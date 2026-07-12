@@ -8,10 +8,14 @@ if (loanForm) {
     e.preventDefault();
     const name = document.getElementById("loan-emp-name").value.trim();
     const total = parseFloat(document.getElementById("loan-total-amount").value);
-    const months = parseInt(document.getElementById("loan-months").value);
+    
+    // قراءة الأشهر: إذا كانت فارغة أو أقل من 1، نعتبرها شهر واحد تلقائياً
+    let monthsInput = document.getElementById("loan-months").value;
+    const months = (monthsInput && parseInt(monthsInput) > 0) ? parseInt(monthsInput) : 1;
+    
     const date = new Date().toLocaleDateString('ar-SA');
     
-    // حساب القسط الشهري
+    // حساب القسط الشهري بدقة
     const monthlyInstallment = (total / months).toFixed(2);
 
     const newLoan = { id: Date.now(), name: name, total: total, months: months, monthly: monthlyInstallment, date: date };
