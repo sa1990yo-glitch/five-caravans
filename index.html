@@ -1,99 +1,78 @@
-<div class="p-6">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-[#0c2d6e] mb-2">لوحة التحكم العامة</h1>
-    <p class="text-gray-500">مرحباً بك مجدداً! إليك نظرة عامة على عمليات مؤسسة القوافل الخمسة اليوم.</p>
+<div class="p-6 font-almarai">
+  
+  <div class="mb-8 flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+    <div>
+      <h1 class="text-3xl font-bold text-[#0c2d6e] mb-2">لوحة التحكم العامة</h1>
+      <p class="text-gray-500 text-sm">نظام الشركات الكبرى لإدارة الإدخال والبيانات الحية.</p>
+    </div>
+    <div class="text-left">
+      <span class="text-xs bg-blue-100 text-[#0c2d6e] font-bold px-3 py-1.5 rounded-full">الوضع المتقدم: متصل ⚡</span>
+    </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
     
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-      <div>
-        <span class="text-gray-400 text-sm font-medium">إجمالي الموظفين</span>
-        <h3 class="text-2xl font-bold text-gray-800 mt-1">42 موظف</h3>
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 lg:col-span-1">
+      <div class="flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
+        <span class="text-xl">📥</span>
+        <h3 class="text-lg font-bold text-[#0c2d6e]">شاشة إدخال الحركات والطلبات</h3>
       </div>
-      <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-2xl">👥</div>
+      
+      <form id="dashboard-input-form" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-gray-600 mb-1">اسم الموظف / السائق</label>
+          <input type="text" id="dashboard-emp-name" required placeholder="مثال: أحمد ناصر علي"
+                 class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] outline-none text-sm">
+        </div>
+        
+        <div>
+          <label class="block text-xs font-bold text-gray-600 mb-1">نوع الإجراء / الإدخال</label>
+          <select id="dashboard-action-type" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] outline-none text-sm bg-white">
+            <option value="طلب سُلفة مالية">💰 طلب سُلفة مالية</option>
+            <option value="تحديث مهنة بقوى">📄 تحديث مهنة بقوى</option>
+            <option value="تجديد رخصة قيادة">🪪 تجديد رخصة قيادة</option>
+            <option value="إجازة سنوية">📅 طلب إجازة سنوية</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-gray-600 mb-1">حالة الطلب الفورية</label>
+          <select id="dashboard-status" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] outline-none text-sm bg-white">
+            <option value="تحت المراجعة">⏳ تحت المراجعة</option>
+            <option value="تمت الموافقة">✅ تمت الموافقة</option>
+            <option value="منتهية / مرفوضة">❌ مرفوضة / منتهية</option>
+          </select>
+        </div>
+
+        <button type="submit" class="w-full bg-[#0c2d6e] hover:bg-[#092252] text-white font-bold py-2 px-4 rounded-xl text-sm transition-all shadow-sm">
+          ترحيل البيانات إلى جدول العرض 🚀
+        </button>
+      </form>
     </div>
 
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-      <div>
-        <span class="text-gray-400 text-sm font-medium">المركبات النشطة</span>
-        <h3 class="text-2xl font-bold text-gray-800 mt-1">15 شاحنة/سيارة</h3>
-      </div>
-      <div class="w-12 h-12 bg-green-50 text-green-600 rounded-xl flex items-center justify-center text-2xl">🚚</div>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
-      <div>
-        <span class="text-gray-400 text-sm font-medium">طلبات قوى المعلقة</span>
-        <h3 class="text-2xl font-bold text-gray-800 mt-1">3 طلبات</h3>
-      </div>
-      <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-2xl">📄</div>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between ring-2 ring-red-100 bg-red-50/30">
-      <div>
-        <span class="text-red-600 text-sm font-bold">إقامات تنتهي قريباً</span>
-        <h3 class="text-2xl font-bold text-red-700 mt-1">5 إقامات</h3>
-      </div>
-      <div class="w-12 h-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center text-2xl">⚠️</div>
-    </div>
-
-  </div>
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
-      <h3 class="text-lg font-bold text-gray-800 mb-4">آخر الطلبات والتحديثات</h3>
+      <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl">🖥️</span>
+          <h3 class="text-lg font-bold text-gray-800">شاشة العرض المباشر للعمليات</h3>
+        </div>
+        <button onclick="clearDashboardData()" class="text-xs text-red-500 hover:underline">مسح السجل بالكامل</button>
+      </div>
+
       <div class="overflow-x-auto">
         <table class="w-full text-right border-collapse">
           <thead>
-            <tr class="border-b border-gray-100 text-gray-400 text-sm">
-              <th class="pb-3 font-medium">الموظف</th>
-              <th class="pb-3 font-medium">نوع الطلب</th>
-              <th class="pb-3 font-medium">التاريخ</th>
-              <th class="pb-3 font-medium">الحالة</th>
+            <tr class="border-b border-gray-200 text-gray-400 text-xs font-bold uppercase tracking-wider">
+              <th class="pb-3">الموظف</th>
+              <th class="pb-3">نوع الطلب / الإجراء</th>
+              <th class="pb-3">التاريخ والوقت</th>
+              <th class="pb-3">الحالة للنظام</th>
             </tr>
           </thead>
-          <tbody class="text-gray-600 text-sm divide-y divide-gray-50">
-            <tr>
-              <td class="py-3 font-medium text-gray-800">محمد أحمد (سائق)</td>
-              <td class="py-3">تحديث مهنة بقوى</td>
-              <td class="py-3">2026/07/12</td>
-              <td class="py-3"><span class="px-2 py-1 bg-amber-100 text-amber-700 rounded-lg text-xs font-bold">تحت المراجعة</span></td>
-            </tr>
-            <tr>
-              <td class="py-3 font-medium text-gray-800">علي الحسين</td>
-              <td class="py-3">طلب سُلفة مالية</td>
-              <td class="py-3">2026/07/10</td>
-              <td class="py-3"><span class="px-2 py-1 bg-green-100 text-green-700 rounded-lg text-xs font-bold">تمت الموافقة</span></td>
-            </tr>
-            <tr>
-              <td class="py-3 font-medium text-gray-800">خالد مصطفى (سائق)</td>
-              <td class="py-3">تجديد رخصة قيادة</td>
-              <td class="py-3">2026/07/08</td>
-              <td class="py-3"><span class="px-2 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-bold">منتهية</span></td>
-            </tr>
-          </tbody>
+          <tbody id="dashboard-live-table" class="text-gray-600 text-xs divide-y divide-gray-50">
+            </tbody>
         </table>
       </div>
-    </div>
-
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <h3 class="text-lg font-bold text-gray-800 mb-4">مهام إدارية عاجلة 📌</h3>
-      <ul class="space-y-3 text-sm text-gray-600">
-        <li class="flex items-start gap-2 p-2 bg-gray-50 rounded-xl">
-          <input type="checkbox" class="mt-1 rounded border-gray-300 text-[#0c2d6e] focus:ring-[#0c2d6e]">
-          <span>مراجعة وثائق تأمين الشاحنات الجديدة</span>
-        </li>
-        <li class="flex items-start gap-2 p-2 bg-gray-50 rounded-xl">
-          <input type="checkbox" class="mt-1 rounded border-gray-300 text-[#0c2d6e] focus:ring-[#0c2d6e]">
-          <span>سداد رسوم رخص العمل للمجموعة القادمة</span>
-        </li>
-        <li class="flex items-start gap-2 p-2 bg-gray-50 rounded-xl">
-          <input type="checkbox" class="mt-1 rounded border-gray-300 text-[#0c2d6e] focus:ring-[#0c2d6e]">
-          <span>اعتماد مسيرات الرواتب لشهر يوليو</span>
-        </li>
-      </ul>
     </div>
 
   </div>
