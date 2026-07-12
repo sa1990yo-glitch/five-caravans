@@ -1,69 +1,90 @@
-// دالة التنقل الآمن بين الصفحات في بيئة CodePen
-const buttons = document.querySelectorAll('.nav-btn');
-const pages = document.querySelectorAll('.page-content');
+// تشغيل الكود بمجرد تحميل الصفحة بالكامل
+document.addEventListener("DOMContentLoaded", function () {
+  // تفعيل شاشة العرض لأول مرة لقراءة البيانات المحفوظة
+  renderDashboardTable();
 
-function switchPage(pageId, activeButton) {
-  pages.forEach(page => {
-    page.classList.add('hidden');
-    page.classList.remove('block');
-  });
-  
-  const targetPage = document.getElementById(pageId);
-  if (targetPage) {
-    targetPage.classList.remove('hidden');
-    targetPage.classList.add('block');
+  // الاستماع لنموذج الإدخال عند الضغط على زر الترحيل
+  const inputForm = document.getElementById("dashboard-input-form");
+  if (inputForm) {
+    inputForm.addEventListener("submit", function (e) {
+      e.preventDefault(); // منع إعادة تحميل الصفحة الحالية
+
+      // جلب القيم من شاشات الإدخال
+      const empName = document.getElementById("dashboard-emp-name").value.trim();
+      const actionType = document.getElementById("dashboard-action-type").value;
+      const status = document.getElementById("dashboard-status").value;
+      const currentDate = new Date().toLocaleDateString('ar-SA');
+
+      // إنشاء كائن الإدخال الجديد لبيانات المنشأة
+      const newRecord = {
+        name: empName,
+        action: actionType,
+        date: currentDate,
+        status: status
+      };
+
+      // جلب البيانات القديمة من الذاكرة أو إنشاء مصفوفة جديدة إذا كانت فارغة
+      let currentRecords = JSON.parse(localStorage.getItem("five_caravans_data")) || [];
+      
+      // إضافة السجل الجديد في أعلى القائمة (أحدث الإدخالات أولاً)
+      currentRecords.unshift(newRecord);
+
+      // حفظ التعديلات في ذاكرة المتصفح للشركات الكبرى
+      localStorage.setItem("five_caravans_data", JSON.stringify(currentRecords));
+
+      // إعادة تحديث شاشة العرض أمام عينك فوراً
+      renderDashboardTable();
+
+      // مسح خانة الاسم لتجهيزها للإدخال التالي
+      document.getElementById("dashboard-emp-name").value = "";
+    });
+  }
+});
+
+// دالة (Function) لتحديث شاشة العرض وجدول البيانات
+function renderDashboardTable() {
+  const tableBody = document.getElementById("dashboard-live-table");
+  if (!tableBody) return;
+
+  // جلب البيانات المخزنة
+  const records = JSON.parse(localStorage.getItem("five_caravans_data")) || [];
+
+  // تنظيف الجدول قبل إعادة الرسم
+  tableBody.innerHTML = "";
+
+  if (records.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="4" class="py-8 text-center text-gray-400 italic">لا توجد سجلات مدخلة حالياً. استخدم شاشة الإدخال على اليمين للبدء.</td>
+      </tr>
+    `;
+    return;
   }
 
-  buttons.forEach(btn => {
-    btn.classList.remove('bg-white/10', 'text-white');
-    btn.classList.add('text-blue-100');
+  // رسم السطور بناءً على المدخلات الحية
+  records.forEach(record => {
+    let statusClass = "bg-amber-100 text-amber-700"; // افتراضي تحت المراجعة
+    if (record.status === "تمت الموافقة") statusClass = "bg-green-100 text-green-700";
+    if (record.status === "منتهية / مرفوضة") statusClass = "bg-red-100 text-red-700";
+
+    const row = `
+      <tr class="hover:bg-gray-50/50 transition-colors">
+        <td class="py-3.5 font-bold text-gray-800">${record.name}</td>
+        <td class="py-3.5 text-gray-700">${record.action}</td>
+        <td class="py-3.5 text-gray-500" dir="ltr">${record.date}</td>
+        <td class="py-3.5">
+          <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${statusClass}">${record.status}</span>
+        </td>
+      </tr>
+    `;
+    tableBody.innerHTML += row;
   });
-
-  activeButton.classList.add('bg-white/10', 'text-white');
 }
 
-// ربط أحداث الضغط لجميع الأزرار الـ 8 بشكل مستقل وصريح
-document.getElementById('btn-dashboard').onclick = function() { switchPage('page-dashboard', this); };
-document.getElementById('btn-employees').onclick = function() { switchPage('page-employees', this); };
-document.getElementById('btn-qiwa').onclick = function() { switchPage('page-qiwa', this); };
-document.getElementById('btn-iqama').onclick = function() { switchPage('page-iqama', this); };
-document.getElementById('btn-advances').onclick = function() { switchPage('page-advances', this); };
-document.getElementById('btn-deductions').onclick = function() { switchPage('page-deductions', this); };
-document.getElementById('btn-leaves').onclick = function() { switchPage('page-leaves', this); };
-document.getElementById('btn-reports').onclick = function() { switchPage('page-reports', this); };
-
-// دالة التصدير للنظام بصيغة CSV المتوافقة مع الإكسيل واللغة العربية
-function exportTableToCSV(tableId, filename) {
-  const table = document.getElementById(tableId);
-  if (!table) return;
-  let csv = [];
-  const rows = table.querySelectorAll("tr");
-  
-  for (let i = 0; i < rows.length; i++) {
-    let row = [], cols = rows[i].querySelectorAll("td, th");
-    for (let j = 0; j < cols.length; j++) {
-      let text = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, "").trim();
-      row.push('"' + text + '"');
-    }
-    csv.push(row.join(","));
+// دالة لتنظيف الذاكرة ومسح جدول العرض بالكامل
+function clearDashboardData() {
+  if (confirm("هل أنت متأكد من رغبتك في مسح كافة السجلات المدخلة في لوحة التحكم؟")) {
+    localStorage.removeItem("five_caravans_data");
+    renderDashboardTable();
   }
-  
-  const csvContent = "\uFEFF" + csv.join("\n");
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement("a");
-  
-  link.href = URL.createObjectURL(blob);
-  link.setAttribute("download", filename);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 }
-
-// تشغيل أزرار التصدير للتقارير
-document.getElementById('export-new-employees').onclick = function() {
-  exportTableToCSV('table-new-employees', 'تقرير_الموظفين_الجدد.csv');
-};
-
-document.getElementById('export-leaving-employees').onclick = function() {
-  exportTableToCSV('table-leaving-employees', 'تقرير_الموظفين_المغادرين.csv');
-};
