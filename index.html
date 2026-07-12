@@ -15,19 +15,12 @@
     body {
       font-family: 'Almarai', sans-serif;
     }
-    /* إخفاء الأقسام غير النشطة بسلاسة */
     .section-hidden {
       display: none !important;
     }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
-
-  <script>
-    if (localStorage.getItem('isLoggedIn') !== 'true') {
-      window.location.href = "login.html";
-    }
-  </script>
 
   <div class="flex h-screen overflow-hidden">
 
@@ -180,6 +173,20 @@
               </table>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div id="sec-visas" class="p-6 space-y-6 section-hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h1 class="text-2xl font-bold text-[#0c2d6e]">طلبات تعديل المهن والوظائف (منصة قوى)</h1>
+          <p class="text-gray-400 text-xs mt-1">قسم إدارة طلبات تعديل المهن المعلقة والمكتملة.</p>
+        </div>
+      </div>
+
+      <div id="sec-loans" class="p-6 space-y-6 section-hidden">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+          <h1 class="text-2xl font-bold text-[#0c2d6e]">سجلات ومتابعة السُلف المالية</h1>
+          <p class="text-gray-400 text-xs mt-1">حصر وتدقيق المبالغ المالية والسلف الخاصة بجميع منسوبي المنشأة.</p>
         </div>
       </div>
 
