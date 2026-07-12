@@ -1,0 +1,199 @@
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Almarai:wght=400;700&display=swap');
+
+  .font-almarai {
+    font-family: 'Almarai', sans-serif;
+  }
+
+  .alert-medium {
+    background-color: #fef9c3;
+    color: #a16207;
+  }
+
+  .status-approved {
+    background-color: #d1fae5;
+    color: #065f46;
+    font-weight: bold;
+  }
+
+  .status-active {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    font-weight: bold;
+  }
+
+  .status-terminated {
+    background-color: #f3f4f6;
+    color: #374151;
+    font-weight: bold;
+  }
+</style>
+
+<div class="bg-gray-100 flex h-screen overflow-hidden font-almarai" dir="rtl">
+
+  <aside class="w-64 bg-[#0c2d6e] text-white flex flex-col p-4 z-50 shadow-lg shrink-0">
+    <div class="mb-8 pr-2 flex items-center gap-3">
+      <span class="text-2xl">🚚</span>
+      <h1 class="text-lg font-bold tracking-wide">القوافل الخمسة</h1>
+    </div>
+
+    <nav class="flex flex-col gap-2 w-full overflow-y-auto max-h-[calc(100vh-100px)]">
+      <button id="btn-dashboard" class="w-full text-right flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-all text-blue-100 hover:text-white nav-btn bg-white/10 text-white">
+        <span>📊</span><span class="text-sm font-medium">لوحة التحكم العامة</span>
+      </button>
+
+      <button id="btn-employees" class="w-full text-right flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-all text-blue-100 hover:text-white nav-btn">
+        <span>👥</span><span class="text-sm font-medium">سجلات الموظفين</span>
+      </button>
+
+      <button id="btn-qiwa" class="w-full text-right flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-all text-blue-100 hover:text-white nav-btn">
+        <span>📄</span><span class="text-sm font-medium">طلبات تعديل المهن (قوى)</span>
+      </button>
+
+      <button id="btn-iqama" class="w-full text-right flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-all text-blue-100 hover:text-white nav-btn">
+        <span>🪪</span><span class="text-sm font-medium">متابعة الإقامات</span>
+      </button>
+
+      <button id="btn-advances" class="w-full text-right flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-all text-blue-100 hover:text-white nav-btn">
+        <span>💰</span><span class="text-sm font-medium">سجلات السُلف المالية</span>
+      </button>
+
+      <button id="btn-deductions" class="w-full text-right flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-all text-blue-100 hover:text-white nav-btn">
+        <span>⚖️</span><span class="text-sm font-medium">الخصومات والجزاءات</span>
+      </button>
+
+      <button id="btn-leaves" class="w-full text-right flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-all text-blue-100 hover:text-white nav-btn">
+        <span>📅</span><span class="text-sm font-medium">سجل ومتابعة الإجازات</span>
+      </button>
+
+      <button id="btn-reports" class="w-full text-right flex items-center gap-3 px-4 py-3 hover:bg-white/5 rounded-xl transition-all text-blue-100 hover:text-white nav-btn">
+        <span>📈</span><span class="text-sm font-medium">التقارير الذكية</span>
+      </button>
+    </nav>
+  </aside>
+
+  <main class="flex-1 overflow-y-auto p-8 relative bg-gray-50 text-right">
+
+    <div id="page-dashboard" class="page-content block space-y-6">
+      <h2 class="text-2xl font-bold text-[#0c2d6e]">مرحباً بك في لوحة التحكم العامة</h2>
+      <p class="text-gray-600">نظام إدارة الموارد البشرية لمؤسسة القوافل الخمسة.</p>
+    </div>
+
+    <div id="page-employees" class="page-content hidden space-y-6">
+      <h2 class="text-2xl font-bold text-[#0c2d6e]">سجلات الموظفين</h2>
+      <p class="text-gray-600">هنا تظهر كافة ملفات وبيانات الموظفين والسائقين.</p>
+    </div>
+
+    <div id="page-qiwa" class="page-content hidden space-y-6">
+      <h2 class="text-2xl font-bold text-[#0c2d6e]">طلبات تغيير المهنة (Qiwa)</h2>
+      <div class="p-4 border border-yellow-200 bg-yellow-50 rounded-xl text-sm text-yellow-800 shadow-sm">
+        <strong>ملاحظة متابعة:</strong> طلب الموظف وافق عليه الموظف وتم استرداد الرسوم، ولكن لم يلغَ من قوى حتى الآن.
+      </div>
+    </div>
+
+    <div id="page-iqama" class="page-content hidden space-y-6">
+      <h2 class="text-2xl font-bold text-[#0c2d6e]">متابعة انتهاء الإقامات</h2>
+      <div class="overflow-hidden bg-white rounded-xl shadow border border-gray-200">
+        <table class="w-full text-right border-collapse">
+          <thead>
+            <tr class="bg-gray-50 border-b border-gray-200 text-[#0c2d6e]">
+              <th class="p-4 font-bold text-sm">الموظف</th>
+              <th class="p-4 font-bold text-sm">الأيام المتبقية</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-gray-100 alert-medium">
+              <td class="p-4 font-bold">محمد عبد اللطيف</td>
+              <td class="p-4 font-bold">45 يوم</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-advances" class="page-content hidden space-y-6">
+      <h2 class="text-2xl font-bold text-[#0c2d6e]">سجلات ومتابعة السُلف المالية</h2>
+      <div class="overflow-hidden bg-white rounded-xl shadow border border-gray-200">
+        <table class="w-full text-right border-collapse">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="p-4 font-bold">أحمد nاصر علي</td>
+              <td class="p-4 text-emerald-600 font-bold">3,500 ر.س</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-deductions" class="page-content hidden space-y-6">
+      <h2 class="text-2xl font-bold text-[#0c2d6e]">سجل الخصومات والجزاءات الإدارية</h2>
+      <div class="overflow-hidden bg-white rounded-xl shadow border border-gray-200">
+        <table class="w-full text-right border-collapse">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="p-4 font-bold">محمد عبد اللطيف</td>
+              <td class="p-4 text-red-600 font-bold">خصم أجر يوم</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-leaves" class="page-content hidden space-y-6">
+      <h2 class="text-2xl font-bold text-[#0c2d6e]">سجل حركة وإحصائيات الإجازات</h2>
+      <div class="overflow-hidden bg-white rounded-xl shadow border border-gray-200">
+        <table class="w-full text-right border-collapse">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="p-4 font-bold">أحمد ناصر علي</td>
+              <td class="p-4 text-xs"><span class="px-2 py-1 rounded-lg status-active">موافقة - جاري التجهيز ✈️</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="page-reports" class="page-content hidden space-y-8">
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-2xl font-bold text-[#0c2d6e]">تقرير الموظفين والتعيينات الجديدة</h2>
+          </div>
+          <button id="export-new-employees" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm">تصدير (CSV)</button>
+        </div>
+        <div class="overflow-hidden bg-white rounded-xl shadow border border-gray-200">
+          <table id="table-new-employees" class="w-full text-right border-collapse">
+            <tbody>
+              <tr class="border-b border-gray-100">
+                <td class="p-4 font-bold">موظف محلي جديد</td>
+                <td class="p-4 text-gray-600">2026/07/01م</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <hr class="border-gray-200" />
+
+      <div class="space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-gray-800">تقرير الموظفين المغادرين</h2>
+          <button id="export-leaving-employees" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-sm">تصدير (CSV)</button>
+        </div>
+        <div class="overflow-hidden bg-white rounded-xl shadow border border-gray-200">
+          <table id="table-leaving-employees" class="w-full text-right border-collapse">
+            <tbody>
+              <tr class="border-b border-gray-100">
+                <td class="p-4 font-bold">سائق سابق (مثال)</td>
+                <td class="p-4 text-gray-600">2026/06/30م</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
