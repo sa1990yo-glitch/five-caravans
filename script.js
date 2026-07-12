@@ -1,77 +1,71 @@
+// أضف هذا الجزء داخل دالة الاستماع الرئيسية (DOMContentLoaded) أو في نهاية الملف:
+
 document.addEventListener("DOMContentLoaded", function () {
-  // تشغيل شاشة العرض لقراءة أي بيانات قديمة محفوظة
+  // تشغيل شاشات العرض فور فتح الصفحة
   renderDashboardTable();
+  renderEmployeesTable();
 
-  // تفعيل الاستماع لشاشة الإدخال
-  const inputForm = document.getElementById("dashboard-input-form");
-  if (inputForm) {
-    inputForm.addEventListener("submit", function (e) {
-      e.preventDefault(); // منع الصفحة من تحديث نفسها وضياع البيانات
+  // تفعيل الاستماع لشاشة إدخال الموظفين
+  const empForm = document.getElementById("employee-input-form");
+  if (empForm) {
+    empForm.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-      // جلب القيم من شاشات الإدخال
-      const empName = document.getElementById("dashboard-emp-name").value.trim();
-      const actionType = document.getElementById("dashboard-action-type").value;
-      const status = document.getElementById("dashboard-status").value;
-      
-      // تسجيل التاريخ والوقت الفعلي الحالي للعملية
-      const currentDateTime = new Date().toLocaleString('ar-SA', { hour12: true });
+      // جلب قيم المدخلات
+      const fullName = document.getElementById("emp-fullname").value.trim();
+      const idNumber = document.getElementById("emp-id-number").value.trim();
+      const jobTitle = document.getElementById("emp-job").value;
+      const phoneNum = document.getElementById("emp-phone").value.trim() || "غير مسجل";
 
-      // تجميع البيانات في سجل موحد
-      const newRecord = {
-        name: empName,
-        action: actionType,
-        date: currentDateTime,
-        status: status
+      const newEmp = {
+        id: Date.now(), // معرف فريد لكل موظف
+        name: fullName,
+        iqama: idNumber,
+        job: jobTitle,
+        phone: phoneNum
       };
 
-      // جلب قاعدة البيانات الحالية من المتصفح أو إنشاء واحدة جديدة
-      let currentRecords = JSON.parse(localStorage.getItem("five_caravans_main_data")) || [];
-      
-      // إدراج السجل الجديد في بداية القائمة لتظهر الأحدث أولاً
-      currentRecords.unshift(newRecord);
+      let currentEmps = JSON.parse(localStorage.getItem("five_caravans_employees")) || [];
+      currentEmps.unshift(newEmp);
+      localStorage.setItem("five_caravans_employees", JSON.stringify(currentEmps));
 
-      // حفظ السجل الجديد في المتصفح لضمان عدم ضياعه حتى بعد الإغلاق
-      localStorage.setItem("five_caravans_main_data", JSON.stringify(currentRecords));
-
-      // تحديث شاشة العرض فوراً أمامك
-      renderDashboardTable();
-
-      // تصفير خانة الاسم لتهيئتها للموظف التالي
-      document.getElementById("dashboard-emp-name").value = "";
+      // إعادة رسم الجدول وتصفير الخانات
+      renderEmployeesTable();
+      empForm.reset();
     });
   }
 });
 
-// دالة معالجة ورسم البيانات داخل شاشة العرض
-function renderDashboardTable() {
-  const tableBody = document.getElementById("dashboard-live-table");
+// دالة رسم جدول عرض الموظفين
+function renderEmployeesTable() {
+  const tableBody = document.getElementById("employees-live-table");
+  const badge = document.getElementById("emp-count-badge");
   if (!tableBody) return;
 
-  const records = JSON.parse(localStorage.getItem("five_caravans_main_data")) || [];
+  const emps = JSON.parse(localStorage.getItem("five_caravans_employees")) || [];
   tableBody.innerHTML = "";
+  if (badge) badge.innerText = emps.length;
 
-  if (records.length === 0) {
+  if (emps.length === 0) {
     tableBody.innerHTML = `
       <tr>
-        <td colspan="4" class="py-8 text-center text-gray-400 italic">شاشة العرض فارغة حالياً. يرجى ترحيل بيانات من شاشة الإدخال المقابلة.</td>
+        <td colspan="5" class="py-8 text-center text-gray-400 italic">قاعدة البيانات فارغة حالياً. أضف موظفاً من الشاشة الجانبية.</td>
       </tr>
     `;
     return;
   }
 
-  // فرز السجلات وبناء السطور برمجياً مع الألوان المناسبة لكل حالة
-  records.forEach(record => {
-    let statusStyle = "bg-amber-100 text-amber-700"; // تحت المراجعة
-    if (record.status === "تمت الموافقة") statusStyle = "bg-green-100 text-green-700";
-    if (record.status === "مرفوضة / منتهية") statusStyle = "bg-red-100 text-red-700";
-
+  emps.forEach(emp => {
     const row = `
       <tr class="hover:bg-gray-50/50 transition-all border-b border-gray-100">
-        <td class="py-3.5 font-bold text-gray-800">${record.name}</td>
-        <td class="py-3.5 text-gray-600">${record.action}</td>
-        <td class="py-3.5 text-gray-400" dir="ltr">${record.date}</td>
-        <td class="py-3.5">
-          <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${statusStyle}">${record.status}</span>
+        <td class="py-3.5 font-bold text-gray-800">${emp.name}</td>
+        <td class="py-3.5 text-gray-600 font-mono">${emp.iqama}</td>
+        <td class="py-3.5 text-gray-700">
+          <span class="px-2 py-0.5 bg-blue-50 text-[#0c2d6e] rounded-md text-xs font-medium">${emp.job}</span>
+        </td>
+        <td class="py-3.5 text-gray-500 font-mono">${emp.phone}</td>
+        <td class="py-3.5 text-center">
+          <button onclick="deleteEmployee(${emp.id})" class="text-red-500 hover:text-red-700 font-bold">حذف 🗑️</button>
         </td>
       </tr>
     `;
@@ -79,10 +73,20 @@ function renderDashboardTable() {
   });
 }
 
-// دالة حذف البيانات بالكامل من شاشة العرض
-function clearDashboardData() {
-  if (confirm("هل أنت متأكد من رغبتك في تفريغ شاشة العرض ومسح كافة البيانات؟")) {
-    localStorage.removeItem("five_caravans_main_data");
-    renderDashboardTable();
+// دالة حذف موظف معين
+function deleteEmployee(id) {
+  if (confirm("هل أنت متأكد من حذف هذا الموظف نهائياً من السجلات؟")) {
+    let emps = JSON.parse(localStorage.getItem("five_caravans_employees")) || [];
+    emps = emps.filter(e => e.id !== id);
+    localStorage.setItem("five_caravans_employees", JSON.stringify(emps));
+    renderEmployeesTable();
+  }
+}
+
+// دالة مسح السجل بالكامل
+function clearEmployeesData() {
+  if (confirm("تحذير: هل تريد مسح قاعدة بيانات الموظفين بالكامل؟")) {
+    localStorage.removeItem("five_caravans_employees");
+    renderEmployeesTable();
   }
 }
