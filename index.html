@@ -1,51 +1,51 @@
-<div class="p-6 font-almarai">
+<div id="dashboard-section" class="p-6 font-almarai">
   
-  <div class="mb-8 flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+  <div class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center bg-white p-6 rounded-2xl shadow-sm border border-gray-100 gap-4">
     <div>
       <h1 class="text-3xl font-bold text-[#0c2d6e] mb-2">لوحة التحكم العامة</h1>
-      <p class="text-gray-500 text-sm">نظام الشركات الكبرى لإدارة الإدخال والبيانات الحية.</p>
+      <p class="text-gray-500 text-sm">نظام الشركات المتقدم: فصل شاشات الإدخال عن شاشات العرض المباشر.</p>
     </div>
-    <div class="text-left">
-      <span class="text-xs bg-blue-100 text-[#0c2d6e] font-bold px-3 py-1.5 rounded-full">الوضع المتقدم: متصل ⚡</span>
+    <div>
+      <span class="text-xs bg-blue-100 text-[#0c2d6e] font-bold px-3 py-1.5 rounded-full">نظام الإدخال المركزي: نشط ⚡</span>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
     
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 lg:col-span-1">
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 lg:col-span-1 h-fit">
       <div class="flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
         <span class="text-xl">📥</span>
-        <h3 class="text-lg font-bold text-[#0c2d6e]">شاشة إدخال الحركات والطلبات</h3>
+        <h3 class="text-lg font-bold text-[#0c2d6e]">شاشة إدخال البيانات</h3>
       </div>
       
       <form id="dashboard-input-form" class="space-y-4">
         <div>
           <label class="block text-xs font-bold text-gray-600 mb-1">اسم الموظف / السائق</label>
           <input type="text" id="dashboard-emp-name" required placeholder="مثال: أحمد ناصر علي"
-                 class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] outline-none text-sm">
+                 class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] focus:border-[#0c2d6e] outline-none text-sm text-right">
         </div>
         
         <div>
-          <label class="block text-xs font-bold text-gray-600 mb-1">نوع الإجراء / الإدخال</label>
-          <select id="dashboard-action-type" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] outline-none text-sm bg-white">
+          <label class="block text-xs font-bold text-gray-600 mb-1">نوع الإجراء أو البيان</label>
+          <select id="dashboard-action-type" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] focus:border-[#0c2d6e] outline-none text-sm bg-white text-right">
             <option value="طلب سُلفة مالية">💰 طلب سُلفة مالية</option>
             <option value="تحديث مهنة بقوى">📄 تحديث مهنة بقوى</option>
             <option value="تجديد رخصة قيادة">🪪 تجديد رخصة قيادة</option>
-            <option value="إجازة سنوية">📅 طلب إجازة سنوية</option>
+            <option value="طلب إجازة سنوية">📅 طلب إجازة سنوية</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-gray-600 mb-1">حالة الطلب الفورية</label>
-          <select id="dashboard-status" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] outline-none text-sm bg-white">
+          <label class="block text-xs font-bold text-gray-600 mb-1">حالة المعاملة الحالية</label>
+          <select id="dashboard-status" class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0c2d6e] focus:border-[#0c2d6e] outline-none text-sm bg-white text-right">
             <option value="تحت المراجعة">⏳ تحت المراجعة</option>
             <option value="تمت الموافقة">✅ تمت الموافقة</option>
-            <option value="منتهية / مرفوضة">❌ مرفوضة / منتهية</option>
+            <option value="مرفوضة / منتهية">❌ مرفوضة / منتهية</option>
           </select>
         </div>
 
-        <button type="submit" class="w-full bg-[#0c2d6e] hover:bg-[#092252] text-white font-bold py-2 px-4 rounded-xl text-sm transition-all shadow-sm">
-          ترحيل البيانات إلى جدول العرض 🚀
+        <button type="submit" class="w-full bg-[#0c2d6e] hover:bg-[#092252] text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all shadow-sm transform active:scale-95">
+          ترحيل البيانات وحفظها 🚀
         </button>
       </form>
     </div>
@@ -56,17 +56,17 @@
           <span class="text-xl">🖥️</span>
           <h3 class="text-lg font-bold text-gray-800">شاشة العرض المباشر للعمليات</h3>
         </div>
-        <button onclick="clearDashboardData()" class="text-xs text-red-500 hover:underline">مسح السجل بالكامل</button>
+        <button onclick="clearDashboardData()" class="text-xs text-red-500 hover:text-red-700 font-bold transition-colors">مسح السجل بالكامل</button>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-right border-collapse">
           <thead>
-            <tr class="border-b border-gray-200 text-gray-400 text-xs font-bold uppercase tracking-wider">
-              <th class="pb-3">الموظف</th>
-              <th class="pb-3">نوع الطلب / الإجراء</th>
-              <th class="pb-3">التاريخ والوقت</th>
-              <th class="pb-3">الحالة للنظام</th>
+            <tr class="border-b border-gray-200 text-gray-400 text-xs font-bold pb-3">
+              <th class="pb-3 text-right">الموظف</th>
+              <th class="pb-3 text-right">نوع الإجراء</th>
+              <th class="pb-3 text-right">التاريخ والوقت</th>
+              <th class="pb-3 text-right">حالة النظام</th>
             </tr>
           </thead>
           <tbody id="dashboard-live-table" class="text-gray-600 text-xs divide-y divide-gray-50">
