@@ -119,7 +119,7 @@
         <table class="w-full text-right border-collapse">
           <tbody>
             <tr class="border-b border-gray-100">
-              <td class="p-4 font-bold">أحمد nاصر علي</td>
+              <td class="p-4 font-bold">أحمد ناصر علي</td>
               <td class="p-4 text-emerald-600 font-bold">3,500 ر.س</td>
             </tr>
           </tbody>
@@ -197,3 +197,41 @@
 
   </main>
 </div>
+
+<script>
+  // مصفوفة تحتوي على معرفات الأزرار والصفحات المرتبطة بها
+  const navigationMap = [
+    { buttonId: 'btn-dashboard', pageId: 'page-dashboard' },
+    { buttonId: 'btn-employees', pageId: 'page-employees' },
+    { buttonId: 'btn-qiwa', pageId: 'page-qiwa' },
+    { buttonId: 'btn-iqama', pageId: 'page-iqama' },
+    { buttonId: 'btn-advances', pageId: 'page-advances' },
+    { buttonId: 'btn-deductions', pageId: 'page-deductions' },
+    { buttonId: 'btn-leaves', pageId: 'page-leaves' },
+    { buttonId: 'btn-reports', pageId: 'page-reports' }
+  ];
+
+  // دالة لتنفيذ عملية الانتقال بين الصفحات وتغيير ألوان الأزرار نشطة
+  navigationMap.forEach(item => {
+    const button = document.getElementById(item.buttonId);
+    if (button) {
+      button.addEventListener('click', () => {
+        // 1. إخفاء جميع الصفحات وإزالة خلفية التحديد من جميع الأزرار
+        navigationMap.forEach(nav => {
+          const page = document.getElementById(nav.pageId);
+          const btn = document.getElementById(nav.buttonId);
+          if (page) page.classList.add('hidden');
+          if (btn) btn.classList.remove('bg-white/10', 'text-white');
+        });
+
+        // 2. إظهار الصفحة المطلوبة وتلوين الزر المضغوط لتوضيح أنه نشط
+        const targetPage = document.getElementById(item.pageId);
+        if (targetPage) targetPage.classList.remove('hidden');
+        button.classList.add('bg-white/10', 'text-white');
+      });
+    }
+  });
+</script>
+
+<script src="script.js"></script>
+   
