@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام إدارة السلف المالية 2026</title>
+  <title>نظام إدارة السلف المالية - القوافل الخمسة</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Almarai:wght@400;700&display=swap');
     body { font-family: 'Almarai', sans-serif; }
@@ -36,42 +35,56 @@
     </div>
 
     <div class="flex-1 flex flex-col overflow-y-auto p-6 space-y-6">
-      <div class="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-        <div>
-          <h1 class="text-xl font-bold text-[#0c2d6e]">نظام إدارة السلف المالية 2026</h1>
-          <p class="text-gray-400 text-xs mt-1">توزيع مالي سنوي مؤتمت للأقساط الشهرية وحساب المتبقي.</p>
-        </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+        <h1 class="text-xl font-bold text-[#0c2d6e]">نظام إدارة السلف المالية 2026</h1>
+        <p class="text-gray-400 text-xs mt-1">توزيع مرن للأقساط الشهرية مع إمكانية تحديد شهر السداد والبدء.</p>
       </div>
 
       <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <h3 class="text-sm font-bold text-[#0c2d6e] mb-5 flex items-center gap-2">✨ قيد شُلفة جديدة وتوزيعها</h3>
-        <form id="loan-input-form" class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
+        <form id="loan-input-form" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
           <div>
             <label class="block text-xs font-bold text-slate-600 mb-1.5 text-right">اسم الموظف / السائق</label>
-            <input type="text" id="loan-emp-name" required placeholder="مثال: نجيبه عبده احمد" class="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#0c2d6e] focus:bg-white transition-all">
+            <input type="text" id="loan-emp-name" required placeholder="مثال: علي قاسم" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#0c2d6e] focus:bg-white transition-all">
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1.5 text-right">إجمالي الشُلفة (ريال)</label>
-            <input type="number" id="loan-total-amount" required placeholder="0.00" class="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#0c2d6e] focus:bg-white transition-all">
+            <label class="block text-xs font-bold text-slate-600 mb-1.5 text-right">إجمالي السلفة (ريال)</label>
+            <input type="number" id="loan-total-amount" required placeholder="0.00" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#0c2d6e] focus:bg-white transition-all">
           </div>
           <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1.5 text-right">عدد أشهر الأقساط (اختياري)</label>
-            <input type="number" id="loan-months" placeholder="اتركه فارغاً لدفعة واحدة" class="w-full px-4 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#0c2d6e] focus:bg-white transition-all">
+            <label class="block text-xs font-bold text-slate-600 mb-1.5 text-right">عدد الأشهر (الأقساط)</label>
+            <input type="number" id="loan-months" placeholder="مثال: 3" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#0c2d6e] focus:bg-white transition-all">
           </div>
-          <button type="submit" class="bg-[#0c2d6e] text-white text-xs font-bold py-3 rounded-xl hover:bg-[#092252] shadow-md shadow-blue-900/10 transition-all h-[42px] flex items-center justify-center gap-2">
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1.5 text-right">بداية القسط من شهر</label>
+            <select id="loan-start-month" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:ring-2 focus:ring-[#0c2d6e] focus:bg-white transition-all">
+              <option value="0">يناير</option>
+              <option value="1">فبراير</option>
+              <option value="2">مارس</option>
+              <option value="3">أبريل</option>
+              <option value="4">مايو</option>
+              <option value="5">يونيو</option>
+              <option value="6">يوليو</option>
+              <option value="7">أغسطس</option>
+              <option value="8">سبتمبر</option>
+              <option value="9">أكتوبر</option>
+              <option value="10">نوفمبر</option>
+              <option value="11">ديسمبر</option>
+            </select>
+          </div>
+          <button type="submit" class="bg-[#0c2d6e] text-white text-xs font-bold py-2.5 rounded-xl hover:bg-[#092252] shadow-md transition-all flex items-center justify-center gap-2 w-full">
             🚀 اعتماد وتوزيع السلفة
           </button>
         </form>
       </div>
 
       <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-        <div class="p-5 border-b border-slate-50 flex items-center gap-2">
-          <span class="text-lg">👥</span>
+        <div class="p-5 border-b border-slate-50">
           <h3 class="text-sm font-bold text-slate-700">جدول سلف الموظفين السنوي</h3>
         </div>
         
         <div class="overflow-x-auto custom-scrollbar">
-          <table class="w-full text-center border-collapse min-w-[1300px]">
+          <table class="w-full text-center border-collapse min-w-[1400px]">
             <thead>
               <tr class="bg-blue-50/60 text-[#0c2d6e] text-xs font-bold border-b border-slate-100">
                 <th class="p-3.5 text-right sticky right-0 bg-[#f4f7fc] z-10 w-52 border-l border-slate-100">اسم الموظف</th>
@@ -87,8 +100,8 @@
                 <th class="p-3.5">أكتوبر</th>
                 <th class="p-3.5">نوفمبر</th>
                 <th class="p-3.5">ديسمبر</th>
-                <th class="p-3.5 text-amber-700 bg-amber-50 font-bold">المتبقي</th>
-                <th class="p-3.5 text-emerald-700 bg-emerald-50 font-bold">الإجمالي</th>
+                <th class="p-3.5 text-amber-700 bg-amber-50">المتبقي</th>
+                <th class="p-3.5 text-emerald-700 bg-emerald-50">الإجمالي</th>
                 <th class="p-3.5 w-32">الإجراءات</th>
               </tr>
             </thead>
