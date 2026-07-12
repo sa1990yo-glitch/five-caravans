@@ -1,3 +1,9 @@
+<script>
+  // التحقق الفوري: إذا لم يسجل المستخدم الدخول، يتم تحويله تلقائياً لصفحة الـ login
+  if (localStorage.getItem('isLoggedIn') !== 'true') {
+    window.location.href = "login.html";
+  }
+</script>
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
