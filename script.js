@@ -1,46 +1,58 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // تشغيل عرض الجدول مباشرة عند تحميل الصفحة لقراءة السجلات المحفوظة
   renderLoansTable();
 
-  const loanForm = document.getElementById("loan-input-form");
+  // تفعيل الاستماع لنموذج إدخال السلف الخاص بتصميمك
+  const loanForm = document.getElementById("loan-input-form") || document.querySelector("form");
+  
   if (loanForm) {
     loanForm.addEventListener("submit", function (e) {
       e.preventDefault();
 
-      // جلب الحقول بدقة عالية
-      const nameEl = document.getElementById("loan-emp-name");
-      const totalEl = document.getElementById("loan-total-amount");
-      const monthsEl = document.getElementById("loan-months");
-      const startMonthEl = document.getElementById("loan-start-month");
-
-      const name = nameEl.value.trim();
-      const total = parseFloat(totalEl.value);
+      // جلب القيم بناءً على التصميم الفعلي لصفحتك واختيار المعرفات الصحيحة
+      const nameInput = document.getElementById("loan-emp-name") || loanForm.querySelector('input[type="text"]');
+      const totalInput = document.getElementById("loan-total-amount") || loanForm.querySelector('input[type="number"]');
       
-      // إذا لم يحدد أشهر نعتبرها شهر واحد (تسديد فوري)
-      const months = (monthsEl.value && parseInt(monthsEl.value) > 0) ? parseInt(monthsEl.value) : 1;
-      // جلب اختيار الشهر اليدوي من القائمة المنسدلة
-      const startMonthIndex = parseInt(startMonthEl.value);
+      // جلب حقل الأشهر (إذا تُرِك فارغاً يُعتبر شهر واحد تلقائياً)
+      const monthsInput = document.getElementById("loan-months") || loanForm.querySelectorAll('input[type="number"]')[1];
 
-      if (isNaN(total) || total <= 0) {
-        alert("الرجاء إدخال إجمالي سلفة صحيح.");
+      if (!nameInput || !totalInput) {
+        alert("لم يتم العثور على حقول الإدخال في الصفحة، يرجى التحقق من المعرفات.");
         return;
       }
 
-      // حساب قيمة القسط الشهري العادل بدون كسور معقدة
+      const name = nameInput.value.trim();
+      const total = parseFloat(totalInput.value);
+      const months = (monthsInput && monthsInput.value && parseInt(monthsInput.value) > 0) ? parseInt(monthsInput.value) : 1;
+
+      if (!name) {
+        alert("الرجاء إدخال اسم الموظف");
+        return;
+      }
+      if (isNaN(total) || total <= 0) {
+        alert("الرجاء إدخال مبلغ سلفة صحيح");
+        return;
+      }
+
+      // الحساب التلقائي والتوزيع بناءً على الشهر الحالي لعام 2026
+      const currentMonthIndex = new Date().getMonth(); // يناير = 0، فبراير = 1... إلخ
       const monthlyInstallment = Math.round(total / months);
+
       let monthlyDistribution = Array(12).fill("-");
       let remainingAmount = total;
 
-      // توزيع المبالغ ابتداءً من الشهر المحدد يدوياً
+      // توزيع الأقساط على مصفوفة الأشهر الـ 12
       for (let i = 0; i < months; i++) {
-        let targetMonth = (startMonthIndex + i) % 12;
+        let targetMonth = (currentMonthIndex + i) % 12;
         if (i === months - 1) {
-          monthlyDistribution[targetMonth] = remainingAmount; // الشهر الأخير يأخذ المتبقي الفعلي
+          monthlyDistribution[targetMonth] = remainingAmount; // الشهر الأخير يأخذ باقي الكسور
         } else {
           monthlyDistribution[targetMonth] = monthlyInstallment;
           remainingAmount -= monthlyInstallment;
         }
       }
 
+      // بناء كائن السلفة الجديد
       const newLoan = {
         id: Date.now(),
         name: name,
@@ -49,22 +61,22 @@ document.addEventListener("DOMContentLoaded", function () {
         monthsData: monthlyDistribution
       };
 
-      // الحفظ الآمن في LocalStorage واختفاء الـ NaN تماماً
+      // جلب البيانات القديمة وإضافة السجِل الجديد في البداية
       let loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
       loans.unshift(newLoan);
       localStorage.setItem("five_caravans_loans", JSON.stringify(loans));
 
-      // إعادة عرض الجدول وتصفير الحقول
+      // تحديث الجدول فوراً وتصفير الفورم
       renderLoansTable();
       loanForm.reset();
     });
   }
 });
 
-// دالة بناء وعرض الجدول السنوي للسلف
+// دالة عرض وتحديث محتويات جدول السلف السنوي المحدثة تماماً
 function renderLoansTable() {
   const tableBody = document.getElementById("loans-table-body");
-  if (!tableBody) return;
+  if (!tableBody) return; // للتأكد من عدم حدوث خطأ إذا كنا في صفحة أخرى
 
   const loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
 
@@ -74,11 +86,12 @@ function renderLoansTable() {
   }
 
   tableBody.innerHTML = "";
+  
   loans.forEach(l => {
     let rowHtml = `<tr class="hover:bg-slate-50/80 transition-all border-b border-slate-100">
       <td class="p-3 text-right font-bold text-slate-800 bg-white sticky right-0 z-10 border-l border-slate-100 shadow-[2px_0_5px_rgba(0,0,0,0.02)]">${l.name}</td>`;
 
-    // تعبئة الـ 12 شهراً بالمبالغ أو الشرطات
+    // عرض الأشهر الـ 12 بالترتيب الصحيح (من يناير إلى ديسمبر)
     l.monthsData.forEach(monthVal => {
       if (monthVal === "-") {
         rowHtml += `<td class="p-3 text-slate-300 font-mono">-</td>`;
@@ -87,7 +100,7 @@ function renderLoansTable() {
       }
     });
 
-    // المتبقي والإجمالي مع أزرار التحكم
+    // إضافة خانات المتبقي والإجمالي والعمليات متوافقة مع الألوان الفخمة لديك
     rowHtml += `
       <td class="p-3 bg-amber-50/40 font-bold text-amber-700 font-mono">
         <span class="bg-amber-100/70 px-2 py-1 rounded-md border border-amber-200/50">${parseFloat(l.remaining).toLocaleString('en-US')}</span>
@@ -108,14 +121,14 @@ function renderLoansTable() {
   });
 }
 
-// دالة التسوية الفورية
+// دالة تسوية السلفة بالكامل
 function settleLoan(id) {
-  if (confirm("هل أنت متأكد من تسوية هذه السُلفة بالكامل؟")) {
+  if (confirm("هل أنت متأكد من تسوية وإغلاق هذه السُلفة بالكامل؟ سيتم تصفير المبلغ المتبقي.")) {
     let loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
     loans = loans.map(l => {
       if (l.id === id) {
         l.remaining = 0;
-        l.monthsData = Array(12).fill("-");
+        l.monthsData = Array(12).fill("-"); // تصفير الأقساط
       }
       return l;
     });
@@ -124,9 +137,9 @@ function settleLoan(id) {
   }
 }
 
-// دالة الحذف النهائي والكامل للسجل
+// دالة حذف القيد نهائياً
 function deleteLoan(id) {
-  if (confirm("تنبيه: هل تريد حذف سجل السلفة هذا نهائياً من النظام؟")) {
+  if (confirm("تنبيه: هل أنت متأكد من حذف هذا السجل المالي نهائياً؟")) {
     let loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
     loans = loans.filter(l => l.id !== id);
     localStorage.setItem("five_caravans_loans", JSON.stringify(loans));
