@@ -1,258 +1,382 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>لوحة التحكم العامة - القوافل الخمسة</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Cairo', sans-serif; }
-  </style>
-</head>
-<body class="bg-slate-100 min-h-screen flex">
-
-  <div class="w-72 bg-slate-900 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
-    <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
-      <div class="text-2xl">🚚</div>
-      <div>
-        <h1 class="font-bold text-lg leading-tight">القوافل الخمسة</h1>
-        <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
-      </div>
-    </div>
-    
-    <nav class="flex-1 flex flex-col gap-2">
-      <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
-        <span>📊</span> لوحة التحكم العامة
-      </a>
-      <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>👥</span> سجلات الموظفين والإقامات
-      </a>
-      <a href="visas.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>📄</span> طلبات التعديل (قوى)
-      </a>
-      <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>💰</span> سجلات السُّلف المالية
-      </a>
-      <a href="deductions.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>⚖️</span> الجزاءات والخصومات
-      </a>
-      <a href="leaves.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>📅</span> إدارة الإجازات
-      </a>
-    </nav>
-  </div>
-
-  <div class="flex-1 p-8 overflow-x-hidden">
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex items-center justify-between">
-      <div>
-        <h2 class="text-2xl font-bold text-slate-800">لوحة التحكم العامة</h2>
-        <p class="text-slate-500 text-sm mt-1">متابعة الحركات اليومية والطلبات المباشرة بالمنشأة لعام 2026.</p>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      
-      <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden flex flex-col h-[500px]">
-        <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-          <h3 class="font-bold text-slate-800 flex items-center gap-2">🖥️ شاشة العرض المباشر للحركات</h3>
-        </div>
-        <div class="overflow-y-auto flex-1">
-          <table class="w-full text-center border-collapse text-sm">
-            <thead>
-              <tr class="bg-slate-800 text-white font-bold text-xs sticky top-0 z-10">
-                <th class="p-3 text-right">الموظف</th>
-                <th class="p-3">نوع الإجراء</th>
-                <th class="p-3">العمليات / التفاصيل</th>
-                <th class="p-3">الحالة</th>
-                <th class="p-3">التاريخ</th>
-              </tr>
-            </thead>
-            <tbody id="live-actions-table" class="divide-y divide-slate-100">
-              </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 h-fit">
-        <div class="flex items-center gap-2 text-blue-600 font-bold mb-6 border-b pb-3 border-slate-100">
-          <span>📝</span>
-          <h3>شاشة إدخال الحركات والترحيل</h3>
-        </div>
-        <form id="main-action-form" class="flex flex-col gap-5">
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
-            <input type="text" id="action-emp-name" placeholder="أحمد ناصر" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium transition-all" required>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-2">نوع الإجراء</label>
-            <select id="action-type" onchange="toggleDynamicInputs()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-bold transition-all">
-              <option value="loan">💰 طلب سُلفة مالية</option>
-              <option value="deduction">⚖️ تسجيل خصم / جزاء</option>
-              <option value="leave">📅 طلب إجازة سنوية</option>
-            </select>
-          </div>
-
-          <div id="dynamic-fields" class="bg-blue-50/50 p-4 rounded-xl border border-blue-100/60 flex flex-col gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-600 mb-1">إجمالي مبلغ السلفة (ريال)</label>
-              <input type="number" id="field-amount" placeholder="0.00" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" required>
-            </div>
-            <div id="months-container">
-              <label class="block text-xs font-bold text-slate-600 mb-1">عدد أشهر الأقساط</label>
-              <input type="number" id="field-months" placeholder="اتركها فارغة لدفعة واحدة" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm">
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-2">الحالة الإدارية للطلب</label>
-            <select id="action-status" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium transition-all">
-              <option value="تحت المراجعة">⏳ تحت المراجعة</option>
-              <option value="معتمد ومرحل">✅ معتمد ومرحل فوراً</option>
-            </select>
-          </div>
-
-          <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-all mt-2">
-             🚀 ترحيل البيانات وحفظها
-          </button>
-        </form>
-      </div>
-
-    </div>
-  </div>
-
-  <script>
-    // تغيير الحقول ديناميكياً لتناسب الترحيل الذكي للجدول المخصص له
-    function toggleDynamicInputs() {
-      const type = document.getElementById("action-type").value;
-      const container = document.getElementById("dynamic-fields");
-      
-      if (type === "loan") {
-        container.innerHTML = `
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">إجمالي مبلغ السلفة (ريال)</label>
-            <input type="number" id="field-amount" placeholder="0.00" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" required>
-          </div>
-          <div id="months-container">
-            <label class="block text-xs font-bold text-slate-600 mb-1">عدد أشهر الأقساط</label>
-            <input type="number" id="field-months" placeholder="اتركها فارغة لدفعة واحدة" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm">
-          </div>`;
-      } else if (type === "deduction") {
-        container.innerHTML = `
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">قيمة الخصم المالي (ريال)</label>
-            <input type="number" id="field-amount" placeholder="0.00" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" required>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">سبب المخالفة / البيان</label>
-            <input type="text" id="field-reason" placeholder="مثال: غياب بدون إذن" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" required>
-          </div>`;
-      } else if (type === "leave") {
-        container.innerHTML = `
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ بداية الإجازة</label>
-            <input type="date" id="field-start" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" required>
-          </div>
-          <div>
-            <label class="block text-xs font-bold text-slate-600 mb-1">تاريخ العودة المتوقع</label>
-            <input type="date" id="field-end" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm" required>
-          </div>`;
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      renderLiveActions();
-
-      document.getElementById("main-action-form").addEventListener("submit", function(e) {
-        e.preventDefault();
-        const name = document.getElementById("action-emp-name").value.trim();
-        const type = document.getElementById("action-type").value;
-        const status = document.getElementById("action-status").value;
-        const dateStr = new Date().toLocaleDateString('ar-SA');
-        
-        let details = "";
-        
-        // عملية الترحيل الذكي إلى قواعد بيانات الصفحات الأخرى في حال كان معتمداً ومرحلاً
-        if (type === "loan") {
-          const amt = parseFloat(document.getElementById("field-amount").value);
-          const mInput = document.getElementById("field-months").value;
-          const months = (mInput && parseInt(mInput) > 0) ? parseInt(mInput) : 1;
-          details = `سُلفة بقيمة ${amt} ريال على ${months} شهر`;
-
-          if (status === "معتمد ومرحل") {
-            let loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
-            let monthlyDistribution = Array(12).fill("-");
-            let currentMonthIndex = new Date().getMonth();
-            let installment = Math.round(amt / months);
-            let rem = amt;
-            for (let i = 0; i < months; i++) {
-              let m = (currentMonthIndex + i) % 12;
-              if (i === months - 1) { monthlyDistribution[m] = rem; } 
-              else { monthlyDistribution[m] = installment; rem -= installment; }
-            }
-            loans.unshift({ id: Date.now(), name, total: amt, remaining: amt, monthsData: monthlyDistribution });
-            localStorage.setItem("five_caravans_loans", JSON.stringify(loans));
-          }
-          
-        } else if (type === "deduction") {
-          const amt = parseFloat(document.getElementById("field-amount").value);
-          const reason = document.getElementById("field-reason").value.trim();
-          details = `خصم ${amt} ريال - السبب: ${reason}`;
-
-          if (status === "معتمد ومرحل") {
-            let deductions = JSON.parse(localStorage.getItem("five_caravans_deductions")) || [];
-            deductions.unshift({ id: Date.now(), name, amount: amt, reason, date: dateStr });
-            localStorage.setItem("five_caravans_deductions", JSON.stringify(deductions));
-          }
-
-        } else if (type === "leave") {
-          const start = document.getElementById("field-start").value;
-          const end = document.getElementById("field-end").value;
-          details = `إجازة سنوية من ${start} إلى ${end}`;
-
-          if (status === "معتمد ومرحل") {
-            let leaves = JSON.parse(localStorage.getItem("five_caravans_leaves")) || [];
-            leaves.unshift({ id: Date.now(), name, start, end, type: "إجازة سنوية", status: "نشط / مجدول" });
-            localStorage.setItem("five_caravans_leaves", JSON.stringify(leaves));
-          }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤسسة القوافل الخمسة - لوحة التحكم العامة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --secondary-color: #1e293b;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
         }
 
-        // حفظ الحركة في السجل العام لشاشة العرض
-        let mainActions = JSON.parse(localStorage.getItem("five_caravans_main_actions")) || [];
-        mainActions.unshift({ name, type, details, status, date: dateStr });
-        localStorage.setItem("five_caravans_main_actions", JSON.stringify(mainActions));
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-        renderLiveActions();
-        document.getElementById("main-action-form").reset();
-        toggleDynamicInputs();
-      });
-    });
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
 
-    function renderLiveActions() {
-      const tableBody = document.getElementById("live-actions-table");
-      if (!tableBody) return;
-      const actions = JSON.parse(localStorage.getItem("five_caravans_main_actions")) || [];
+        /* السايد بار (الشريط الجانبي) */
+        .sidebar {
+            width: 260px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            flex-shrink: 0;
+        }
 
-      if (actions.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 bg-white italic">لا توجد حركات مسجلة لشاشة العرض المباشر.</td></tr>`;
-        return;
-      }
+        .sidebar-brand {
+            padding: 10px 20px 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
 
-      const typeLabels = { loan: "💰 سُلفة مالية", deduction: "⚖️ خصم مالي", leave: "📅 إجازة" };
-      tableBody.innerHTML = "";
-      actions.forEach(act => {
-        const statusClass = act.status === "معتمد ومرحل" ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800";
-        tableBody.innerHTML += `
-          <tr class="hover:bg-slate-50 transition-all text-slate-600">
-            <td class="p-3 text-right font-bold text-slate-800">${act.name}</td>
-            <td class="p-3 font-semibold text-xs text-blue-600">${typeLabels[act.type] || act.type}</td>
-            <td class="p-3 text-slate-500 text-xs text-right">${act.details}</td>
-            <td class="p-3 text-xs"><span class="${statusClass} font-bold px-2.5 py-0.5 rounded-full">${act.status}</span></td>
-            <td class="p-3 font-mono text-xs text-slate-400">${act.date}</td>
-          </tr>`;
-      });
-    }
-  </script>
+        .sidebar-brand h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .sidebar-brand p {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .sidebar-menu li a {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .sidebar-menu li a i {
+            margin-left: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-menu li.active a, .sidebar-menu li a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-right: 4px solid var(--accent-color);
+        }
+
+        /* المحتوى الرئيسي */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .page-header {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .page-header h1 {
+            font-size: 22px;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .page-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* توزيع الشاشات لمنع التداخل */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr; /* إعطاء مساحة أكبر لجدول العرض المباشر */
+            gap: 25px;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr; /* تحويلها لعمود واحد في الشاشات الصغيرة */
+            }
+        }
+
+        /* الكروت والشاشات */
+        .dashboard-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .card-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* تنسيق الفورم والحقول */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #f8fafc;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* الحقول المشروطة (تظهر وتختفي بسلاسة دون تخريب التصميم) */
+        .conditional-fields {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .conditional-fields.show {
+            max-height: 200px; /* تمدد تلقائي عند الحاجة */
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--accent-color);
+        }
+
+        /* تنسيق جدول العرض المباشر */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            font-size: 14px;
+        }
+
+        .custom-table th {
+            background-color: #f1f5f9;
+            color: var(--primary-color);
+            padding: 14px 16px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .custom-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .custom-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            background-color: #f1f5f9;
+            color: var(--text-muted);
+        }
+        
+        .status-badge.review {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <h3>القوافل الخمسة</h3>
+            <p>للخدمات اللوجستية</p>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="active"><a href="index.html"><i class="fa-solid asleep fa-chart-line"></i> لوحة التحكم العامة</a></li>
+            <li><a href="residence.html"><i class="fa-solid fa-users"></i> سجلات الموظفين والإقامات</a></li>
+            <li><a href="requests.html"><i class="fa-solid fa-file-invoice"></i> طلبات التعديل (قوى)</a></li>
+            <li><a href="loans.html"><i class="fa-solid fa-sack-dollar"></i> سجلات السلف المالية</a></li>
+            <li><a href="penalties.html"><i class="fa-solid fa-scale-balanced"></i> الجزاءات والخصومات</a></li>
+            <li><a href="leaves.html"><i class="fa-solid fa-calendar-days"></i> إدارة الإجازات</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1>لوحة التحكم العامة</h1>
+            <p>متابعة الحركات اليومية والطلبات المباشرة بالمنشأة لعام 2026</p>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-pen-to-square"></i> شاشة إدخال الحركات والترحيل
+                </div>
+                <div class="card-body">
+                    <form id="loan-input-form">
+                        <div class="form-group">
+                            <label>اسم الموظف / السائق</label>
+                            <input type="text" id="loan-emp-name" class="form-control" placeholder="أحمد ناصر" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>نوع الإجراء</label>
+                            <select id="action-type" class="form-control" onchange="toggleLoanFields(this.value)">
+                                <option value="">-- اختر الإجراء --</option>
+                                <option value="loan">💰 طلب سلفة مالية</option>
+                                <option value="penalty">⚖️ جزاءات وخصومات</option>
+                                <option value="leave">📅 طلب إجازة</option>
+                            </select>
+                        </div>
+
+                        <div id="loan-conditional-fields" class="conditional-fields">
+                            <div class="form-group">
+                                <label>إجمالي مبلغ السلفة (ريال)</label>
+                                <input type="number" id="loan-total-amount" class="form-control" placeholder="0.00">
+                            </div>
+                            <div class="form-group">
+                                <label>عدد أشهر الأقساط</label>
+                                <input type="number" id="loan-months" class="form-control" placeholder="اتركه فارغاً لدفعة واحدة">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>الحالة الإدارية للطلب</label>
+                            <select id="loan-status" class="form-control">
+                                <option value="review">⏳ تحت المراجعة</option>
+                                <option value="approved">✅ معتمد</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn-submit">
+                            ترحيل البيانات وحفظها 🚀
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <i class="fa-solid fa-desktop"></i> شاشة العرض المباشر للحركات
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="custom-table">
+                            <thead>
+                                <tr>
+                                    <th>الموظف</th>
+                                    <th>نوع الإجراء</th>
+                                    <th>العمليات / التفاصيل</th>
+                                    <th>الحالة</th>
+                                    <th>التاريخ</th>
+                                    <th>الإجراء</th>
+                                </tr>
+                            </thead>
+                            <tbody id="loans-table-body">
+                                <tr>
+                                    <td colspan="6" class="empty-message">لا توجد حركات مسجلة حالياً لشاشة العرض المباشر.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // دالة إظهار وإخفاء حقول السلفة بسلاسة دون التأثير على أبعاد الصناديق
+        function toggleLoanFields(value) {
+            const container = document.getElementById('loan-conditional-fields');
+            if (value === 'loan') {
+                container.classList.add('show');
+            } else {
+                container.classList.remove('show');
+            }
+        }
+    </script>
 </body>
 </html>
