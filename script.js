@@ -79,3 +79,7 @@ function convertExcelDate(excelDate) {
     }
     return excelDate; // إرجاع القيمة كما هي إذا كانت نصاً بالفعل
 }
+
+// مثال لتعديل سطر قراءة تاريخ الالتحاق أثناء حلقة الاستيراد:
+let joiningDateRaw = row['تاريخ الالتحاق'] || row['تاريخ الانضمام'];
+let formattedDate = convertExcelDate(joiningDateRaw);
