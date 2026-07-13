@@ -35,12 +35,6 @@
         <span>💰</span> سجلات السُّلف المالية
       </a>
     </nav>
-    
-    <div class="pt-4 border-t border-slate-800">
-      <button class="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white py-2.5 rounded-xl text-sm font-bold transition-all">
-        <span>🚪</span> تسجيل الخروج
-      </button>
-    </div>
   </div>
 
   <div class="flex-1 p-8 overflow-x-hidden">
@@ -49,7 +43,6 @@
         <h2 class="text-2xl font-bold text-slate-800">نظام إدارة السلف المالية 2026</h2>
         <p class="text-slate-500 text-sm mt-1">توزيع مالي سنوي مؤتمت للأقساط الشهرية وحساب المتبقي.</p>
       </div>
-      <div class="p-3 bg-blue-50 text-blue-600 rounded-xl text-xl">📅</div>
     </div>
 
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
@@ -57,54 +50,40 @@
         <span>✨</span>
         <h3>قيد سُلفة جديدة وتوزيعها</h3>
       </div>
-      
       <form id="loan-input-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
-          <input type="text" id="loan-emp-name" placeholder="مثال: نجيبه عبده احمد" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium transition-all" required>
+          <input type="text" id="loan-emp-name" placeholder="مثال: علي قاسم" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium transition-all" required>
         </div>
         <div>
           <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي السُّلفة (ريال)</label>
           <input type="number" id="loan-total-amount" placeholder="0.00" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-bold transition-all" required>
         </div>
         <div>
-          <label class="block text-xs font-bold text-slate-600 mb-2">عدد أشهر الأقساط (اختياري)</label>
-          <input type="number" id="loan-months" placeholder="اتركه فارغاً لدفعة واحدة" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium transition-all">
+          <label class="block text-xs font-bold text-slate-600 mb-2">عدد أشهر الأقساط</label>
+          <input type="number" id="loan-months" placeholder="اتركها فارغة لدفعة واحدة" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium transition-all">
         </div>
-        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2">
-          🚀 اعتماد وتوزيع السلفة
+        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition-all">
+           اعتماد وتوزيع السلفة
         </button>
       </form>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-      <div class="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <div class="flex items-center gap-2 text-slate-800 font-bold">
-          <span>👥</span>
-          <h3>جدول سلف الموظفين السنوي</h3>
-        </div>
+      <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+        <h3 class="font-bold text-slate-800">جدول سلف الموظفين السنوي</h3>
       </div>
-
       <div class="overflow-x-auto">
-        <table class="w-full text-center border-collapse">
+        <table class="w-full text-center border-collapse text-sm">
           <thead>
-            <tr class="bg-blue-600 text-white text-xs font-bold whitespace-nowrap">
+            <tr class="bg-blue-600 text-white font-bold whitespace-nowrap text-xs">
               <th class="p-3 text-right bg-blue-700 sticky right-0 z-10 min-w-[180px]">اسم الموظف</th>
-              <th class="p-3 min-w-[75px]">يناير</th>
-              <th class="p-3 min-w-[75px]">فبراير</th>
-              <th class="p-3 min-w-[75px]">مارس</th>
-              <th class="p-3 min-w-[75px]">أبريل</th>
-              <th class="p-3 min-w-[75px]">مايو</th>
-              <th class="p-3 min-w-[75px]">يونيو</th>
-              <th class="p-3 min-w-[75px]">يوليو</th>
-              <th class="p-3 min-w-[75px]">أغسطس</th>
-              <th class="p-3 min-w-[75px]">سبتمبر</th>
-              <th class="p-3 min-w-[75px]">أكتوبر</th>
-              <th class="p-3 min-w-[75px]">نوفمبر</th>
-              <th class="p-3 min-w-[75px]">ديسمبر</th>
-              <th class="p-3 min-w-[90px] bg-blue-700/30">المتبقي</th>
-              <th class="p-3 min-w-[90px] bg-blue-700/50">الإجمالي</th>
-              <th class="p-3 min-w-[110px]">إجراء</th>
+              <th class="p-3">يناير</th><th class="p-3">فبراير</th><th class="p-3">مارس</th><th class="p-3">أبريل</th>
+              <th class="p-3">مايو</th><th class="p-3">يونيو</th><th class="p-3">يوليو</th><th class="p-3">أغسطس</th>
+              <th class="p-3">سبتمبر</th><th class="p-3">أكتوبر</th><th class="p-3">نوفمبر</th><th class="p-3">ديسمبر</th>
+              <th class="p-3 bg-blue-700/30">المتبقي</th>
+              <th class="p-3 bg-blue-700/50">الإجمالي</th>
+              <th class="p-3">إجراء</th>
             </tr>
           </thead>
           <tbody id="loans-table-body" class="divide-y divide-slate-100">
@@ -117,24 +96,14 @@
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       renderLoansTable();
-
       const loanForm = document.getElementById("loan-input-form");
       if (loanForm) {
         loanForm.addEventListener("submit", function (e) {
           e.preventDefault();
-
-          const nameInput = document.getElementById("loan-emp-name");
-          const totalInput = document.getElementById("loan-total-amount");
-          const monthsInput = document.getElementById("loan-months");
-
-          const name = nameInput.value.trim();
-          const total = parseFloat(totalInput.value);
-          const months = (monthsInput.value && parseInt(monthsInput.value) > 0) ? parseInt(monthsInput.value) : 1;
-
-          if (!name || isNaN(total) || total <= 0) {
-            alert("الرجاء التحقق من البيانات المدخلة.");
-            return;
-          }
+          const name = document.getElementById("loan-emp-name").value.trim();
+          const total = parseFloat(document.getElementById("loan-total-amount").value);
+          const monthsInput = document.getElementById("loan-months").value;
+          const months = (monthsInput && parseInt(monthsInput) > 0) ? parseInt(monthsInput) : 1;
 
           const currentMonthIndex = new Date().getMonth(); 
           const monthlyInstallment = Math.round(total / months);
@@ -162,7 +131,6 @@
           let loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
           loans.unshift(newLoan);
           localStorage.setItem("five_caravans_loans", JSON.stringify(loans));
-
           renderLoansTable();
           loanForm.reset();
         });
@@ -172,64 +140,29 @@
     function renderLoansTable() {
       const tableBody = document.getElementById("loans-table-body");
       if (!tableBody) return;
-
       const loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
-
       if (loans.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="16" class="py-8 text-center text-slate-400 italic bg-white">لا توجد سجلات سلف مالية نشطة حالياً.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="16" class="py-8 text-center text-slate-400 bg-white italic">لا توجد سجلات سلف مالية نشطة.</td></tr>`;
         return;
       }
-
       tableBody.innerHTML = "";
       loans.forEach(l => {
-        let rowHtml = `<tr class="hover:bg-slate-50/80 transition-all text-sm text-slate-600">
-          <td class="p-3 text-right font-bold text-slate-800 bg-white sticky right-0 z-10 border-l border-slate-100 shadow-[2px_0_5px_rgba(0,0,0,0.01)]">${l.name}</td>`;
-
-        l.monthsData.forEach(monthVal => {
-          if (monthVal === "-") {
-            rowHtml += `<td class="p-3 text-slate-300 font-mono">-</td>`;
-          } else {
-            rowHtml += `<td class="p-3 font-bold text-blue-600 font-mono">${parseFloat(monthVal).toLocaleString('en-US')}</td>`;
-          }
+        let rowHtml = `<tr class="hover:bg-slate-50 transition-all text-xs">
+          <td class="p-3 text-right font-bold text-slate-800 bg-white sticky right-0 z-10 border-l border-slate-100">${l.name}</td>`;
+        l.monthsData.forEach(m => {
+          rowHtml += `<td class="p-3 ${m === '-' ? 'text-slate-300' : 'font-bold text-blue-600'} font-mono">${m === '-' ? '-' : parseFloat(m).toLocaleString()}</td>`;
         });
-
         rowHtml += `
-          <td class="p-3 bg-amber-50/40 font-bold text-amber-700 font-mono">
-            <span class="bg-amber-100/70 px-2 py-0.5 rounded-md border border-amber-200/50">${parseFloat(l.remaining).toLocaleString('en-US')}</span>
-          </td>
-          <td class="p-3 bg-emerald-50/40 font-bold text-emerald-700 font-mono">
-            <span class="bg-emerald-100/70 px-2 py-0.5 rounded-md border border-emerald-200/50">${parseFloat(l.total).toLocaleString('en-US')}</span>
-          </td>
-          <td class="p-3">
-            <div class="flex items-center justify-center gap-2 text-xs">
-              <button onclick="settleLoan(${l.id})" class="text-amber-600 hover:text-amber-800 font-bold hover:underline">تسوية</button>
-              <span class="text-slate-300">|</span>
-              <button onclick="deleteLoan(${l.id})" class="text-red-500 hover:text-red-700 font-bold hover:underline">حذف</button>
-            </div>
-          </td>
+          <td class="p-3 bg-amber-50 font-bold text-amber-700 font-mono">${parseFloat(l.remaining).toLocaleString()}</td>
+          <td class="p-3 bg-emerald-50 font-bold text-emerald-700 font-mono">${parseFloat(l.total).toLocaleString()}</td>
+          <td class="p-3"><button onclick="deleteLoan(${l.id})" class="text-red-500 font-bold hover:underline">حذف</button></td>
         </tr>`;
-
         tableBody.innerHTML += rowHtml;
       });
     }
 
-    function settleLoan(id) {
-      if (confirm("هل أنت متأكد من تسوية وإغلاق هذه السُلفة بالكامل؟")) {
-        let loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
-        loans = loans.map(l => {
-          if (l.id === id) {
-            l.remaining = 0;
-            l.monthsData = Array(12).fill("-");
-          }
-          return l;
-        });
-        localStorage.setItem("five_caravans_loans", JSON.stringify(loans));
-        renderLoansTable();
-      }
-    }
-
     function deleteLoan(id) {
-      if (confirm("تنبيه: هل تريد حذف سجل السلفة هذا نهائياً؟")) {
+      if (confirm("هل تريد الحذف؟")) {
         let loans = JSON.parse(localStorage.getItem("five_caravans_loans")) || [];
         loans = loans.filter(l => l.id !== id);
         localStorage.setItem("five_caravans_loans", JSON.stringify(loans));
