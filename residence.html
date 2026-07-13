@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مؤسسة القوافل الخمسة - سجلات الموظفين والرواتب</title>
-    <!-- مكتبة أيقونات FontAwesome و Tailwind CSS للتصميم الاحترافي -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- مكتبة XLSX لتصدير واستيراد ملفات الإكسل -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
@@ -16,7 +14,6 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex">
 
-    <!-- الشريط الجانبي الثابت (Sidebar) -->
     <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
         <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
             <div class="text-2xl text-blue-500">🚚</div>
@@ -48,10 +45,8 @@
         </nav>
     </div>
 
-    <!-- المحتوى الرئيسي للموقع -->
     <div class="flex-1 p-8 overflow-x-hidden">
         
-        <!-- الهيدر العلوي المطور -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">بطاقات الموظفين والتسويات المالية</h2>
@@ -70,53 +65,44 @@
             </div>
         </div>
 
-        <!-- شاشة إدخال وتعديل بيانات موظف الذكية -->
         <div id="form-section" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
             <div class="flex items-center justify-between mb-6 border-b pb-3 border-slate-100 flex-wrap gap-4">
                 <div class="flex items-center gap-2 text-blue-600 font-bold">
                     <i class="fa-solid fa-user-pen"></i>
                     <h3>إدخال / تحديث السجل المالي والإداري للموظف</h3>
                 </div>
-                <!-- حقل البحث الذكي للتعديل والإضافة المباشرة -->
                 <div class="relative w-full sm:w-96">
                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-blue-500">
                         <i class="fa-solid fa-magnifying-glass-dollar text-sm"></i>
                     </span>
                     <input type="text" id="quick-search-edit" oninput="handleQuickSearch()" placeholder="بحث سريع باسم الموظف أو الإقامة للتعديل السريع..." class="w-full pl-4 pr-9 py-2 bg-blue-50/50 border border-blue-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 placeholder-blue-400">
-                    <!-- قائمة نتائج البحث المنسدلة -->
                     <div id="search-results-dropdown" class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto hidden">
-                        <!-- تُعرض هنا نتائج البحث ديناميكياً -->
-                    </div>
+                        </div>
                 </div>
             </div>
             
             <form id="employee-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                <!-- 1. الاسم -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف الثلاثي</label>
                     <input type="text" id="emp-name" oninput="handleManualFormInput()" placeholder="اكتب اسم الموظف..." class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium" required>
                     <p id="search-status" class="text-[11px] text-emerald-600 mt-1 font-bold hidden">✨ سجل موظف نشط! جارٍ التعديل والإضافة السريعة.</p>
                 </div>
 
-                <!-- 2. المسمى الوظيفي -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">المسمى الوظيفي</label>
                     <input type="text" id="emp-role" placeholder="مثال: سائق نقل ثقيل" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium" required>
                 </div>
 
-                <!-- 3. الهوية -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">رقم الإقامة / الهوية</label>
                     <input type="text" id="emp-id" oninput="handleManualFormInput()" placeholder="2xxxxxxxxx" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-mono" required>
                 </div>
 
-                <!-- 4. الجنسية -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الجنسية</label>
                     <input type="text" id="emp-nationality" placeholder="مثال: سعودي، هندي..." class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium" required>
                 </div>
 
-                <!-- 5. الكفالة -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الكفالة</label>
                     <select id="emp-sponsorship" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-right text-slate-700 focus:outline-none focus:border-blue-500 font-medium cursor-pointer">
@@ -125,67 +111,56 @@
                     </select>
                 </div>
 
-                <!-- 6. تاريخ الالتحاق -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">تاريخ الالتحاق (الانضمام)</label>
                     <input type="date" id="emp-join-date" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
                 </div>
 
-                <!-- 7. الراتب المستحق -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الراتب الأساسي المستحق (ريال)</label>
                     <input type="number" id="emp-salary" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
                 </div>
 
-                <!-- 8. المكافآت -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">المكافآت (ريال)</label>
                     <input type="number" id="emp-bonus" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
                 </div>
 
-                <!-- 9. إجمالي المستحق -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي المستحق (تلقائي)</label>
                     <input type="number" id="emp-total-earned" value="0" class="w-full px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-sm font-bold text-emerald-700 focus:outline-none" readonly>
                 </div>
 
-                <!-- 10. غياب -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">غياب (ريال)</label>
                     <input type="number" id="emp-absence" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
                 </div>
 
-                <!-- 11. حوادث -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">حوادث (ريال)</label>
                     <input type="number" id="emp-accidents" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
                 </div>
 
-                <!-- 12. الخصومات والجزاءات -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الخصومات والجزاءات (ريال)</label>
                     <input type="number" id="emp-penalties" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
                 </div>
 
-                <!-- 13. سلف مستقطعة -->
                 <div>
                     <label class="block text-xs font-bold text-amber-800 mb-2">سلف مستقطعة (ريال) 💰</label>
                     <input type="number" id="emp-loans-deduct" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-amber-50/50 border border-amber-200 rounded-xl text-sm focus:outline-none focus:border-amber-500 font-bold" placeholder="أدخل مبلغ السلفة...">
                 </div>
 
-                <!-- 14. إجمالي المستقطع -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي المستقطع (تلقائي)</label>
                     <input type="number" id="emp-total-deducted" value="0" class="w-full px-4 py-2 bg-rose-50 border border-rose-200 rounded-xl text-sm font-bold text-rose-700 focus:outline-none" readonly>
                 </div>
 
-                <!-- 15. صافي المبلغ المستحق -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">صافي المبلغ المستحق للصرف</label>
                     <input type="number" id="emp-net-salary" value="0" class="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-xl text-sm font-bold text-blue-700 focus:outline-none" readonly>
                 </div>
 
-                <!-- 16. طريقة الدفع -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">طريقة الدفع</label>
                     <select id="emp-pay-method" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-right text-slate-700 focus:outline-none focus:border-blue-500 font-medium cursor-pointer">
@@ -205,7 +180,6 @@
             </form>
         </div>
 
-        <!-- جدول قاعدة البيانات والسجلات العامة -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
@@ -214,7 +188,6 @@
                     <span id="emp-count" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">المسجلين: 0</span>
                 </div>
                 
-                <!-- حقل تصفية الجدول السريع -->
                 <div class="relative w-full sm:w-80">
                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                         <i class="fa-solid fa-filter text-sm"></i>
@@ -247,8 +220,7 @@
                         </tr>
                     </thead>
                     <tbody id="employee-table-body" class="divide-y divide-slate-100 text-slate-600 font-medium whitespace-nowrap">
-                        <!-- تظهر البيانات ديناميكياً هنا -->
-                    </tbody>
+                        </tbody>
                 </table>
             </div>
         </div>
@@ -256,407 +228,79 @@
     </div>
 
     <script>
+        // دالة ذكية لتحليل وتصحيح صيغ التواريخ القادمة من الإكسل بأي صيغة كانت
+        function parseAndFormatDate(rawVal) {
+            if (rawVal === undefined || rawVal === null || rawVal === '') {
+                return '';
+            }
+
+            // 1. معالجة الأرقام التسلسلية المباشرة من إكسل (مثل 45755)
+            if (!isNaN(rawVal) && Number(rawVal) > 0) {
+                const serial = Number(rawVal);
+                // الفارق بين بداية تقويم إكسل وبداية تقويم جافاسكريبت
+                const dateObj = new Date((serial - 25569) * 86400 * 1000);
+                if (!isNaN(dateObj.getTime())) {
+                    return formatDateToYYYYMMDD(dateObj);
+                }
+            }
+
+            // 2. إذا كان المدخل نصاً، سنقوم بتنظيفه ومحاولة تحليله
+            let strVal = String(rawVal).trim();
+            
+            // محاولة معالجة التواريخ الشائعة المنفصلة بشرطة مائلة أو شرطة عادية
+            // مثل: DD/MM/YYYY أو DD-MM-YYYY
+            const parts = strVal.split(/[-/.]/);
+            if (parts.length === 3) {
+                let day = parseInt(parts[0], 10);
+                let month = parseInt(parts[1], 10);
+                let year = parseInt(parts[2], 10);
+
+                // إذا كان الجزء الثالث مكوناً من رقمين فقط (مثال: 25 بدلاً من 2025)
+                if (year < 100) {
+                    year = 2000 + year;
+                }
+
+                // محاولة تحليله كصيغة (يوم-شهر-سنة)
+                if (day <= 31 && month <= 12 && year > 1900) {
+                    const testDate = new Date(year, month - 1, day);
+                    if (!isNaN(testDate.getTime())) {
+                        return formatDateToYYYYMMDD(testDate);
+                    }
+                }
+                
+                // محاولة أخرى بصيغة (سنة-شهر-يوم)
+                let altYear = parseInt(parts[0], 10);
+                let altMonth = parseInt(parts[1], 10);
+                let altDay = parseInt(parts[2], 10);
+                if (altYear > 1900 && altMonth <= 12 && altDay <= 31) {
+                    const testDate = new Date(altYear, altMonth - 1, altDay);
+                    if (!isNaN(testDate.getTime())) {
+                        return formatDateToYYYYMMDD(testDate);
+                    }
+                }
+            }
+
+            // 3. المحاولة القياسية الأخيرة عبر مفسر التواريخ المدمج بالمتصفح
+            const standardParsed = new Date(strVal);
+            if (!isNaN(standardParsed.getTime())) {
+                return formatDateToYYYYMMDD(standardParsed);
+            }
+
+            // إرجاع القيمة الأصلية كحل أخير إذا فشلت كافة المحاولات
+            return strVal;
+        }
+
+        // دالة مساعدة لتنسيق كائن التاريخ لـ YYYY-MM-DD
+        function formatDateToYYYYMMDD(dateObj) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
         // دالة الحساب المباشر والتلقائي داخل الشاشة
         function calculateSalaryTotals() {
             const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
             const bonus = parseFloat(document.getElementById('emp-bonus').value) || 0;
             const absence = parseFloat(document.getElementById('emp-absence').value) || 0;
-            const penalties = parseFloat(document.getElementById('emp-penalties').value) || 0;
-            const accidents = parseFloat(document.getElementById('emp-accidents').value) || 0;
-            const loansDeduct = parseFloat(document.getElementById('emp-loans-deduct').value) || 0;
-
-            const totalEarned = salary + bonus;
-            const totalDeducted = absence + penalties + accidents + loansDeduct;
-            const netSalary = totalEarned - totalDeducted;
-
-            document.getElementById('emp-total-earned').value = totalEarned.toFixed(2);
-            document.getElementById('emp-total-deducted').value = totalDeducted.toFixed(2);
-            document.getElementById('emp-net-salary').value = netSalary.toFixed(2);
-        }
-
-        // تفريغ كافة الحقول وإعادتها للوضع الافتراضي
-        function resetFormFields() {
-            document.getElementById('emp-role').value = '';
-            document.getElementById('emp-nationality').value = '';
-            document.getElementById('emp-sponsorship').value = 'مؤسسة القوافل';
-            document.getElementById('emp-join-date').value = '';
-            document.getElementById('emp-salary').value = 0;
-            document.getElementById('emp-bonus').value = 0;
-            document.getElementById('emp-absence').value = 0;
-            document.getElementById('emp-penalties').value = 0;
-            document.getElementById('emp-accidents').value = 0;
-            document.getElementById('emp-loans-deduct').value = 0;
-            document.getElementById('emp-pay-method').value = 'تحويل بنكي';
-            
-            document.getElementById('emp-total-earned').value = 0;
-            document.getElementById('emp-total-deducted').value = 0;
-            document.getElementById('emp-net-salary').value = 0;
-            
-            document.getElementById('search-status').classList.add('hidden');
-        }
-
-        // تفاعل حقل البحث الذكي العلوي الخاص بالتعديل والاضافة
-        function handleQuickSearch() {
-            const query = document.getElementById('quick-search-edit').value.trim().toLowerCase();
-            const dropdown = document.getElementById('search-results-dropdown');
-            
-            if (query === '') {
-                dropdown.innerHTML = '';
-                dropdown.classList.add('hidden');
-                return;
-            }
-
-            const employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
-            const filtered = employees.filter(emp => 
-                emp.name.toLowerCase().includes(query) || 
-                emp.idCard.includes(query)
-            );
-
-            if (filtered.length === 0) {
-                dropdown.innerHTML = `<div class="p-3 text-slate-400 text-xs text-center italic">لا يوجد موظف مطابق للبحث.</div>`;
-            } else {
-                dropdown.innerHTML = '';
-                filtered.forEach(emp => {
-                    const item = document.createElement('div');
-                    item.className = "p-3 border-b border-slate-50 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-all text-xs";
-                    item.innerHTML = `
-                        <div>
-                            <span class="font-bold text-slate-800">${emp.name}</span>
-                            <span class="text-slate-400 block mt-0.5 font-mono text-[10px]">إقامة: ${emp.idCard}</span>
-                        </div>
-                        <span class="bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px]">${emp.role || 'سائق'}</span>
-                    `;
-                    item.onclick = function() {
-                        selectEmployeeToForm(emp);
-                        dropdown.classList.add('hidden');
-                    };
-                    dropdown.appendChild(item);
-                });
-            }
-            dropdown.classList.remove('hidden');
-        }
-
-        // تفريغ الحقول وإعادتها للوضع الافتراضي عند حذف الاسم أو الإقامة يدوياً من الحقول الأساسية
-        function handleManualFormInput() {
-            const nameValue = document.getElementById('emp-name').value.trim();
-            const idValue = document.getElementById('emp-id').value.trim();
-
-            if (nameValue === '' || idValue === '') {
-                resetFormFields();
-                return;
-            }
-
-            checkAndAutofillEmployee(nameValue, idValue);
-        }
-
-        // دالة تعديل سريعة يتم استدعاؤها من أيقونة القلم أو قائمة البحث
-        function selectEmployeeToForm(emp) {
-            document.getElementById('quick-search-edit').value = emp.name;
-            document.getElementById('emp-name').value = emp.name;
-            document.getElementById('emp-id').value = emp.idCard;
-            document.getElementById('emp-role').value = emp.role || '';
-            document.getElementById('emp-nationality').value = emp.nationality || '';
-            document.getElementById('emp-sponsorship').value = emp.sponsorship || 'مؤسسة القوافل';
-            document.getElementById('emp-join-date').value = emp.joinDate || '';
-            document.getElementById('emp-salary').value = emp.salary || 0;
-            document.getElementById('emp-bonus').value = emp.bonus || 0;
-            document.getElementById('emp-absence').value = emp.absence || 0;
-            document.getElementById('emp-penalties').value = emp.penalties || 0;
-            document.getElementById('emp-accidents').value = emp.accidents || 0;
-            document.getElementById('emp-loans-deduct').value = emp.loansDeduct || 0;
-            document.getElementById('emp-pay-method').value = emp.payMethod || 'تحويل بنكي';
-            
-            calculateSalaryTotals();
-            document.getElementById('search-status').classList.remove('hidden');
-            
-            // التمرير بسلاسة لأعلى الصفحة نحو شاشة التعديل
-            document.getElementById('form-section').scrollIntoView({ behavior: 'smooth' });
-
-            // تركيز المؤشر فوراً على حقل السلف لتوفير الوقت والجهد
-            setTimeout(() => {
-                document.getElementById('emp-loans-deduct').focus();
-                document.getElementById('emp-loans-deduct').select();
-            }, 500);
-        }
-
-        // البحث التلقائي لمنع التكرار عند الكتابة اليدوية لاسم الموظف أو هويته
-        function checkAndAutofillEmployee(nameInput, idInput) {
-            let employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
-            let matched = employees.find(emp => 
-                emp.name.toLowerCase() === nameInput.toLowerCase() || 
-                emp.idCard === idInput
-            );
-
-            if (matched) {
-                document.getElementById('search-status').classList.remove('hidden');
-                document.getElementById('emp-name').value = matched.name;
-                document.getElementById('emp-id').value = matched.idCard;
-                document.getElementById('emp-role').value = matched.role || '';
-                document.getElementById('emp-nationality').value = matched.nationality || '';
-                document.getElementById('emp-sponsorship').value = matched.sponsorship || 'مؤسسة القوافل';
-                document.getElementById('emp-join-date').value = matched.joinDate || '';
-                document.getElementById('emp-salary').value = matched.salary || 0;
-                document.getElementById('emp-bonus').value = matched.bonus || 0;
-                document.getElementById('emp-absence').value = matched.absence || 0;
-                document.getElementById('emp-penalties').value = matched.penalties || 0;
-                document.getElementById('emp-accidents').value = matched.accidents || 0;
-                document.getElementById('emp-loans-deduct').value = matched.loansDeduct || 0;
-                document.getElementById('emp-pay-method').value = matched.payMethod || 'تحويل بنكي';
-                calculateSalaryTotals();
-            } else {
-                document.getElementById('search-status').classList.add('hidden');
-            }
-        }
-
-        // تصفية الجدول السفلي
-        function filterTable() {
-            const query = document.getElementById('table-search').value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#employee-table-body tr');
-
-            rows.forEach(row => {
-                if (row.cells.length < 3) return;
-                const nameText = row.cells[0].textContent.toLowerCase();
-                const idText = row.cells[2].textContent.toLowerCase();
-
-                if (nameText.includes(query) || idText.includes(query)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-
-        // إغلاق قائمة البحث المنسدلة عند النقر في أي مكان آخر
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('search-results-dropdown');
-            const searchInput = document.getElementById('quick-search-edit');
-            if (e.target !== dropdown && e.target !== searchInput) {
-                dropdown.classList.add('hidden');
-            }
-        });
-
-        document.addEventListener("DOMContentLoaded", function() {
-            renderEmployeeTable();
-
-            document.getElementById('employee-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const name = document.getElementById('emp-name').value.trim();
-                const idCard = document.getElementById('emp-id').value.trim();
-                const role = document.getElementById('emp-role').value.trim();
-                const nationality = document.getElementById('emp-nationality').value.trim();
-                const sponsorship = document.getElementById('emp-sponsorship').value;
-                const joinDate = document.getElementById('emp-join-date').value;
-                const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
-                const bonus = parseFloat(document.getElementById('emp-bonus').value) || 0;
-                const totalEarned = parseFloat(document.getElementById('emp-total-earned').value) || 0;
-                const absence = parseFloat(document.getElementById('emp-absence').value) || 0;
-                const penalties = parseFloat(document.getElementById('emp-penalties').value) || 0;
-                const accidents = parseFloat(document.getElementById('emp-accidents').value) || 0;
-                const loansDeduct = parseFloat(document.getElementById('emp-loans-deduct').value) || 0;
-                const totalDeducted = parseFloat(document.getElementById('emp-total-deducted').value) || 0;
-                const netSalary = parseFloat(document.getElementById('emp-net-salary').value) || 0;
-                const payMethod = document.getElementById('emp-pay-method').value;
-
-                let employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
-                
-                let existingIndex = employees.findIndex(emp => emp.name.toLowerCase() === name.toLowerCase() || emp.idCard === idCard);
-
-                const targetEmployeeData = {
-                    id: existingIndex !== -1 ? employees[existingIndex].id : Date.now(),
-                    name, idCard, role, nationality, sponsorship, joinDate, salary, bonus, totalEarned, absence, penalties, accidents, loansDeduct, totalDeducted, netSalary, payMethod
-                };
-
-                if (existingIndex !== -1) {
-                    employees[existingIndex] = targetEmployeeData;
-                } else {
-                    employees.unshift(targetEmployeeData);
-                }
-
-                localStorage.setItem('five_caravans_employees_finance', JSON.stringify(employees));
-
-                renderEmployeeTable();
-                
-                // تفريغ وتهيئة الحقول لاستقبال مدخلات جديدة
-                document.getElementById('employee-form').reset();
-                document.getElementById('quick-search-edit').value = '';
-                resetFormFields();
-                document.getElementById('emp-name').value = '';
-                document.getElementById('emp-id').value = '';
-            });
-        });
-
-        // عرض وتحديث جدول الموظفين
-        function renderEmployeeTable() {
-            const tbody = document.getElementById('employee-table-body');
-            const employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
-            document.getElementById('emp-count').innerText = `المسجلين: ${employees.length}`;
-
-            if (employees.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="17" class="py-8 text-slate-400 bg-white italic text-sm">لا توجد سجلات موظفين محفوظة حالياً.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = '';
-            employees.forEach(emp => {
-                let payBadgeColor = 'bg-slate-100 text-slate-700';
-                if (emp.payMethod === 'تحويل بنكي') payBadgeColor = 'bg-blue-100 text-blue-800';
-                else if (emp.payMethod === 'نقدي') payBadgeColor = 'bg-amber-100 text-amber-800';
-                else if (emp.payMethod === 'من الخزينة') payBadgeColor = 'bg-indigo-100 text-indigo-800';
-                else if (emp.payMethod === 'مدد') payBadgeColor = 'bg-emerald-100 text-emerald-800';
-
-                const sponsorBadge = emp.sponsorship === 'مؤسسة القوافل' ? 'bg-teal-100 text-teal-800' : 'bg-slate-200 text-slate-700';
-
-                // تحويل الكائن لسلسلة نصية آمنة للإرسال للدالة
-                const targetJson = JSON.stringify(emp).replace(/"/g, '&quot;');
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition-all">
-                        <td class="p-3 text-right font-bold text-slate-800">${emp.name}</td>
-                        <td class="p-3 text-right text-slate-700 font-medium">${emp.role || '-'}</td>
-                        <td class="p-3 font-mono text-slate-500">${emp.idCard}</td>
-                        <td class="p-3 text-slate-700">${emp.nationality || '-'}</td>
-                        <td class="p-3"><span class="${sponsorBadge} px-2 py-0.5 rounded-md font-bold text-xs">${emp.sponsorship || 'مؤسسة القوافل'}</span></td>
-                        <td class="p-3 font-mono">${emp.joinDate}</td>
-                        <td class="p-3 text-slate-700">${parseFloat(emp.salary).toLocaleString()} ريال</td>
-                        <td class="p-3 text-emerald-600">+${parseFloat(emp.bonus || 0).toLocaleString()}</td>
-                        <td class="p-3 bg-emerald-50 text-emerald-800 font-bold">${parseFloat(emp.totalEarned).toLocaleString()} ريال</td>
-                        <td class="p-3 text-rose-500">-${parseFloat(emp.absence || 0).toLocaleString()}</td>
-                        <td class="p-3 text-rose-500">-${parseFloat(emp.accidents || 0).toLocaleString()}</td>
-                        <td class="p-3 text-rose-500">-${parseFloat(emp.penalties || 0).toLocaleString()}</td>
-                        <td class="p-3 bg-amber-50 text-amber-800 font-bold">-${parseFloat(emp.loansDeduct || 0).toLocaleString()}</td>
-                        <td class="p-3 bg-rose-50 text-rose-800 font-bold">${parseFloat(emp.totalDeducted).toLocaleString()} ريال</td>
-                        <td class="p-3 bg-blue-50 text-blue-800 font-bold text-sm">${parseFloat(emp.netSalary).toLocaleString()} ريال</td>
-                        <td class="p-3"><span class="${payBadgeColor} px-2 py-0.5 rounded-md font-bold text-xs">${emp.payMethod || 'تحويل بنكي'}</span></td>
-                        <td class="p-3 flex items-center justify-center gap-3">
-                            <!-- زر القلم المضاف حديثاً للتعديل السريع -->
-                            <button onclick="selectEmployeeToForm(${targetJson})" class="text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1 transition-all hover:scale-110" title="تعديل السجل">
-                                <i class="fa-solid fa-pen-to-square text-sm"></i> تعديل
-                            </button>
-                            <span class="text-slate-300">|</span>
-                            <button onclick="deleteEmployee(${emp.id})" class="text-rose-500 hover:text-rose-700 font-bold flex items-center gap-1 transition-all" title="حذف نهائي">
-                                <i class="fa-solid fa-trash-can"></i> حذف
-                            </button>
-                        </td>
-                    </tr>`;
-            });
-            filterTable();
-        }
-
-        function deleteEmployee(id) {
-            if (confirm("هل أنت متأكد من حذف سجل هذا الموظف وحساباته المالية نهائياً؟")) {
-                let employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
-                employees = employees.filter(e => e.id !== id);
-                localStorage.setItem('five_caravans_employees_finance', JSON.stringify(employees));
-                renderEmployeeTable();
-            }
-        }
-
-        // دالة التصدير إلى Excel
-        function exportToExcel() {
-            const employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
-            if (employees.length === 0) {
-                alert("لا توجد سجلات مسجلة لتصديرها حالياً!");
-                return;
-            }
-
-            const excelData = employees.map(emp => ({
-                "الاسم": emp.name,
-                "المسمى الوظيفي": emp.role || "غير محدد",
-                "الهوية": emp.idCard,
-                "الجنسية": emp.nationality || "غير محدد",
-                "الكفالة": emp.sponsorship || "مؤسسة القوافل",
-                "تاريخ الالتحاق": emp.joinDate,
-                "الراتب المستحق": parseFloat(emp.salary),
-                "المكافآت": parseFloat(emp.bonus || 0),
-                "إجمالي المستحق": parseFloat(emp.totalEarned),
-                "غياب": parseFloat(emp.absence || 0),
-                "حوادث": parseFloat(emp.accidents || 0),
-                "الخصومات والجزاءات": parseFloat(emp.penalties || 0),
-                "سلف": parseFloat(emp.loansDeduct || 0),
-                "إجمالي المستقطع": parseFloat(emp.totalDeducted),
-                "صافي المبلغ المستحق": parseFloat(emp.netSalary),
-                "طريقة الدفع": emp.payMethod || "تحويل بنكي"
-            }));
-
-            const worksheet = XLSX.utils.json_to_sheet(excelData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "مسيرات الرواتب");
-            
-            XLSX.writeFile(workbook, "مسير_رواتب_القوافل_الخمسة_2026.xlsx");
-        }
-
-        // دالة استيراد البيانات من Excel
-        function importFromExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const firstSheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[firstSheetName];
-                
-                const importedRows = XLSX.utils.sheet_to_json(worksheet);
-                if (importedRows.length === 0) {
-                    alert("الملف المرفوع فارغ أو غير متوافق!");
-                    return;
-                }
-
-                let employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
-                let updatedCount = 0;
-                let addedCount = 0;
-
-                importedRows.forEach(row => {
-                    const name = row["الاسم"] || row["اسم الموظف الثلاثي"] || row["الموظف"] || "";
-                    if (!name.trim()) return;
-
-                    const idCard = row["الهوية"] || row["رقم الإقامة / الهوية"] || "";
-                    const role = row["المسمى الوظيفي"] || "";
-                    const nationality = row["الجنسية"] || "";
-                    const sponsorship = row["الكفالة"] || "مؤسسة القوافل";
-                    const joinDate = row["تاريخ الالتحاق"] || row["تاريخ الانضمام"] || new Date().toISOString().split('T')[0];
-                    
-                    const salary = parseFloat(row["الراتب المستحق"] || row["الراتب الأساسي (ريال)"] || 0);
-                    const bonus = parseFloat(row["المكافآت"] || row["المكافآت (ريال)"] || 0);
-                    const absence = parseFloat(row["غياب"] || row["غياب (ريال)"] || 0);
-                    const accidents = parseFloat(row["حوادث"] || row["حوادث (ريال)"] || 0);
-                    const penalties = parseFloat(row["الخصومات والجزاءات"] || row["جزاءات / خصومات (ريال)"] || 0);
-                    const loansDeduct = parseFloat(row["سلف"] || row["سلف مستقطعة (ريال)"] || 0);
-                    
-                    let payMethod = row["طريقة الدفع"] || "تحويل بنكي";
-                    if (payMethod === 'نقداً' || payMethod === 'كاش') payMethod = 'نقدي';
-                    else if (payMethod === 'أخرى') payMethod = 'اخرى';
-
-                    const totalEarned = (salary + bonus).toFixed(2);
-                    const totalDeducted = (absence + penalties + accidents + loansDeduct).toFixed(2);
-                    const netSalary = (parseFloat(totalEarned) - parseFloat(totalDeducted)).toFixed(2);
-
-                    let existingIndex = employees.findIndex(emp => emp.name.toLowerCase() === name.trim().toLowerCase() || emp.idCard === idCard);
-
-                    const targetEmployeeData = {
-                        id: existingIndex !== -1 ? employees[existingIndex].id : Date.now() + Math.random(),
-                        name: name.trim(), idCard, role, nationality, sponsorship, joinDate, salary, bonus, totalEarned, absence, penalties, accidents, loansDeduct, totalDeducted, netSalary, payMethod
-                    };
-
-                    if (existingIndex !== -1) {
-                        employees[existingIndex] = targetEmployeeData;
-                        updatedCount++;
-                    } else {
-                        employees.unshift(targetEmployeeData);
-                        addedCount++;
-                    }
-                });
-
-                localStorage.setItem('five_caravans_employees_finance', JSON.stringify(employees));
-                renderEmployeeTable();
-                
-                alert(`تم استيراد وتحديث البيانات بنجاح! 🎉\n- موظفين جدد: ${addedCount}\n- سجلات تم تحديثها: ${updatedCount}`);
-                event.target.value = '';
-            };
-            reader.readAsArrayBuffer(file);
-        }
-    </script>
-</body>
-</html>
+            const penalties = parseFloat(document.getElementById('emp-penalties').value) ||
