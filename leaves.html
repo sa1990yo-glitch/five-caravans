@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
         body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
@@ -81,12 +81,12 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الراتب الأساسي (ريال)</label>
-                    <input type="number" id="leave-salary" placeholder="4000" oninput="calculateLeaveAmount()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
+                    <input type="number" id="leave-salary" placeholder="4000" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">عدد أيام الإجازة</label>
-                    <input type="number" id="leave-days" placeholder="30" oninput="calculateLeaveAmount()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
+                    <input type="number" id="leave-days" placeholder="30" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
                 </div>
 
                 <div>
@@ -97,3 +97,167 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">تأمين تذكرة طيران؟</label>
                     <select id="leave-ticket" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-bold">
+                        <option value="نعم">نعم</option>
+                        <option value="لا">لا</option>
+                    </select>
+                </div>
+
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition-all">
+                        <i class="fa-solid fa-arrow-down-long"></i> قيد الإجازة بالجدول
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/50">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-table-list text-blue-600"></i> بيان حركة إجازات الموظفين</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-center border-collapse text-sm" id="leaves-main-table">
+                    <thead>
+                        <tr class="bg-slate-800 text-white font-bold text-xs">
+                            <th class="p-3.5 text-right">الموظف</th>
+                            <th class="p-3.5">رقم الهوية</th>
+                            <th class="p-3.5">تاريخ الانضمام</th>
+                            <th class="p-3.5">الراتب</th>
+                            <th class="p-3.5">أيام الإجازة</th>
+                            <th class="p-3.5">مبلغ الإجازة</th>
+                            <th class="p-3.5">تذكرة طيران</th>
+                            <th class="p-3.5">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaves-table-body" class="divide-y divide-slate-100 text-slate-600">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // دالة حساب مستحقات الإجازة التلقائية والمباشرة فوراً أثناء الكتابة
+        function calculateLeaveAmount() {
+            const salaryInput = document.getElementById('leave-salary');
+            const daysInput = document.getElementById('leave-days');
+            const amountInput = document.getElementById('leave-amount');
+
+            const salary = parseFloat(salaryInput.value) || 0;
+            const days = parseInt(daysInput.value) || 0;
+            
+            // معادلة احتساب مبلغ الإجازة
+            const amount = (salary / 30) * days;
+            amountInput.value = amount.toFixed(2);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // ربط الحساب المباشر فوراً عند الكتابة (input) في الحقول
+            document.getElementById('leave-salary').addEventListener('input', calculateLeaveAmount);
+            document.getElementById('leave-days').addEventListener('input', calculateLeaveAmount);
+
+            renderLeavesTable();
+
+            // معالجة إرسال وحفظ النموذج بالجدول
+            document.getElementById('leave-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('leave-name').value.trim();
+                const idCard = document.getElementById('leave-id-card').value.trim();
+                const joinDate = document.getElementById('leave-join-date').value;
+                const salary = document.getElementById('leave-salary').value;
+                const days = document.getElementById('leave-days').value;
+                const amount = document.getElementById('leave-amount').value;
+                const ticket = document.getElementById('leave-ticket').value;
+
+                const newLeave = {
+                    id: Date.now(),
+                    name: name,
+                    idCard: idCard,
+                    joinDate: joinDate,
+                    salary: salary,
+                    days: days,
+                    amount: amount,
+                    ticket: ticket
+                };
+
+                let leaves = JSON.parse(localStorage.getItem('five_caravans_leaves_extended')) || [];
+                leaves.unshift(newLeave);
+                localStorage.setItem('five_caravans_leaves_extended', JSON.stringify(leaves));
+
+                renderLeavesTable();
+                document.getElementById('leave-form').reset();
+                document.getElementById('leave-amount').value = '0.00';
+            });
+        });
+
+        // دالة رندرة وعرض جدول الإجازات مع خيار التذكرة
+        function renderLeavesTable() {
+            const tbody = document.getElementById('leaves-table-body');
+            const leaves = JSON.parse(localStorage.getItem('five_caravans_leaves_extended')) || [];
+
+            if (leaves.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-slate-400 bg-white italic">لا توجد حركات إجازات مسجلة حالياً.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            leaves.forEach(item => {
+                // تمييز لون شارة نعم / لا للحصول على مظهر احترافي وسلس
+                const ticketBadge = item.ticket === 'نعم' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800';
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition-all">
+                        <td class="p-3.5 text-right font-bold text-slate-800">${item.name}</td>
+                        <td class="p-3.5 font-mono text-xs">${item.idCard}</td>
+                        <td class="p-3.5 font-mono text-xs">${item.joinDate}</td>
+                        <td class="p-3.5 font-medium">${parseFloat(item.salary).toLocaleString()} ريال</td>
+                        <td class="p-3.5 font-bold text-blue-600">${item.days} يوم</td>
+                        <td class="p-3.5 font-bold text-amber-700">${parseFloat(item.amount).toLocaleString()} ريال</td>
+                        <td class="p-3.5"><span class="${ticketBadge} px-2.5 py-0.5 rounded-full text-xs font-bold">${item.ticket || 'لا'}</span></td>
+                        <td class="p-3.5">
+                            <button onclick="deleteLeave(${item.id})" class="text-rose-600 hover:text-rose-800 hover:underline font-medium text-xs">
+                                <i class="fa-solid fa-trash-can"></i> حذف
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // دالة حذف السجل نهائياً
+        function deleteLeave(id) {
+            if (confirm("هل أنت متأكد من حذف سجل هذه الإجازة نهائياً؟")) {
+                let leaves = JSON.parse(localStorage.getItem('five_caravans_leaves_extended')) || [];
+                leaves = leaves.filter(l => l.id !== id);
+                localStorage.setItem('five_caravans_leaves_extended', JSON.stringify(leaves));
+                renderLeavesTable();
+            }
+        }
+
+        // دالة تصدير الجدول الحالي لملف إكسل Excel
+        function exportToExcel() {
+            const leaves = JSON.parse(localStorage.getItem('five_caravans_leaves_extended')) || [];
+            if (leaves.length === 0) {
+                alert("لا توجد بيانات مسجلة لتصديرها!");
+                return;
+            }
+
+            const excelData = leaves.map(item => ({
+                "اسم الموظف / السائق": item.name,
+                "رقم الهوية / الإقامة": item.idCard,
+                "تاريخ الانضمام": item.joinDate,
+                "الراتب الأساسي (ريال)": parseFloat(item.salary),
+                "عدد أيام الإجازة": parseInt(item.days),
+                "مبلغ الإجازة المستحق (ريال)": parseFloat(item.amount),
+                "تأمين تذكرة طيران": item.ticket || 'لا'
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "الإجازات المستحقة");
+            
+            XLSX.writeFile(workbook, "تقرير_إجازات_مؤسسة_القوافل_الخمسة_2026.xlsx");
+        }
+    </script>
+</body>
+</html>
