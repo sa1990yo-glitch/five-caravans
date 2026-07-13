@@ -1,97 +1,296 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سجلات الموظفين والإقامات - القوافل الخمسة</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤسسة القوافل الخمسة - سجلات الموظفين والرواتب</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-100 min-h-screen flex">
 
-  <div class="flex h-screen overflow-hidden">
-    <!-- 📋 القائمة الجانبية (Sidebar) الثابتة -->
-    <div class="w-64 bg-[#0c2d6e] text-white flex flex-col shadow-xl z-20">
-      <div class="p-5 bg-[#092252] flex items-center gap-3 border-b border-blue-900/50">
-        <span class="text-2xl">🚚</span>
-        <div>
-          <h2 class="font-bold text-base">القوافل الخمسة</h2>
-          <p class="text-xs text-blue-300">للخدمات اللوجستية</p>
+    <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
+        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
+            <div class="text-2xl text-blue-500">🚚</div>
+            <div>
+                <h1 class="font-bold text-base leading-tight">القوافل الخمسة</h1>
+                <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
+            </div>
         </div>
-      </div>
-
-      <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
-        <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-blue-100 hover:bg-white/5 transition-all">
-          <span>📊</span> لوحة التحكم العامة
-        </a>
-        <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-white/10 text-white transition-all">
-          <span>👥</span> سجلات الموظفين والإقامات
-        </a>
-        <a href="visas.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-blue-100 hover:bg-white/5 transition-all">
-          <span>📄</span> طلبات التعديل (قوى)
-        </a>
-        <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-blue-100 hover:bg-white/5 transition-all">
-          <span>💰</span> سجلات السُلف المالية
-        </a>
-      </nav>
-
-      <div class="p-4 border-t border-blue-900/50">
-        <button onclick="logout()" class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition-all">
-          <span>🚪</span> تسجيل الخروج
-        </button>
-      </div>
+        
+        <nav class="flex-1 flex flex-col gap-1.5">
+            <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i> لوحة التحكم العامة
+            </a>
+            <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
+                <i class="fa-solid fa-users w-5 text-center"></i> سجلات الموظفين والإقامات
+            </a>
+            <a href="requests.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-file-invoice w-5 text-center"></i> طلبات التعديل (قوى)
+            </a>
+            <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
+            </a>
+            <a href="penalties.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-scale-balanced w-5 text-center"></i> الجزاءات والخصومات
+            </a>
+            <a href="leaves.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-calendar-days w-5 text-center"></i> إدارة الإجازات
+            </a>
+        </nav>
     </div>
 
-    <!-- 🖥️ محتوى سجلات الموظفين والإقامات مستقل تماماً -->
-    <div class="flex-1 flex flex-col overflow-y-auto bg-gray-50 p-6 space-y-6">
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex justify-between items-center">
-        <div>
-          <h1 class="text-2xl font-bold text-[#0c2d6e]">سجلات الموظفين والإقامات</h1>
-          <p class="text-gray-400 text-xs mt-1">إضافة وإدارة ملفات الموظفين النشطين بالمنشأة.</p>
-        </div>
-        <span class="text-xs bg-blue-100 text-[#0c2d6e] font-bold px-3 py-1.5 rounded-full">المسجلين: <span id="emp-count-badge">0</span></span>
-      </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- كارت الإدخال -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 h-fit">
-          <h3 class="text-sm font-bold text-[#0c2d6e] mb-4 pb-2 border-b">👤 بطاقة إدخال موظف</h3>
-          <form id="employee-input-form" class="space-y-4">
+    <div class="flex-1 p-8 overflow-x-hidden">
+        
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex items-center justify-between">
             <div>
-              <label class="block text-xs font-bold text-gray-500 mb-1">اسم الموظف الثلاثي</label>
-              <input type="text" id="emp-fullname" required placeholder="محمد عبد الله" class="w-full px-3 py-2 border rounded-xl text-xs outline-none">
+                <h2 class="text-2xl font-bold text-slate-800">بطاقات الموظفين والتسويات المالية</h2>
+                <p class="text-slate-500 text-sm mt-1">إدارة شاملة لرواتب الموظفين، المكافآت، الخصومات وصافي المبالغ المستحقة لعام 2026.</p>
             </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-500 mb-1">رقم الإقامة / الهوية</label>
-              <input type="number" id="emp-id-number" required placeholder="2xxxxxxxx" class="w-full px-3 py-2 border rounded-xl text-xs outline-none">
-            </div>
-            <div>
-              <label class="block text-xs font-bold text-gray-500 mb-1">المسمى الوظيفي</label>
-              <select id="emp-job" class="w-full px-3 py-2 border rounded-xl text-xs bg-white">
-                <option value="سائق شاحنة">سائق شاحنة</option>
-                <option value="إداري">إداري</option>
-              </select>
-            </div>
-            <button type="submit" class="w-full bg-[#0c2d6e] text-white text-xs font-bold py-2.5 rounded-xl">إضافة للسجلات 🚀</button>
-          </form>
+            <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
+                <i class="fa-solid fa-file-excel text-base"></i> تصدير السجلات إلى إكسل
+            </button>
         </div>
 
-        <!-- جدول البيانات -->
-        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
-          <h3 class="text-sm font-bold text-gray-700 mb-4 pb-2 border-b">📋 قاعدة البيانات المفتوحة للأقامات</h3>
-          <div class="overflow-x-auto text-xs">
-            <table class="w-full text-right">
-              <thead>
-                <tr class="text-gray-400 border-b pb-2 font-bold"><th class="pb-2">الاسم</th><th class="pb-2">رقم الإقامة</th><th class="pb-2">الوظيفة</th><th class="pb-2 text-center">إجراءات</th></tr>
-              </thead>
-              <tbody id="employees-live-table" class="divide-y divide-gray-50 text-gray-600"></tbody>
-            </table>
-          </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
+            <div class="flex items-center gap-2 text-blue-600 font-bold mb-6 border-b pb-3 border-slate-100">
+                <i class="fa-solid fa-user-plus"></i>
+                <h3>إدخال / تحديث السجل المالي للموظف</h3>
+            </div>
+            
+            <form id="employee-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف الثلاثي</label>
+                    <input type="text" id="emp-name" placeholder="مثال: محمد عبد الله" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium" required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">رقم الإقامة / الهوية</label>
+                    <input type="text" id="emp-id" placeholder="2xxxxxxxxx" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-mono" required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">تاريخ الانضمام</label>
+                    <input type="date" id="emp-join-date" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">الراتب الأساسي (ريال)</label>
+                    <input type="number" id="emp-salary" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">المكافآت (ريال)</label>
+                    <input type="number" id="emp-bonus" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي المستحق (تلقائي)</label>
+                    <input type="number" id="emp-total-earned" value="0" class="w-full px-4 py-2 bg-emerald-50 border border-emerald-200 rounded-xl text-sm font-bold text-emerald-700 focus:outline-none" readonly>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">غياب (ريال)</label>
+                    <input type="number" id="emp-absence" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">جزاءات / خصومات (ريال)</label>
+                    <input type="number" id="emp-penalties" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">حوادث (ريال)</label>
+                    <input type="number" id="emp-accidents" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي المستقطع (تلقائي)</label>
+                    <input type="number" id="emp-total-deducted" value="0" class="w-full px-4 py-2 bg-rose-50 border border-rose-200 rounded-xl text-sm font-bold text-rose-700 focus:outline-none" readonly>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">صافي المبلغ المستحق للـصرف</label>
+                    <input type="number" id="emp-net-salary" value="0" class="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-xl text-sm font-bold text-blue-700 focus:outline-none" readonly>
+                </div>
+
+                <div class="flex items-end">
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition-all">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> حفظ السجل بقاعدة البيانات
+                    </button>
+                </div>
+            </form>
         </div>
-      </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
+                <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-address-book text-blue-600"></i> قاعدة بيانات سجلات الموظفين المفتوحة</h3>
+                <span id="emp-count" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">المسجلين: 0</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-center border-collapse text-xs" id="employee-main-table">
+                    <thead>
+                        <tr class="bg-slate-800 text-white font-bold whitespace-nowrap">
+                            <th class="p-3 text-right">الموظف</th>
+                            <th class="p-3">رقم الهوية</th>
+                            <th class="p-3">تاريخ الانضمام</th>
+                            <th class="p-3">الراتب</th>
+                            <th class="p-3">المكافآت</th>
+                            <th class="p-3 bg-emerald-900">إجمالي المستحق</th>
+                            <th class="p-3">غياب</th>
+                            <th class="p-3">جزاءات</th>
+                            <th class="p-3">حوادث</th>
+                            <th class="p-3 bg-rose-900">إجمالي المستقطع</th>
+                            <th class="p-3 bg-blue-900">المبلغ المستحق</th>
+                            <th class="p-3">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employee-table-body" class="divide-y divide-slate-100 text-slate-600 font-medium whitespace-nowrap">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
-  </div>
 
-  <script src="script.js"></script>
+    <script>
+        // دالة الحساب المباشر والتلقائي داخل الشاشة فوراً أثناء إدخال المبالغ
+        function calculateSalaryTotals() {
+            const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
+            const bonus = parseFloat(document.getElementById('emp-bonus').value) || 0;
+            const absence = parseFloat(document.getElementById('emp-absence').value) || 0;
+            const penalties = parseFloat(document.getElementById('emp-penalties').value) || 0;
+            const accidents = parseFloat(document.getElementById('emp-accidents').value) || 0;
+
+            // الحسابات المترابطة
+            const totalEarned = salary + bonus;
+            const totalDeducted = absence + penalties + accidents;
+            const netSalary = totalEarned - totalDeducted;
+
+            // إسناد القيم للحقول التلقائية
+            document.getElementById('emp-total-earned').value = totalEarned.toFixed(2);
+            document.getElementById('emp-total-deducted').value = totalDeducted.toFixed(2);
+            document.getElementById('emp-net-salary').value = netSalary.toFixed(2);
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            renderEmployeeTable();
+
+            // عند إرسال النموذج وحفظ الموظف
+            document.getElementById('employee-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('emp-name').value.trim();
+                const idCard = document.getElementById('emp-id').value.trim();
+                const joinDate = document.getElementById('emp-join-date').value;
+                const salary = document.getElementById('emp-salary').value;
+                const bonus = document.getElementById('emp-bonus').value;
+                const totalEarned = document.getElementById('emp-total-earned').value;
+                const absence = document.getElementById('emp-absence').value;
+                const penalties = document.getElementById('emp-penalties').value;
+                const accidents = document.getElementById('emp-accidents').value;
+                const totalDeducted = document.getElementById('emp-total-deducted').value;
+                const netSalary = document.getElementById('emp-net-salary').value;
+
+                const newEmployee = {
+                    id: Date.now(),
+                    name, idCard, joinDate, salary, bonus, totalEarned, absence, penalties, accidents, totalDeducted, netSalary
+                };
+
+                let employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
+                employees.unshift(newEmployee);
+                localStorage.setItem('five_caravans_employees_finance', JSON.stringify(employees));
+
+                renderEmployeeTable();
+                document.getElementById('employee-form').reset();
+                
+                // إعادة تصفير حقول الحسابات التلقائية الافتراضية
+                document.getElementById('emp-total-earned').value = "0.00";
+                document.getElementById('emp-total-deducted').value = "0.00";
+                document.getElementById('emp-net-salary').value = "0.00";
+            });
+        });
+
+        // دالة عرض وتحديث جدول الموظفين
+        function renderEmployeeTable() {
+            const tbody = document.getElementById('employee-table-body');
+            const employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
+            document.getElementById('emp-count').innerText = `المسجلين: ${employees.length}`;
+
+            if (employees.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="12" class="py-8 text-slate-400 bg-white italic text-sm">لا توجد سجلات موظفين محفوظة حالياً.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            employees.forEach(emp => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition-all">
+                        <td class="p-3 text-right font-bold text-slate-800">${emp.name}</td>
+                        <td class="p-3 font-mono text-slate-500">${emp.idCard}</td>
+                        <td class="p-3 font-mono">${emp.joinDate}</td>
+                        <td class="p-3 text-slate-700">${parseFloat(emp.salary).toLocaleString()} ريال</td>
+                        <td class="p-3 text-emerald-600">+${parseFloat(emp.bonus || 0).toLocaleString()}</td>
+                        <td class="p-3 bg-emerald-50 text-emerald-800 font-bold">${parseFloat(emp.totalEarned).toLocaleString()} ريال</td>
+                        <td class="p-3 text-rose-500">-${parseFloat(emp.absence || 0).toLocaleString()}</td>
+                        <td class="p-3 text-rose-500">-${parseFloat(emp.penalties || 0).toLocaleString()}</td>
+                        <td class="p-3 text-rose-500">-${parseFloat(emp.accidents || 0).toLocaleString()}</td>
+                        <td class="p-3 bg-rose-50 text-rose-800 font-bold">${parseFloat(emp.totalDeducted).toLocaleString()} ريال</td>
+                        <td class="p-3 bg-blue-50 text-blue-800 font-bold text-sm">${parseFloat(emp.netSalary).toLocaleString()} ريال</td>
+                        <td class="p-3">
+                            <button onclick="deleteEmployee(${emp.id})" class="text-rose-600 hover:text-rose-800 font-bold hover:underline">
+                                <i class="fa-solid fa-trash-can"></i> حذف
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // دالة حذف الموظف
+        function deleteEmployee(id) {
+            if (confirm("هل أنت متأكد من حذف سجل هذا الموظف وحساباته المالية نهائياً؟")) {
+                let employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
+                employees = employees.filter(e => e.id !== id);
+                localStorage.setItem('five_caravans_employees_finance', JSON.stringify(employees));
+                renderEmployeeTable();
+            }
+        }
+
+        // دالة التصدير الذكي إلى ملف Excel منسق للمؤسسة
+        function exportToExcel() {
+            const employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
+            if (employees.length === 0) {
+                alert("لا توجد سجلات مسجلة لتصديرها حالياً!");
+                return;
+            }
+
+            // مسميات الأعمدة باللغة العربية للإكسل المعتمد
+            const excelData = employees.map(emp => ({
+                "اسم الموظف الثلاثي": emp.name,
+                "رقم الإقامة / الهوية": emp.idCard,
+                "تاريخ الانضمام": emp.joinDate,
+                "الراتب الأساسي (ريال)": parseFloat(emp.salary),
+                "المكافآت (ريال)": parseFloat(emp.bonus || 0),
+                "إجمالي المستحق (ريال)": parseFloat(emp.totalEarned),
+                "غياب (ريال)": parseFloat(emp.absence || 0),
+                "جزاءات وخصومات (ريال)": parseFloat(emp.penalties || 0),
+                "حوادث (ريال)": parseFloat(emp.accidents || 0),
+                "إجمالي المستقطع (ريال)": parseFloat(emp.totalDeducted),
+                "صافي المبلغ المستحق (ريال)": parseFloat(emp.netSalary)
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "مسيرات الرواتب والسجلات");
+            
+            // تحميل ملف الإكسل
+            XLSX.writeFile(workbook, "مسير_رواتب_وسجلات_موظفي_القوافل_الخمسة_2026.xlsx");
+        }
+    </script>
 </body>
 </html>
