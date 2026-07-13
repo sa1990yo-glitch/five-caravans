@@ -82,7 +82,7 @@
                 <!-- 1. الاسم -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف الثلاثي</label>
-                    <input type="text" id="emp-name" oninput="checkAndAutofillEmployee()" placeholder="اكتب الاسم للبحث أو الإضافة..." class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium" required>
+                    <input type="text" id="emp-name" oninput="handleNameOrIdInput()" placeholder="اكتب الاسم للبحث أو الإضافة..." class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium" required>
                     <p id="search-status" class="text-[11px] text-blue-600 mt-1 font-medium hidden">✨ موظف مسجل! سيتم تحديث بياناته دون تكرار.</p>
                 </div>
 
@@ -95,7 +95,7 @@
                 <!-- 3. الهوية -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">رقم الإقامة / الهوية</label>
-                    <input type="text" id="emp-id" placeholder="2xxxxxxxxx" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-mono" required>
+                    <input type="text" id="emp-id" oninput="handleNameOrIdInput()" placeholder="2xxxxxxxxx" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-mono" required>
                 </div>
 
                 <!-- 4. الجنسية -->
@@ -173,7 +173,7 @@
                     <input type="number" id="emp-net-salary" value="0" class="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-xl text-sm font-bold text-blue-700 focus:outline-none" readonly>
                 </div>
 
-                <!-- 16. طريقة الدفع (المحدثة) -->
+                <!-- 16. طريقة الدفع -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">طريقة الدفع</label>
                     <select id="emp-pay-method" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-right text-slate-700 focus:outline-none focus:border-blue-500 font-medium cursor-pointer">
@@ -193,12 +193,24 @@
             </form>
         </div>
 
-        <!-- 2. الجدول العام لعرض سجلات الموظفين والرواتب -->
+        <!-- 2. شريط البحث وقاعدة البيانات المحدثة -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-                <h3 class="font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-address-book text-blue-600"></i> قاعدة بيانات سجلات الموظفين</h3>
-                <span id="emp-count" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">المسجلين: 0</span>
+            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-address-book text-blue-600 text-lg"></i>
+                    <h3 class="font-bold text-slate-800">قاعدة بيانات سجلات الموظفين</h3>
+                    <span id="emp-count" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">المسجلين: 0</span>
+                </div>
+                
+                <!-- حقل البحث الجديد في الأعلى -->
+                <div class="relative w-full sm:w-80">
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </span>
+                    <input type="text" id="table-search" oninput="filterTable()" placeholder="ابحث بالاسم أو رقم الإقامة..." class="w-full pl-4 pr-9 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-medium">
+                </div>
             </div>
+            
             <div class="overflow-x-auto">
                 <table class="w-full text-center border-collapse text-xs" id="employee-main-table">
                     <thead>
@@ -250,16 +262,56 @@
             document.getElementById('emp-net-salary').value = netSalary.toFixed(2);
         }
 
+        // تفريغ الحقول وإعادتها للوضع الافتراضي
+        function resetFormFields() {
+            document.getElementById('emp-role').value = '';
+            document.getElementById('emp-nationality').value = '';
+            document.getElementById('emp-sponsorship').value = 'مؤسسة القوافل';
+            document.getElementById('emp-join-date').value = '';
+            document.getElementById('emp-salary').value = 0;
+            document.getElementById('emp-bonus').value = 0;
+            document.getElementById('emp-absence').value = 0;
+            document.getElementById('emp-penalties').value = 0;
+            document.getElementById('emp-accidents').value = 0;
+            document.getElementById('emp-loans-deduct').value = 0;
+            document.getElementById('emp-pay-method').value = 'تحويل بنكي';
+            
+            document.getElementById('emp-total-earned').value = 0;
+            document.getElementById('emp-total-deducted').value = 0;
+            document.getElementById('emp-net-salary').value = 0;
+            
+            document.getElementById('search-status').classList.add('hidden');
+        }
+
+        // إدارة عمليات الإدخال لحقلي الاسم والهوية وتفريغ البيانات فور الحذف
+        function handleNameOrIdInput() {
+            const nameValue = document.getElementById('emp-name').value.trim();
+            const idValue = document.getElementById('emp-id').value.trim();
+
+            // إذا تم إفراغ أحد الحقلين الأساسيين (الاسم أو الهوية)، يتم تصفير كل الحقول فوراً
+            if (nameValue === '' || idValue === '') {
+                resetFormFields();
+                return;
+            }
+
+            // محاولة البحث التلقائي إذا كانت الحقول ممتلئة
+            checkAndAutofillEmployee(nameValue, idValue);
+        }
+
         // دالة البحث التلقائي وتعبئة الحقول منعاً لتكرار الإدخال اليدوي
-        function checkAndAutofillEmployee() {
-            const nameInput = document.getElementById('emp-name').value.trim();
+        function checkAndAutofillEmployee(nameInput, idInput) {
             const statusLabel = document.getElementById('search-status');
             let employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
             
-            let matched = employees.find(emp => emp.name.toLowerCase() === nameInput.toLowerCase());
+            // البحث عن تطابق بالاسم أو برقم الهوية
+            let matched = employees.find(emp => 
+                emp.name.toLowerCase() === nameInput.toLowerCase() || 
+                emp.idCard === idInput
+            );
 
             if (matched) {
                 statusLabel.classList.remove('hidden');
+                document.getElementById('emp-name').value = matched.name;
                 document.getElementById('emp-id').value = matched.idCard;
                 document.getElementById('emp-role').value = matched.role || '';
                 document.getElementById('emp-nationality').value = matched.nationality || '';
@@ -276,6 +328,26 @@
             } else {
                 statusLabel.classList.add('hidden');
             }
+        }
+
+        // تصفية الجدول باستخدام حقل البحث العلوي المضاف حديثاً
+        function filterTable() {
+            const query = document.getElementById('table-search').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#employee-table-body tr');
+
+            rows.forEach(row => {
+                // إذا كان الجدول يحتوي على رسالة "لا توجد سجلات"، نتخطى الفلترة
+                if (row.cells.length < 3) return;
+
+                const nameText = row.cells[0].textContent.toLowerCase();
+                const idText = row.cells[2].textContent.toLowerCase();
+
+                if (nameText.includes(query) || idText.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
 
         document.addEventListener("DOMContentLoaded", function() {
@@ -303,7 +375,7 @@
 
                 let employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
                 
-                let existingIndex = employees.findIndex(emp => emp.name.toLowerCase() === name.toLowerCase());
+                let existingIndex = employees.findIndex(emp => emp.name.toLowerCase() === name.toLowerCase() || emp.idCard === idCard);
 
                 const targetEmployeeData = {
                     id: existingIndex !== -1 ? employees[existingIndex].id : Date.now(),
@@ -321,11 +393,9 @@
                 renderEmployeeTable();
                 
                 document.getElementById('employee-form').reset();
-                document.getElementById('search-status').classList.add('hidden');
-                
-                document.getElementById('emp-total-earned').value = "0";
-                document.getElementById('emp-total-deducted').value = "0";
-                document.getElementById('emp-net-salary').value = "0";
+                resetFormFields();
+                document.getElementById('emp-name').value = '';
+                document.getElementById('emp-id').value = '';
             });
         });
 
@@ -342,7 +412,6 @@
 
             tbody.innerHTML = '';
             employees.forEach(emp => {
-                // تنسيق بادج طريقة الدفع بالألوان المناسبة
                 let payBadgeColor = 'bg-slate-100 text-slate-700';
                 if (emp.payMethod === 'تحويل بنكي') payBadgeColor = 'bg-blue-100 text-blue-800';
                 else if (emp.payMethod === 'نقدي') payBadgeColor = 'bg-amber-100 text-amber-800';
@@ -376,6 +445,7 @@
                         </td>
                     </tr>`;
             });
+            filterTable(); // الحفاظ على حالة الفلترة إن وجدت
         }
 
         function deleteEmployee(id) {
@@ -387,7 +457,7 @@
             }
         }
 
-        // دالة التصدير الذكي إلى ملف Excel منسق حسب الترتيب الجديد
+        // دالة التصدير إلى Excel
         function exportToExcel() {
             const employees = JSON.parse(localStorage.getItem('five_caravans_employees_finance')) || [];
             if (employees.length === 0) {
@@ -421,7 +491,7 @@
             XLSX.writeFile(workbook, "مسير_رواتب_القوافل_الخمسة_2026.xlsx");
         }
 
-        // دالة استيراد البيانات الذكية تدعم الترتيب والحقول والخيارات المحدثة
+        // دالة استيراد البيانات من Excel
         function importFromExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -460,9 +530,7 @@
                     const penalties = parseFloat(row["الخصومات والجزاءات"] || row["جزاءات / خصومات (ريال)"] || 0);
                     const loansDeduct = parseFloat(row["سلف"] || row["سلف مستقطعة (ريال)"] || 0);
                     
-                    // قراءة طريقة الدفع
                     let payMethod = row["طريقة الدفع"] || "تحويل بنكي";
-                    // تصحيح الأخطاء الإملائية الشائعة أثناء الاستيراد لربطها بالخيارات الجديدة
                     if (payMethod === 'نقداً' || payMethod === 'كاش') payMethod = 'نقدي';
                     else if (payMethod === 'أخرى') payMethod = 'اخرى';
 
@@ -470,7 +538,7 @@
                     const totalDeducted = (absence + penalties + accidents + loansDeduct).toFixed(2);
                     const netSalary = (parseFloat(totalEarned) - parseFloat(totalDeducted)).toFixed(2);
 
-                    let existingIndex = employees.findIndex(emp => emp.name.toLowerCase() === name.trim().toLowerCase());
+                    let existingIndex = employees.findIndex(emp => emp.name.toLowerCase() === name.trim().toLowerCase() || emp.idCard === idCard);
 
                     const targetEmployeeData = {
                         id: existingIndex !== -1 ? employees[existingIndex].id : Date.now() + Math.random(),
