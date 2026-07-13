@@ -81,12 +81,12 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الراتب الأساسي (ريال)</label>
-                    <input type="number" id="leave-salary" placeholder="4000" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
+                   <input type="number" id="leave-salary" placeholder="4000" oninput="calculateLeaveAmount()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">عدد أيام الإجازة</label>
-                    <input type="number" id="leave-days" placeholder="30" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
+                   <input type="number" id="leave-days" placeholder="30" oninput="calculateLeaveAmount()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500" required>
                 </div>
 
                 <div>
@@ -138,18 +138,19 @@
 
     <script>
         // دالة حساب مستحقات الإجازة التلقائية والمباشرة فوراً أثناء الكتابة
-        function calculateLeaveAmount() {
-            const salaryInput = document.getElementById('leave-salary');
-            const daysInput = document.getElementById('leave-days');
-            const amountInput = document.getElementById('leave-amount');
+     // دالة حساب مستحقات الإجازة التلقائية والمباشرة فوراً أثناء الكتابة
+function calculateLeaveAmount() {
+    const salaryInput = document.getElementById('leave-salary');
+    const daysInput = document.getElementById('leave-days');
+    const amountInput = document.getElementById('leave-amount');
 
-            const salary = parseFloat(salaryInput.value) || 0;
-            const days = parseInt(daysInput.value) || 0;
-            
-            // معادلة احتساب مبلغ الإجازة
-            const amount = (salary / 30) * days;
-            amountInput.value = amount.toFixed(2);
-        }
+    const salary = parseFloat(salaryInput.value) || 0;
+    const days = parseInt(daysInput.value) || 0;
+    
+    // معادلة احتساب مبلغ الإجازة
+    const amount = (salary / 30) * days;
+    amountInput.value = amount.toFixed(2);
+}
 
         document.addEventListener("DOMContentLoaded", function() {
             // ربط الحساب المباشر فوراً عند الكتابة (input) في الحقول
