@@ -124,7 +124,7 @@
                     <input type="number" id="emp-accidents" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
                 </div>
 
-                <!-- جزء السلف الجديد المضاف للاستقطاعات -->
+                <!-- جزء السلف المستقطعة المضاف حديثاً -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">السلف المستقطعة (ريال)</label>
                     <input type="number" id="emp-loans-deduct" value="0" oninput="calculateSalaryTotals()" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
@@ -135,14 +135,14 @@
                     <input type="number" id="emp-total-deducted" value="0" class="w-full px-4 py-2 bg-rose-50 border border-rose-200 rounded-xl text-sm font-bold text-rose-700 focus:outline-none" readonly>
                 </div>
 
-                <div class="lg:col-span-2">
+                <div class="lg:col-span-4">
                     <label class="block text-xs font-bold text-slate-600 mb-2">صافي المبلغ المستحق للصرف</label>
-                    <input type="number" id="emp-net-salary" value="0" class="w-full px-4 py-2 bg-blue-50 border border-blue-200 rounded-xl text-sm font-bold text-blue-700 focus:outline-none" readonly>
+                    <input type="number" id="emp-net-salary" value="0" class="w-full px-4 py-3 bg-blue-50 border border-blue-200 rounded-xl text-base font-bold text-blue-700 focus:outline-none" readonly>
                 </div>
 
                 <div class="flex items-end lg:col-span-4">
                     <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-all">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> حفظ وتحديث السجل المالي للموظف
+                        <i class="fa-solid fa-cloud-arrow-up"></i> حفظ السجل بقاعدة البيانات
                     </button>
                 </div>
             </form>
@@ -158,20 +158,20 @@
                 <table class="w-full text-center border-collapse text-xs" id="employee-main-table">
                     <thead>
                         <tr class="bg-slate-800 text-white font-bold whitespace-nowrap">
-                            <th class="p-3 text-right">الموظف</th>
-                            <th class="p-3">رقم الهوية</th>
-                            <th class="p-3">الكفالة</th>
-                            <th class="p-3">تاريخ الانضمام</th>
-                            <th class="p-3">الراتب</th>
-                            <th class="p-3">المكافآت</th>
-                            <th class="p-3 bg-emerald-900">إجمالي المستحق</th>
-                            <th class="p-3">غياب</th>
-                            <th class="p-3">جزاءات</th>
-                            <th class="p-3">حوادث</th>
-                            <th class="p-3 bg-amber-700">سلف</th>
-                            <th class="p-3 bg-rose-900">إجمالي المستقطع</th>
-                            <th class="p-3 bg-blue-900">المبلغ المستحق</th>
-                            <th class="p-3">الإجراء</th>
+                            <th class="p-3.5 text-right">الموظف</th>
+                            <th class="p-3.5">رقم الهوية</th>
+                            <th class="p-3.5">الكفالة</th>
+                            <th class="p-3.5">تاريخ الانضمام</th>
+                            <th class="p-3.5">الراتب</th>
+                            <th class="p-3.5">المكافآت</th>
+                            <th class="p-3.5 bg-emerald-900">إجمالي المستحق</th>
+                            <th class="p-3.5">غياب</th>
+                            <th class="p-3.5">جزاءات</th>
+                            <th class="p-3.5">حوادث</th>
+                            <th class="p-3.5 bg-amber-700">سلف</th>
+                            <th class="p-3.5 bg-rose-900">إجمالي المستقطع</th>
+                            <th class="p-3.5 bg-blue-900">المبلغ المستحق</th>
+                            <th class="p-3.5">الإجراء</th>
                         </tr>
                     </thead>
                     <tbody id="employee-table-body" class="divide-y divide-slate-100 text-slate-600 font-medium whitespace-nowrap">
@@ -268,12 +268,14 @@
                 localStorage.setItem('five_caravans_employees_finance', JSON.stringify(employees));
 
                 renderEmployeeTable();
-                document.getElementById('employee-form').reset();
-                document.getElementById('search-status').add('hidden');
                 
-                document.getElementById('emp-total-earned').value = "0.00";
-                document.getElementById('emp-total-deducted').value = "0.00";
-                document.getElementById('emp-net-salary').value = "0.00";
+                // إعادة تهيئة النموذج وتصفير الخانات بالكامل
+                document.getElementById('employee-form').reset();
+                document.getElementById('search-status').classList.add('hidden');
+                
+                document.getElementById('emp-total-earned').value = "0";
+                document.getElementById('emp-total-deducted').value = "0";
+                document.getElementById('emp-net-salary').value = "0";
             });
         });
 
