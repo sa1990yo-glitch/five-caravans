@@ -55,44 +55,60 @@
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex items-center justify-between">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">نظام إدارة السلف المالية 2026</h2>
-                <p class="text-slate-500 text-sm mt-1">توزيع مالي سنوي مؤتمت للأقساط الشهرية وحساب المتبقي تلقائياً.</p>
+                <p class="text-slate-500 text-sm mt-1">تسجيل السلف وتنزيل أقساط السداد يدوياً حسب الأشهر مع احتساب تلقائي للمتبقي.</p>
             </div>
             <button onclick="exportLoansToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
                 <i class="fa-solid fa-file-excel text-base"></i> تصدير السلف إلى إكسل
             </button>
         </div>
 
-        <!-- 1. شاشة قيد سلفة جديدة وتوزيعها -->
+        <!-- 1. شاشة قيد / تحديث سلفة وقسط الموظف -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
-            <div class="flex items-center justify-between border-b pb-3 border-slate-100 mb-6">
-                <div class="flex items-center gap-2 text-blue-600 font-bold">
-                    <i class="fa-solid fa-hand-holding-dollar"></i>
-                    <h3>قيد سلفة جديدة وتوزيعها</h3>
-                </div>
-                <span class="text-xs text-slate-400 font-medium">* ملاحظة: النقر المزدوج على أي قسط بالجدول يحوله لـ (تم السداد) وينقص من المتبقي.</span>
+            <div class="flex items-center gap-2 text-blue-600 font-bold mb-6 border-b pb-3 border-slate-100">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+                <h3>تسجيل إجمالي السلفة / تنزيل قسط السداد الشهرى</h3>
             </div>
             
-            <form id="loan-form" class="flex flex-col lg:flex-row gap-5 items-end">
-                <div class="flex-1 w-full grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
-                        <input type="text" id="loan-name" placeholder="مثال: علي قاسم" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي السلفة (ريال)</label>
-                        <input type="number" id="loan-total" placeholder="0.00" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-bold" required>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2">عدد أشهر الأقساط</label>
-                        <input type="number" id="loan-months" placeholder="اتركها فارغة لدفعة واحدة" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium">
-                    </div>
+            <form id="loan-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
+                    <input type="text" id="loan-name" placeholder="مثال: محمد" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium" required>
                 </div>
 
-                <button type="submit" class="w-full lg:w-48 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 px-4 rounded-xl text-sm shadow-md transition-all">
-                    اعتماد وتوزيع السلفة
-                </button>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي السلفة (ريال)</label>
+                    <input type="number" id="loan-total" placeholder="حدد أو حدّث الإجمالي" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-bold" required>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">الشهر المصاحب للسداد</label>
+                    <select id="loan-month-select" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-right text-slate-700 focus:outline-none focus:border-blue-500 font-medium cursor-pointer">
+                        <option value="none">-- بدون قسط حالياً --</option>
+                        <option value="jan">يناير</option>
+                        <option value="feb">فبراير</option>
+                        <option value="mar">مارس</option>
+                        <option value="apr">أبريل</option>
+                        <option value="may">مايو</option>
+                        <option value="jun">يونيو</option>
+                        <option value="jul">يوليو</option>
+                        <option value="aug">أغسطس</option>
+                        <option value="sep">سبتمبر</option>
+                        <option value="oct">أكتوبر</option>
+                        <option value="nov">نوفمبر</option>
+                        <option value="dec">ديسمبر</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">مبلغ السداد ينزل للشهر (ريال)</label>
+                    <input type="number" id="loan-month-amount" value="0" class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium">
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-xl text-sm shadow-md transition-all">
+                        حفظ وتحديث السجل
+                    </button>
+                </div>
             </form>
         </div>
 
@@ -105,7 +121,7 @@
                 <table class="w-full text-center border-collapse text-xs" id="loans-main-table">
                     <thead>
                         <tr class="bg-blue-600 text-white font-bold whitespace-nowrap">
-                            <th class="p-3.5 text-right bg-blue-700 min-w-[160px]">اسم الموظف</th>
+                            <th class="p-3.5 text-right bg-blue-700 min-w-[150px]">اسم الموظف</th>
                             <th class="p-3.5">يناير</th>
                             <th class="p-3.5">فبراير</th>
                             <th class="p-3.5">مارس</th>
@@ -118,9 +134,9 @@
                             <th class="p-3.5">أكتوبر</th>
                             <th class="p-3.5">نوفمبر</th>
                             <th class="p-3.5">ديسمبر</th>
-                            <th class="p-3.5 bg-amber-600">المتبقي</th>
-                            <th class="p-3.5 bg-slate-800">الإجمالي</th>
-                            <th class="p-3.5 bg-rose-700">إجراء</th>
+                            <th class="p-3.5 bg-amber-600 text-white">المتبقي</th>
+                            <th class="p-3.5 bg-slate-800 text-white">الإجمالي</th>
+                            <th class="p-3.5 bg-rose-700 text-white">إجراء</th>
                         </tr>
                     </thead>
                     <tbody id="loans-table-body" class="divide-y divide-slate-100 text-slate-600 font-medium whitespace-nowrap">
@@ -142,64 +158,56 @@
                 e.preventDefault();
                 
                 const name = document.getElementById('loan-name').value.trim();
-                const totalAmount = parseFloat(document.getElementById('loan-total').value) || 0;
-                let monthsCount = parseInt(document.getElementById('loan-months').value) || 1;
-                if(monthsCount < 1) monthsCount = 1;
-                if(monthsCount > 12) monthsCount = 12;
+                const totalLoan = parseFloat(document.getElementById('loan-total').value) || 0;
+                const selectedMonth = document.getElementById('loan-month-select').value;
+                const monthAmount = parseFloat(document.getElementById('loan-month-amount').value) || 0;
 
-                // الحصول على الشهر الحالي ديناميكياً لتوزيع الأقساط ابتداءً منه
-                const currentMonthIndex = new Date().getMonth(); // 0 = يناير، 6 = يوليو
-                const perMonthAmount = Math.round((totalAmount / monthsCount) * 100) / 100;
-
-                let loansList = JSON.parse(localStorage.getItem('five_caravans_loans_v2')) || [];
-                
-                // البحث عما إذا كان الموظف مسجل مسبقاً لدمج أو إضافة السلفة الجديدة له
+                let loansList = JSON.parse(localStorage.getItem('five_caravans_manual_loans')) || [];
                 let existingEmployee = loansList.find(emp => emp.name === name);
 
                 if (existingEmployee) {
-                    // إذا كان موجوداً، نقوم بإضافة الأقساط الجديدة للأشهر المحددة
-                    let distributed = 0;
-                    for (let i = 0; i < monthsCount; i++) {
-                        let targetMonthIdx = (currentMonthIndex + i) % 12;
-                        let mKey = monthsKey[targetMonthIdx];
-                        
-                        existingEmployee.monthsData[mKey].amount += perMonthAmount;
-                        distributed += perMonthAmount;
+                    // تحديث إجمالي السلفة الجديد المدخل
+                    existingEmployee.totalLoan = totalLoan;
+                    
+                    // إذا تم اختيار شهر ومبلغ سداد، ينزل مباشرة للشهر المصاحب له
+                    if (selectedMonth !== 'none' && monthAmount > 0) {
+                        existingEmployee.monthsData[selectedMonth] = monthAmount;
                     }
-                    existingEmployee.totalLoan += totalAmount;
                 } else {
-                    // إذا كان موظفاً جديداً، ننشئ له سجلاً كاملاً
+                    // إنشاء موظف جديد ببيانات فارغة للأشهر وتنزيل القسط في الشهر المختار إن وجد
                     let monthsData = {};
-                    monthsKey.forEach(m => monthsData[m] = { amount: 0, paid: false });
-
-                    for (let i = 0; i < monthsCount; i++) {
-                        let targetMonthIdx = (currentMonthIndex + i) % 12;
-                        let mKey = monthsKey[targetMonthIdx];
-                        monthsData[mKey].amount = perMonthAmount;
+                    monthsKey.forEach(m => monthsData[m] = 0);
+                    
+                    if (selectedMonth !== 'none' && monthAmount > 0) {
+                        monthsData[selectedMonth] = monthAmount;
                     }
 
-                    const newLoanRow = {
+                    const newRow = {
                         id: Date.now(),
                         name: name,
-                        monthsData: monthsData,
-                        totalLoan: totalAmount
+                        totalLoan: totalLoan,
+                        monthsData: monthsData
                     };
-                    loansList.unshift(newLoanRow);
+                    loansList.unshift(newRow);
                 }
 
-                localStorage.setItem('five_caravans_loans_v2', JSON.stringify(loansList));
+                localStorage.setItem('five_caravans_manual_loans', JSON.stringify(loansList));
                 renderLoansTable();
+                
+                // إعادة تهيئة النموذج
                 document.getElementById('loan-form').reset();
+                document.getElementById('loan-month-select').value = 'none';
+                document.getElementById('loan-month-amount').value = '0';
             });
         });
 
-        // دالة رندرة وتحديث جدول السلف
+        // دالة عرض وتحديث الجدول
         function renderLoansTable() {
             const tbody = document.getElementById('loans-table-body');
-            const loans = JSON.parse(localStorage.getItem('five_caravans_loans_v2')) || [];
+            const loans = JSON.parse(localStorage.getItem('five_caravans_manual_loans')) || [];
 
             if (loans.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="16" class="py-8 text-slate-400 bg-white italic text-sm">لا توجد سلف مالية مسجلة حالياً.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="16" class="py-8 text-slate-400 bg-white italic text-sm">لا توجد سجلات سلف محفوظة حالياً.</td></tr>`;
                 return;
             }
 
@@ -208,23 +216,19 @@
                 let monthsHtml = '';
                 let totalPaid = 0;
 
-                // احتساب المبالغ المدفوعة لبناء خانة المتبقي
+                // احتساب إجمالي مبالغ السداد المدفوعة في الأشهر
                 monthsKey.forEach(m => {
-                    const monthObj = emp.monthsData[m];
-                    if (monthObj.paid) {
-                        totalPaid += monthObj.amount;
-                    }
+                    const amount = emp.monthsData[m] || 0;
+                    totalPaid += amount;
 
-                    // تصميم خلايا الأقساط مع ميزة التبديل عند النقر المزدوج
-                    if (monthObj.amount > 0) {
-                        const paidClass = monthObj.paid ? 'bg-emerald-100 text-emerald-800 line-through font-bold' : 'bg-amber-50 text-slate-700 hover:bg-blue-50 cursor-pointer';
-                        const titleTip = monthObj.paid ? 'تم السداد (انقر مرتين للإلغاء)' : 'قسط مستحق (انقر مرتين لتأكيد السداد)';
-                        monthsHtml += `<td class="p-3 border ${paidClass} select-none" title="${titleTip}" ondblclick="toggleMonthPaid(${emp.id}, '${m}')">${monthObj.amount.toLocaleString()}</td>`;
+                    if (amount > 0) {
+                        monthsHtml += `<td class="p-3 border bg-emerald-50 text-emerald-700 font-bold">${amount.toLocaleString()}</td>`;
                     } else {
-                        monthsHtml += `<td class="p-3 border text-slate-300 bg-slate-50/50">-</td>`;
+                        monthsHtml += `<td class="p-3 border text-slate-300 bg-slate-50/40">-</td>`;
                     }
                 });
 
+                // المتبقي = الإجمالي - مبالغ السداد المدفوعة في الأشهر
                 const remaining = Math.max(0, emp.totalLoan - totalPaid);
 
                 tbody.innerHTML += `
@@ -234,7 +238,7 @@
                         <td class="p-3 bg-amber-50 text-amber-800 font-bold border font-mono">${remaining.toLocaleString()} ريال</td>
                         <td class="p-3 bg-slate-900 text-white font-bold border font-mono">${emp.totalLoan.toLocaleString()} ريال</td>
                         <td class="p-3 border">
-                            <button onclick="deleteLoanRow(${emp.id})" class="text-rose-600 hover:text-rose-800 font-bold hover:underline">
+                            <button onclick="deleteLoanRow(${emp.id})" class="text-rose-600 hover:text-rose-800 font-bold hover:underline" title="حذف السجل">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </td>
@@ -242,32 +246,21 @@
             });
         }
 
-        // تبديل حالة القسط (مدفوع / غير مدفوع) وتحديث المتبقي فوراً
-        function toggleMonthPaid(empId, monthKey) {
-            let loans = JSON.parse(localStorage.getItem('five_caravans_loans_v2')) || [];
-            let emp = loans.find(e => e.id === empId);
-            if (emp && emp.monthsData[monthKey]) {
-                emp.monthsData[monthKey].paid = !emp.monthsData[monthKey].paid;
-                localStorage.setItem('five_caravans_loans_v2', JSON.stringify(loans));
-                renderLoansTable();
-            }
-        }
-
-        // حذف سجل السلف بالكامل للموظف
+        // دالة حذف الموظف من جدول السلف
         function deleteLoanRow(id) {
             if (confirm("هل أنت متأكد من حذف سجل سلف هذا الموظف بالكامل؟")) {
-                let loans = JSON.parse(localStorage.getItem('five_caravans_loans_v2')) || [];
+                let loans = JSON.parse(localStorage.getItem('five_caravans_manual_loans')) || [];
                 loans = loans.filter(e => e.id !== id);
-                localStorage.setItem('five_caravans_loans_v2', JSON.stringify(loans));
+                localStorage.setItem('five_caravans_manual_loans', JSON.stringify(loans));
                 renderLoansTable();
             }
         }
 
-        // دالة التصدير الشامل لملف Excel
+        // دالة تصدير بيانات السلف إلى ملف Excel منسق
         function exportLoansToExcel() {
-            const loans = JSON.parse(localStorage.getItem('five_caravans_loans_v2')) || [];
+            const loans = JSON.parse(localStorage.getItem('five_caravans_manual_loans')) || [];
             if (loans.length === 0) {
-                alert("لا توجد بيانات سلف لتصديرها!");
+                alert("لا توجد سجلات سلف لتصديرها حالياً!");
                 return;
             }
 
@@ -278,25 +271,21 @@
                 let totalPaid = 0;
 
                 monthsKey.forEach((m, idx) => {
-                    const mObj = emp.monthsData[m];
-                    let cellValue = mObj.amount || 0;
-                    if (mObj.paid) {
-                        totalPaid += mObj.amount;
-                        cellValue += " (تم السداد)";
-                    }
-                    row[arabicMonthNames[idx]] = cellValue;
+                    const amt = emp.monthsData[m] || 0;
+                    totalPaid += amt;
+                    row[arabicMonthNames[idx]] = amt;
                 });
 
                 row["المتبقي (ريال)"] = Math.max(0, emp.totalLoan - totalPaid);
-                row["إجمالي السلف (ريال)"] = emp.totalLoan;
+                row["إجمالي السلفة (ريال)"] = emp.totalLoan;
                 return row;
             });
 
             const worksheet = XLSX.utils.json_to_sheet(excelData);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "بيان السلف السنوي");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "كشف السلف والأقساط المنزلة");
             
-            XLSX.writeFile(workbook, "سجل_سلف_موظفي_القوافل_الخمسة_2026.xlsx");
+            XLSX.writeFile(workbook, "سجل_السلف_المالية_مؤسسة_القوافل_الخمسة_2026.xlsx");
         }
     </script>
 </body>
