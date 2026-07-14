@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <!-- 📤 قسم الاستيراد والتصدير الجديد 📥 -->
+        <!-- 📤 قسم الاستيراد والتصدير المنسق لملفك 📥 -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
             <div class="flex items-center gap-2 text-blue-600 font-bold mb-4">
                 <i class="fa-solid fa-right-left text-lg"></i>
@@ -121,6 +121,7 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">فئة التأمين الطبي</label>
                     <select id="doc-insurance-class" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
+                        <option value="basic">basic 🟢</option>
                         <option value="الفئة A">الفئة A 💎</option>
                         <option value="الفئة B">الفئة B ⭐</option>
                         <option value="الفئة C">الفئة C 🔵</option>
@@ -206,7 +207,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             renderDocTable();
 
-            // معالجة الحفظ
+            // معالجة الحفظ يدوياً
             document.getElementById('doc-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -281,7 +282,7 @@
             const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
 
             if (docData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="14" class="py-12 text-slate-400 bg-white italic text-center text-sm">سجل الإقامات فارغ حالياً. قم بإدخال أول موظف بالأعلى أو قم باستيراد ملف إكسل.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="14" class="py-12 text-slate-400 bg-white italic text-center text-sm">سجل الإقامات فارغ حالياً. قم برفع ملف الإكسل (الاقامات النظام.xlsx) فَوْراً للاستيراد.</td></tr>`;
                 return;
             }
 
@@ -333,7 +334,7 @@
             });
         }
 
-        /* 📥 دالة استيراد السجلات من الإكسل 📥 */
+        /* 📥 دالة استيراد السجلات المخصصة تماماً لملف "الاقامات النظام.xlsx" 📥 */
         function importResFromExcel() {
             const fileInput = document.getElementById('res-excel-file-input');
             const file = fileInput.files[0];
@@ -355,39 +356,56 @@
                     return;
                 }
 
-                // رسم خريطة البيانات لتتوافق مع بنية السجلات في الموقع
+                // دالة تحويل التواريخ من صيغ إكسل المختلفة إلى صيغة YYYY-MM-DD
+                const parseDate = (val) => {
+                    if (!val) return '';
+                    if (typeof val === 'number') {
+                        // معالجة تاريخ إكسل الرقمي المتسلسل
+                        const dateObj = new Date((val - 25569) * 86400 * 1000);
+                        return dateObj.toISOString().split('T')[0];
+                    }
+                    // إذا كان نصاً، نقوم بتنظيفه
+                    const str = String(val).trim();
+                    if (str.match(/^\d{4}-\d{2}-\d{2}$/)) return str; // صيغة ممتازة جاهزة
+                    
+                    // محاولة تحويل الصيغ النصية الأخرى مثل (DD/MM/YYYY)
+                    const parsed = Date.parse(str);
+                    if (!isNaN(parsed)) {
+                        return new Date(parsed).toISOString().split('T')[0];
+                    }
+                    return str;
+                };
+
+                // فلترة ورسم خريطة للبيانات بالتطابق مع ملف "الاقامات النظام.xlsx"
                 const formattedDocs = jsonRows.map((row, idx) => {
-                    // تحويل تواريخ الإكسل التسلسلية إذا وجدت
-                    const parseDate = (val) => {
-                        if (!val) return '';
-                        if (typeof val === 'number') {
-                            // تحويل تاريخ اكسل الرقمي
-                            const dateObj = new Date((val - 25569) * 86400 * 1000);
-                            return dateObj.toISOString().split('T')[0];
-                        }
-                        return String(val).trim();
-                    };
+                    const empName = row['اسم الموظف / السائق'] || row['الاسم'] || '';
+                    if (!empName) return null;
 
                     return {
                         id: Date.now() + idx,
-                        name: row['اسم الموظف / السائق'] || row['الاسم'] || '',
+                        name: empName,
                         nationalId: row['رقم الإقامة'] || row['الهوية'] || '-',
-                        idExpiry: parseDate(row['تاريخ انتهاء الإقامة'] || row['تاريخ الإقامة']),
-                        licenseExpiry: parseDate(row['تاريخ انتهاء رخصة العمل'] || row['تاريخ رخصة العمل']),
-                        insuranceExpiry: parseDate(row['تاريخ انتهاء التأمين'] || row['تاريخ التأمين']),
-                        insuranceClass: row['فئة التأمين'] || 'الفئة C',
-                        docStatus: row['الحالة العامة للمستندات'] || 'مجدد وساري'
+                        idExpiry: parseDate(row['تاريخ انتهاء الإقامة']),
+                        licenseExpiry: parseDate(row['تاريخ رخصة العمل'] || row['تاريخ انتهاء رخصة العمل']),
+                        insuranceExpiry: parseDate(row['تاريخ انتهاء التأمين']),
+                        insuranceClass: row['فئة التأمين'] || 'basic',
+                        docStatus: row['حالة التأمين'] || row['حالة الإقامة'] || 'مجدد وساري'
                     };
-                }).filter(doc => doc.name !== ''); // تصفية الصفوف بدون أسماء
+                }).filter(doc => doc !== null); // إزالة أي سطور فارغة
+
+                if (formattedDocs.length === 0) {
+                    alert("لم يتم العثور على أي أسماء موظفين صحيحة في الملف!");
+                    return;
+                }
 
                 localStorage.setItem('five_caravans_documents', JSON.stringify(formattedDocs));
                 renderDocTable();
-                alert(`تم استيراد ${formattedDocs.length} سجل بنجاح! 🎉`);
+                alert(`تم استرداد وتحديث ${formattedDocs.length} سجل بنجاح من ملف النظام! 🎉`);
             };
             reader.readAsArrayBuffer(file);
         }
 
-        /* 📤 دالة تصدير السجلات الحالية إلى إكسل منسق 📤 */
+        /* 📤 دالة تصدير السجلات الحالية إلى إكسل 📤 */
         function exportResToExcel() {
             const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
             if (docData.length === 0) {
@@ -395,7 +413,7 @@
                 return;
             }
 
-            // تجهيز مصفوفة البيانات المصدرة مع حساب الأيام والحالات تلقائياً
+            // تجهيز البيانات للتصدير بنفس هيكلية ملفك ليبقى التوافق مستمر دائماً
             const exportRows = docData.map(item => {
                 const idResult = calculateRemainingDays(item.idExpiry);
                 const licenseResult = calculateRemainingDays(item.licenseExpiry);
@@ -405,30 +423,27 @@
                     'اسم الموظف / السائق': item.name,
                     'رقم الإقامة': item.nationalId,
                     'تاريخ انتهاء الإقامة': item.idExpiry || '',
-                    'أيام الإقامة المتبقية': idResult.days,
+                    'أيام الإقامة': idResult.days,
                     'حالة الإقامة': idResult.text,
-                    'تاريخ انتهاء رخصة العمل': item.licenseExpiry || '',
-                    'أيام رخصة العمل المتبقية': licenseResult.days,
+                    'تاريخ رخصة العمل': item.licenseExpiry || '',
+                    'أيام رخصة العمل': licenseResult.days,
                     'حالة رخصة العمل': licenseResult.text,
                     'تاريخ انتهاء التأمين': item.insuranceExpiry || '',
-                    'أيام التأمين المتبقية': insResult.days,
+                    'أيام التأمين': insResult.days,
                     'فئة التأمين': item.insuranceClass,
-                    'حالة التأمين': insResult.text,
-                    'الحالة العامة للمستندات': item.docStatus
+                    'حالة التأمين': insResult.text
                 };
             });
 
-            // إنشاء شيت إكسل وتحويل البيانات
             const worksheet = XLSX.utils.json_to_sheet(exportRows);
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "مستندات الموظفين");
+            XLSX.utils.book_append_sheet(workbook, worksheet, "ورقة1");
 
-            // تعديل اتجاه الشيت ليكون RTL تلقائياً
+            // جعل اتجاه الشيت من اليمين لليسار RTL متطابقاً مع الإكسل العربي
             if(!worksheet['!views']) worksheet['!views'] = [];
             worksheet['!views'].push({RTL: true});
 
-            // تحميل الملف
-            XLSX.writeFile(workbook, "سجل_الإقامات_والتراخيص_القوافل_الخمسة.xlsx");
+            XLSX.writeFile(workbook, "الاقامات النظام.xlsx");
         }
 
         // تحويل السطر المسجل للنموذج العلوي للتحديث
@@ -439,7 +454,7 @@
             document.getElementById('doc-id-expiry').value = item.idExpiry || '';
             document.getElementById('doc-license-expiry').value = item.licenseExpiry || '';
             document.getElementById('doc-insurance-expiry').value = item.insuranceExpiry || '';
-            document.getElementById('doc-insurance-class').value = item.insuranceClass || 'الفئة C';
+            document.getElementById('doc-insurance-class').value = item.insuranceClass || 'basic';
             document.getElementById('doc-status').value = item.docStatus || 'مجدد وساري';
 
             document.getElementById('doc-form-section').scrollIntoView({ behavior: 'smooth' });
