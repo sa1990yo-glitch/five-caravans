@@ -1,163 +1,482 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام الجزاءات والخصومات 2026</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Cairo', sans-serif; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مؤسسة القوافل الخمسة - إدارة الجزاءات والخصومات</title>
+    <!-- مكتبة أيقونات FontAwesome و Tailwind CSS للتصميم الاحترافي -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- مكتبة XLSX لتصدير واستيراد ملفات الإكسل -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex">
 
-  <div class="w-72 bg-slate-900 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
-    <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
-      <div class="text-2xl">🚚</div>
-      <div>
-        <h1 class="font-bold text-lg leading-tight">القوافل الخمسة</h1>
-        <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
-      </div>
-    </div>
-    
-    <nav class="flex-1 flex flex-col gap-2">
-      <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>📊</span> لوحة التحكم العامة
-      </a>
-      <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>👥</span> سجلات الموظفين والإقامات
-      </a>
-      <a href="visas.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>📄</span> طلبات التعديل (قوى)
-      </a>
-      <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>💰</span> سجلات السُّلف المالية
-      </a>
-      <a href="deductions.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
-        <span>⚖️</span> الجزاءات والخصومات
-      </a>
-      <a href="leaves.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400 hover:bg-slate-800 hover:text-white transition-all">
-        <span>📅</span> إدارة الإجازات
-      </a>
-    </nav>
-  </div>
-
-  <div class="flex-1 p-8 overflow-x-hidden">
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex items-center justify-between">
-      <div>
-        <h2 class="text-2xl font-bold text-slate-800">نظام تسجيل الجزاءات والخصومات</h2>
-        <p class="text-slate-500 text-sm mt-1">تقييد المخالفات والخصومات المالية المباشرة على الموظفين والسائقين.</p>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
-      <div class="flex items-center gap-2 text-red-600 font-bold mb-6">
-        <span>⚠️</span>
-        <h3>تقييد مخالفة / خصم جديد</h3>
-      </div>
-      <form id="deductions-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
-          <input type="text" id="deduct-name" placeholder="مثال: محمد أحمد" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium transition-all" required>
+    <!-- الشريط الجانبي الثابت (Sidebar) -->
+    <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
+        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
+            <div class="text-2xl text-blue-500">🚚</div>
+            <div>
+                <h1 class="font-bold text-base leading-tight">القوافل الخمسة</h1>
+                <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
+            </div>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-2">قيمة الخصم (ريال)</label>
-          <input type="number" id="deduct-amount" placeholder="0.00" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-bold transition-all" required>
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-600 mb-2">سبب المخالفة / البيان</label>
-          <input type="text" id="deduct-reason" placeholder="مثال: غياب بدون إذن / مخالفة مرورية" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-medium transition-all" required>
-        </div>
-        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-sm shadow-md transition-all">
-           تسجيل الخصم فوراً
-        </button>
-      </form>
+        
+        <nav class="flex-1 flex flex-col gap-1.5">
+            <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i> لوحة التحكم العامة
+            </a>
+            <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-users w-5 text-center"></i> سجلات الموظفين والإقامات
+            </a>
+            <a href="requests.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-file-invoice w-5 text-center"></i> طلبات التعديل (قوى)
+            </a>
+            <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
+            </a>
+            <a href="deductions.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
+                <i class="fa-solid fa-scale-balanced w-5 text-center"></i> الجزاءات والخصومات
+            </a>
+            <a href="leaves.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-calendar-days w-5 text-center"></i> إدارة الإجازات
+            </a>
+        </nav>
     </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-      <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex justify-between items-center">
-        <h3 class="font-bold text-slate-800">سجل المخالفات والخصومات المعتمدة</h3>
-        <span id="total-deductions-badge" class="bg-red-100 text-red-700 font-bold text-xs px-3 py-1 rounded-full font-mono">إجمالي الخصومات: 0 ريال</span>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-center border-collapse text-sm">
-          <thead>
-            <tr class="bg-slate-800 text-white font-bold whitespace-nowrap text-xs">
-              <th class="p-3 text-right">اسم الموظف / السائق</th>
-              <th class="p-3">التاريخ</th>
-              <th class="p-3">البيان / السبب</th>
-              <th class="p-3">قيمة الخصم</th>
-              <th class="p-3">إجراء</th>
-            </tr>
-          </thead>
-          <tbody id="deductions-table-body" class="divide-y divide-slate-100">
-            </tbody>
-        </table>
-      </div>
+    <!-- المحتوى الرئيسي للموقع -->
+    <div class="flex-1 p-8 overflow-x-hidden">
+        
+        <!-- الهيدر العلوي -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">إدارة الجزاءات والخصومات السنوية</h2>
+                <p class="text-slate-500 text-sm mt-1">تسجيل الخصومات الشهرية، تحديد أنواع الجزاءات ومراقبة إجمالي المبالغ المخصومة لكل موظف.</p>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <label class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2 cursor-pointer">
+                    <i class="fa-solid fa-file-import text-base"></i> استيراد الخصومات من إكسل
+                    <input type="file" id="excel-import-deductions" accept=".xlsx, .xls" class="hidden" onchange="importDeductionsFromExcel(event)">
+                </label>
+
+                <button onclick="exportDeductionsToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-file-excel text-base"></i> تصدير الخصومات إلى إكسل
+                </button>
+            </div>
+        </div>
+
+        <!-- شاشة تسجيل وتعديل الخصومات الذكية -->
+        <div id="deduction-form-section" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
+            <div class="flex items-center justify-between mb-6 border-b pb-3 border-slate-100 flex-wrap gap-4">
+                <div class="flex items-center gap-2 text-blue-600 font-bold">
+                    <i class="fa-solid fa-pen-to-square text-lg"></i>
+                    <h3>إدخال خصم جديد أو تعديل جزاءات موظف حالي</h3>
+                </div>
+                <!-- حقل البحث السريع الذكي -->
+                <div class="relative w-full sm:w-96">
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-blue-500">
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                    </span>
+                    <input type="text" id="quick-search-deduction" oninput="handleDeductionSearch()" placeholder="ابحث باسم الموظف للتعديل الفوري..." class="w-full pl-4 pr-9 py-2.5 bg-blue-50/50 border border-blue-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 placeholder-blue-400">
+                    <div id="search-dropdown-deduction" class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto hidden"></div>
+                </div>
+            </div>
+            
+            <form id="deduction-form" class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
+                <!-- 1. اسم الموظف -->
+                <div class="md:col-span-1">
+                    <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
+                    <input type="text" id="deduction-emp-name" placeholder="أدخل اسم الموظف..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-semibold" required>
+                </div>
+
+                <!-- 2. نوع الجزاء / المخالفة -->
+                <div class="md:col-span-1">
+                    <label class="block text-xs font-bold text-slate-600 mb-2">نوع الجزاء / سبب الخصم</label>
+                    <input type="text" id="deduction-reason" placeholder="مثال: غياب، مخالفة سرعة، إتلاف..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold focus:outline-none focus:border-blue-500" required>
+                </div>
+
+                <!-- 3. اختيار شهر الخصم -->
+                <div class="md:col-span-1">
+                    <label class="block text-xs font-bold text-slate-600 mb-2">تحديث خصم شهر معين</label>
+                    <select id="deduction-month" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer" required>
+                        <option value="">-- اختر شهر تطبيق الخصم --</option>
+                        <option value="january">يناير</option>
+                        <option value="february">فبراير</option>
+                        <option value="march">مارس</option>
+                        <option value="april">أبريل</option>
+                        <option value="may">مايو</option>
+                        <option value="june">يونيو</option>
+                        <option value="july">يوليو</option>
+                        <option value="august">أغسطس</option>
+                        <option value="september">سبتمبر</option>
+                        <option value="october">أكتوبر</option>
+                        <option value="november">نوفمبر</option>
+                        <option value="december">ديسمبر</option>
+                    </select>
+                </div>
+
+                <!-- 4. قيمة الخصم -->
+                <div class="md:col-span-1">
+                    <label class="block text-xs font-bold text-slate-600 mb-2">قيمة الخصم للشهر المختار (ريال)</label>
+                    <input type="number" id="deduction-pay-amount" placeholder="اكتب 0 لإلغاء الخصم" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:border-blue-500" required>
+                </div>
+
+                <!-- أزرار التحكم والعمليات -->
+                <div class="md:col-span-4 flex gap-3">
+                    <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات وتحديث السجل
+                    </button>
+                    <button type="button" onclick="clearDeductionForm()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 rounded-xl text-sm transition-all">
+                        إلغاء وتصفية الحقول
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- جدول جزاءات وخصومات الموظفين السنوي -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-scale-balanced text-red-600 text-lg"></i>
+                    <h3 class="font-bold text-slate-800">جدول الجزاءات والخصومات السنوية (قابل للتعديل والحذف)</h3>
+                </div>
+                
+                <div class="relative w-full sm:w-80">
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-filter text-sm"></i>
+                    </span>
+                    <input type="text" id="deduction-table-search" oninput="filterDeductionsTable()" placeholder="ابحث باسم الموظف بالجدول..." class="w-full pl-4 pr-9 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-medium">
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-center border-collapse text-xs" id="deductions-main-table">
+                    <thead>
+                        <tr class="bg-red-600 text-white font-bold whitespace-nowrap">
+                            <th class="p-3 text-right">اسم الموظف</th>
+                            <th class="p-3">سبب الخصم الأخير</th>
+                            <th class="p-3">يناير</th>
+                            <th class="p-3">فبراير</th>
+                            <th class="p-3">مارس</th>
+                            <th class="p-3">أبريل</th>
+                            <th class="p-3">مايو</th>
+                            <th class="p-3">يونيو</th>
+                            <th class="p-3">يوليو</th>
+                            <th class="p-3">أغسطس</th>
+                            <th class="p-3">سبتمبر</th>
+                            <th class="p-3">أكتوبر</th>
+                            <th class="p-3">نوفمبر</th>
+                            <th class="p-3">ديسمبر</th>
+                            <th class="p-3 bg-slate-900 text-white">إجمالي الخصومات السنوية</th>
+                            <th class="p-3">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deductions-table-body" class="divide-y divide-slate-100 text-slate-600 font-semibold whitespace-nowrap">
+                        <!-- الخلايا تظهر هنا -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
-  </div>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      renderDeductionsTable();
-      const form = document.getElementById("deductions-form");
-      if (form) {
-        form.addEventListener("submit", function (e) {
-          e.preventDefault();
-          const name = document.getElementById("deduct-name").value.trim();
-          const amount = parseFloat(document.getElementById("deduct-amount").value);
-          const reason = document.getElementById("deduct-reason").value.trim();
-          const date = new Date().toLocaleDateString('ar-SA');
+    <script>
+        const monthsKeys = [
+            'january', 'february', 'march', 'april', 'may', 'june', 
+            'july', 'august', 'september', 'october', 'november', 'december'
+        ];
 
-          const newDeduction = { id: Date.now(), name, amount, reason, date };
-          let deductions = JSON.parse(localStorage.getItem("five_caravans_deductions")) || [];
-          deductions.unshift(newDeduction);
-          localStorage.setItem("five_caravans_deductions", JSON.stringify(deductions));
-          
-          renderDeductionsTable();
-          form.reset();
+        document.addEventListener("DOMContentLoaded", function() {
+            renderDeductionsTable();
+
+            // معالجة وحفظ الخصومات والجزاءات
+            document.getElementById('deduction-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('deduction-emp-name').value.trim();
+                const reason = document.getElementById('deduction-reason').value.trim();
+                const selectedMonth = document.getElementById('deduction-month').value;
+                const payAmountRaw = document.getElementById('deduction-pay-amount').value;
+
+                if (!name) return;
+
+                let deductions = JSON.parse(localStorage.getItem('five_caravans_deductions')) || [];
+                let existingIndex = deductions.findIndex(d => d.name.toLowerCase() === name.toLowerCase());
+
+                let finalPayAmount = 0;
+                if (payAmountRaw !== undefined && payAmountRaw !== null && payAmountRaw.trim() !== '') {
+                    finalPayAmount = parseFloat(payAmountRaw) || 0;
+                }
+
+                if (existingIndex !== -1) {
+                    // تحديث موظف حالي
+                    let record = deductions[existingIndex];
+                    record.reason = reason;
+
+                    if (selectedMonth) {
+                        record[selectedMonth] = finalPayAmount;
+                    }
+                } else {
+                    // إضافة موظف جديد
+                    let newRecord = {
+                        id: Date.now(),
+                        name: name,
+                        reason: reason,
+                        january: 0, february: 0, march: 0, april: 0, may: 0, june: 0,
+                        july: 0, august: 0, september: 0, october: 0, november: 0, december: 0
+                    };
+
+                    if (selectedMonth) {
+                        newRecord[selectedMonth] = finalPayAmount;
+                    }
+
+                    deductions.unshift(newRecord);
+                }
+
+                localStorage.setItem('five_caravans_deductions', JSON.stringify(deductions));
+                renderDeductionsTable();
+                clearDeductionForm();
+                alert("تم حفظ وتحديث بيانات الجزاءات والخصومات بنجاح! ✨");
+            });
         });
-      }
-    });
 
-    function renderDeductionsTable() {
-      const tableBody = document.getElementById("deductions-table-body");
-      const badge = document.getElementById("total-deductions-badge");
-      if (!tableBody) return;
+        // رندرة وبناء الجدول
+        function renderDeductionsTable() {
+            const tbody = document.getElementById('deductions-table-body');
+            const deductions = JSON.parse(localStorage.getItem('five_caravans_deductions')) || [];
 
-      const deductions = JSON.parse(localStorage.getItem("five_caravans_deductions")) || [];
-      
-      let totalAmount = deductions.reduce((sum, item) => sum + item.amount, 0);
-      if (badge) badge.innerText = `إجمالي الخصومات: ${totalAmount.toLocaleString('en-US')} ريال`;
+            if (deductions.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="16" class="py-8 text-slate-400 bg-white italic text-center">لا توجد سجلات جزاءات أو خصومات مسجلة حالياً.</td></tr>`;
+                return;
+            }
 
-      if (deductions.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-400 bg-white italic">لا توجد مخالفات أو خصومات مسجلة حالياً.</td></tr>`;
-        return;
-      }
+            tbody.innerHTML = '';
+            deductions.forEach(deduction => {
+                let totalPaid = 0;
+                monthsKeys.forEach(month => {
+                    totalPaid += parseFloat(deduction[month] || 0);
+                });
 
-      tableBody.innerHTML = "";
-      deductions.forEach(item => {
-        tableBody.innerHTML += `<tr class="hover:bg-slate-50 transition-all text-slate-600">
-          <td class="p-3 text-right font-bold text-slate-800">${item.name}</td>
-          <td class="p-3 font-mono text-xs">${item.date}</td>
-          <td class="p-3 text-slate-500">${item.reason}</td>
-          <td class="p-3 font-bold text-red-600 font-mono">${item.amount.toLocaleString('en-US')} ريال</td>
-          <td class="p-3">
-            <button onclick="deleteDeduction(${item.id})" class="text-red-500 font-bold hover:underline text-xs">إلغاء الأمر</button>
-          </td>
-        </tr>`;
-      });
-    }
+                let monthsCellsHtml = '';
+                monthsKeys.forEach(m => {
+                    const val = parseFloat(deduction[m] || 0);
+                    if (val > 0) {
+                        monthsCellsHtml += `<td class="p-3 bg-red-50 text-red-600 font-bold">${val.toLocaleString()}</td>`;
+                    } else {
+                        monthsCellsHtml += `<td class="p-3 text-slate-300">-</td>`;
+                    }
+                });
 
-    function deleteDeduction(id) {
-      if (confirm("هل تريد إلغاء قيد هذا الخصم نهائياً؟")) {
-        let deductions = JSON.parse(localStorage.getItem("five_caravans_deductions")) || [];
-        deductions = deductions.filter(item => item.id !== id);
-        localStorage.setItem("five_caravans_deductions", JSON.stringify(deductions));
-        renderDeductionsTable();
-      }
-    }
-  </script>
+                const targetJson = JSON.stringify(deduction).replace(/"/g, '&quot;');
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition-all">
+                        <td class="p-3 text-right font-bold text-slate-800">${deduction.name}</td>
+                        <td class="p-3 text-slate-500 font-medium text-right">${deduction.reason || '-'}</td>
+                        ${monthsCellsHtml}
+                        <td class="p-3 bg-slate-900 text-white font-bold">${totalPaid.toLocaleString()} ريال</td>
+                        <td class="p-3 flex items-center justify-center gap-1.5">
+                            <!-- زر التعديل -->
+                            <button onclick='selectDeductionToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 transition-all text-[11px]" title="تعديل الخصم">
+                                <i class="fa-solid fa-pen-to-square"></i> تعديل
+                            </button>
+                            <!-- زر الحذف -->
+                            <button onclick="deleteDeductionRecord('${deduction.id}', '${deduction.name}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 transition-all text-[11px]" title="حذف السجل نهائياً">
+                                <i class="fa-solid fa-trash-can"></i> حذف
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        // دالة الحذف لسجل الجزاءات والخصومات
+        function deleteDeductionRecord(id, name) {
+            const confirmDelete = confirm(`⚠️ هل أنت متأكد من رغبتك في حذف سجل جزاءات الموظف (${name}) بالكامل؟`);
+            if (!confirmDelete) return;
+
+            let deductions = JSON.parse(localStorage.getItem('five_caravans_deductions')) || [];
+            
+            deductions = deductions.filter(d => {
+                if (d.id && String(d.id) === String(id)) return false;
+                if (!d.id && d.name.toLowerCase() === name.toLowerCase()) return false;
+                return true;
+            });
+
+            localStorage.setItem('five_caravans_deductions', JSON.stringify(deductions));
+            renderDeductionsTable();
+            clearDeductionForm();
+            alert(`تم حذف سجل الموظف (${name}) بنجاح! 🗑️`);
+        }
+
+        // سحب البيانات للنموذج عند التعديل
+        function selectDeductionToForm(deduction) {
+            document.getElementById('quick-search-deduction').value = deduction.name;
+            document.getElementById('deduction-emp-name').value = deduction.name;
+            document.getElementById('deduction-reason').value = deduction.reason || '';
+            document.getElementById('deduction-month').value = '';
+            document.getElementById('deduction-pay-amount').value = '';
+            
+            document.getElementById('deduction-form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // تصفية حقول النموذج
+        function clearDeductionForm() {
+            document.getElementById('deduction-form').reset();
+            document.getElementById('quick-search-deduction').value = '';
+        }
+
+        // البحث الفوري بالأعلى للخصومات
+        function handleDeductionSearch() {
+            const query = document.getElementById('quick-search-deduction').value.trim().toLowerCase();
+            const dropdown = document.getElementById('search-dropdown-deduction');
+            
+            if (query === '') {
+                dropdown.innerHTML = '';
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            const deductions = JSON.parse(localStorage.getItem('five_caravans_deductions')) || [];
+            const filtered = deductions.filter(d => d.name.toLowerCase().includes(query));
+
+            if (filtered.length === 0) {
+                dropdown.innerHTML = `<div class="p-3 text-slate-400 text-xs text-center italic">لا يوجد موظف مسجل بهذا الاسم.</div>`;
+            } else {
+                dropdown.innerHTML = '';
+                filtered.forEach(deduction => {
+                    const item = document.createElement('div');
+                    item.className = "p-3 border-b border-slate-50 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-all text-xs";
+                    item.innerHTML = `
+                        <span class="font-bold text-slate-800">${deduction.name}</span>
+                        <span class="font-bold text-slate-500 text-[10px]">السبب الأخير: ${deduction.reason || 'غير محدد'}</span>
+                    `;
+                    item.onclick = function() {
+                        selectDeductionToForm(deduction);
+                        dropdown.classList.add('hidden');
+                    };
+                    dropdown.appendChild(item);
+                });
+            }
+            dropdown.classList.remove('hidden');
+        }
+
+        // فلترة جدول الخصومات
+        function filterDeductionsTable() {
+            const query = document.getElementById('deduction-table-search').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#deductions-table-body tr');
+
+            rows.forEach(row => {
+                if (row.cells.length < 1) return;
+                const nameText = row.cells[0].textContent.toLowerCase();
+                if (nameText.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // إغلاق الدروب داون عند النقر في الخارج
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('search-dropdown-deduction');
+            const searchInput = document.getElementById('quick-search-deduction');
+            if (e.target !== dropdown && e.target !== searchInput) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // تصدير الخصومات لملف إكسل
+        function exportDeductionsToExcel() {
+            const deductions = JSON.parse(localStorage.getItem('five_caravans_deductions')) || [];
+            if (deductions.length === 0) {
+                alert("لا توجد بيانات لتصديرها!");
+                return;
+            }
+
+            const excelData = deductions.map(deduction => {
+                let totalPaid = 0;
+                monthsKeys.forEach(m => totalPaid += (parseFloat(deduction[m]) || 0));
+
+                return {
+                    "اسم الموظف": deduction.name,
+                    "سبب الخصم الأخير": deduction.reason || '',
+                    "يناير": deduction.january || 0, "فبراير": deduction.february || 0, "مارس": deduction.march || 0,
+                    "أبريل": deduction.april || 0, "مايو": deduction.may || 0, "يونيو": deduction.june || 0,
+                    "يوليو": deduction.july || 0, "أغسطس": deduction.august || 0, "سبتمبر": deduction.september || 0,
+                    "أكتوبر": deduction.october || 0, "نوفمبر": deduction.november || 0, "ديسمبر": deduction.december || 0,
+                    "إجمالي الخصومات السنوية": totalPaid
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "الخصومات والجزاءات");
+            XLSX.writeFile(workbook, "سجل_الجزاءات_والخصومات_2026.xlsx");
+        }
+
+        // استيراد الخصومات من ملف إكسل
+        function importDeductionsFromExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const importedRows = XLSX.utils.sheet_to_json(worksheet);
+
+                if (importedRows.length === 0) {
+                    alert("الملف فارغ أو غير متوافق!");
+                    return;
+                }
+
+                let deductions = JSON.parse(localStorage.getItem('five_caravans_deductions')) || [];
+                let importedCount = 0;
+
+                importedRows.forEach(row => {
+                    const name = row["اسم الموظف"] || row["الاسم"] || "";
+                    if (!name) return;
+
+                    let deductionData = {
+                        id: Date.now() + Math.random(),
+                        name: name.trim(),
+                        reason: row["سبب الخصم الأخير"] || row["السبب"] || "",
+                        january: parseFloat(row["يناير"] || 0),
+                        february: parseFloat(row["فبراير"] || 0),
+                        march: parseFloat(row["مارس"] || 0),
+                        april: parseFloat(row["أبريل"] || 0),
+                        may: parseFloat(row["مايو"] || 0),
+                        june: parseFloat(row["يونيو"] || 0),
+                        july: parseFloat(row["يوليو"] || 0),
+                        august: parseFloat(row["أغسطس"] || 0),
+                        september: parseFloat(row["سبتمبر"] || 0),
+                        october: parseFloat(row["أكتوبر"] || 0),
+                        november: parseFloat(row["نوفمبر"] || 0),
+                        december: parseFloat(row["ديسمبر"] || 0)
+                    };
+
+                    let existingIndex = deductions.findIndex(d => d.name.toLowerCase() === name.trim().toLowerCase());
+                    if (existingIndex !== -1) {
+                        deductions[existingIndex] = deductionData;
+                    } else {
+                        deductions.unshift(deductionData);
+                    }
+                    importedCount++;
+                });
+
+                localStorage.setItem('five_caravans_deductions', JSON.stringify(deductions));
+                renderDeductionsTable();
+                alert(`تم استيراد وتحديث ${importedCount} سجل خصومات بنجاح! 🎉`);
+                event.target.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
 </body>
 </html>
