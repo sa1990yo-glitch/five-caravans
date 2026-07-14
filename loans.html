@@ -143,7 +143,7 @@
             <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-table-list text-blue-600 text-lg"></i>
-                    <h3 class="font-bold text-slate-800">جدول سلف الموظفين السنوي (قابل للتعديل)</h3>
+                    <h3 class="font-bold text-slate-800">جدول سلف الموظفين السنوي (قابل للتعديل والحذف)</h3>
                 </div>
                 
                 <div class="relative w-full sm:w-80">
@@ -194,7 +194,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             renderLoansTable();
 
-            // معالجة وإصلاح ثغرة الحفظ للمبالغ الفارغة
+            // معالجة وحفظ المبالغ والسجلات
             document.getElementById('loan-form').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -208,7 +208,6 @@
                 let loans = JSON.parse(localStorage.getItem('five_caravans_loans')) || [];
                 let existingIndex = loans.findIndex(l => l.name.toLowerCase() === name.toLowerCase());
 
-                // معالجة قيمة القسط الفورية بشكل آمن لمنع تعطل المحرك البرمجي
                 let finalPayAmount = 0;
                 if (payAmountRaw !== undefined && payAmountRaw !== null && payAmountRaw.trim() !== '') {
                     finalPayAmount = parseFloat(payAmountRaw) || 0;
@@ -223,7 +222,7 @@
                         record[selectedMonth] = finalPayAmount;
                     }
                 } else {
-                    // إضافة موظف جديد تماماً
+                    // إضافة موظف جديد
                     let newRecord = {
                         id: Date.now(),
                         name: name,
@@ -246,7 +245,7 @@
             });
         });
 
-        // رندرة وبناء الجدول وعرض التحديثات الفورية
+        // رندرة الجدول وإضافة الأزرار
         function renderLoansTable() {
             const tbody = document.getElementById('loans-table-body');
             const loans = JSON.parse(localStorage.getItem('five_caravans_loans')) || [];
@@ -288,13 +287,39 @@
                         ${monthsCellsHtml}
                         <td class="p-3 ${remainingBadgeClass} text-sm">${remaining.toLocaleString()} ريال</td>
                         <td class="p-3 bg-slate-900 text-white font-bold">${originalTotal.toLocaleString()} ريال</td>
-                        <td class="p-3">
-                            <button onclick='selectLoanToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 mx-auto transition-all text-[11px]">
-                                <i class="fa-solid fa-pen-to-square"></i> تعديل السلفة
+                        <td class="p-3 flex items-center justify-center gap-1.5">
+                            <!-- زر التعديل -->
+                            <button onclick='selectLoanToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 transition-all text-[11px]" title="تعديل السلفة">
+                                <i class="fa-solid fa-pen-to-square"></i> تعديل
+                            </button>
+                            <!-- زر الحذف المضاف حديثاً -->
+                            <button onclick="deleteLoanRecord('${loan.id}', '${loan.name}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 transition-all text-[11px]" title="حذف السجل نهائياً">
+                                <i class="fa-solid fa-trash-can"></i> حذف
                             </button>
                         </td>
                     </tr>`;
             });
+        }
+
+        // دالة الحذف الذكية لحذف موظف محدد وتصفير السجل
+        function deleteLoanRecord(id, name) {
+            const confirmDelete = confirm(`⚠️ هل أنت متأكد من رغبتك في حذف سجل الموظف (${name}) بالكامل من كشوفات السلف؟`);
+            if (!confirmDelete) return;
+
+            let loans = JSON.parse(localStorage.getItem('five_caravans_loans')) || [];
+            
+            // فلترة السجلات واستثناء السجل المطلوب حذفه
+            loans = loans.filter(loan => {
+                if (loan.id && String(loan.id) === String(id)) return false;
+                // حماية إضافية في حال تكرار الاسم دون وجود id فريد
+                if (!loan.id && loan.name.toLowerCase() === name.toLowerCase()) return false;
+                return true;
+            });
+
+            localStorage.setItem('five_caravans_loans', JSON.stringify(loans));
+            renderLoansTable();
+            clearLoanForm();
+            alert(`تم حذف سجل الموظف (${name}) بنجاح! 🗑️`);
         }
 
         // سحب البيانات للنموذج عند الضغط على زر تعديل
