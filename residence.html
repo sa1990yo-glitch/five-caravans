@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مؤسسة القوافل الخمسة - سجل الموظفين المالي والإداري</title>
+    <title>مؤسسة القوافل الخمسة - سجل الموظفين والمسيرات</title>
     <!-- مكتبة أيقونات FontAwesome و Tailwind CSS للتصميم الاحترافي -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -122,9 +122,13 @@
                     <input type="text" id="emp-nationality" placeholder="أدخل الجنسية..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
                 </div>
 
+                <!-- قائمة منسدلة الكفالة (محدثة) -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الكفالة</label>
-                    <input type="text" id="emp-sponsorship" placeholder="على كفالة..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
+                    <select id="emp-sponsorship" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
+                        <option value="القوافل">القوافل 🏢</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
                 </div>
 
                 <div>
@@ -132,12 +136,15 @@
                     <input type="date" id="emp-join-date" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
                 </div>
 
+                <!-- قائمة منسدلة طريقة الدفع (محدثة) -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">طريقة الدفع</label>
                     <select id="emp-payment-method" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="تحويل بنكي">تحويل بنكي 🏦</option>
                         <option value="نقداً">نقداً 💵</option>
-                        <option value="أخرى">أخرى</option>
+                        <option value="تحويل بنكي">تحويل بنكي 🏦</option>
+                        <option value="مدد">مدد 🔗</option>
+                        <option value="زاد الجود">زاد الجود 💎</option>
+                        <option value="الخزينة">الخزينة 💰</option>
                     </select>
                 </div>
 
@@ -161,7 +168,6 @@
                     <input type="text" id="emp-total-earned" value="0.00" readonly class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-black text-slate-700 focus:outline-none cursor-not-allowed">
                 </div>
 
-                <!-- حقل تعويضي للحفاظ على شبكة الـ Grid متناسقة -->
                 <div class="hidden md:block"></div>
 
                 <!-- القسم 3: الاستقطاعات والخصومات -->
@@ -272,7 +278,7 @@
                 const phone = document.getElementById('emp-phone').value.trim();
                 const nationalId = document.getElementById('emp-national-id').value.trim();
                 const nationality = document.getElementById('emp-nationality').value.trim();
-                const sponsorship = document.getElementById('emp-sponsorship').value.trim();
+                const sponsorship = document.getElementById('emp-sponsorship').value;
                 const joinDate = document.getElementById('emp-join-date').value;
                 const paymentMethod = document.getElementById('emp-payment-method').value;
 
@@ -300,7 +306,7 @@
                     phone: phone || '-',
                     nationalId: nationalId || '-',
                     nationality: nationality || '-',
-                    sponsorship: sponsorship || '-',
+                    sponsorship: sponsorship,
                     joinDate: joinDate || '-',
                     paymentMethod: paymentMethod,
                     salary: salary.toFixed(2),
@@ -327,7 +333,7 @@
             });
         });
 
-        // احتساب الإجماليات بشكل حي ومباشر أثناء إدخال الأرقام بالنموذج
+        // احتساب الإجماليات بشكل حي ومباشر
         function calculateTotals() {
             const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
             const bonuses = parseFloat(document.getElementById('emp-bonuses').value) || 0;
@@ -345,7 +351,7 @@
             document.getElementById('emp-net-salary').value = netSalary.toFixed(2);
         }
 
-        // بناء وعرض جدول الموظفين بالتصميم الشامل
+        // بناء وعرض جدول الموظفين
         function renderEmpTable() {
             const tbody = document.getElementById('emp-table-body');
             const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
@@ -359,6 +365,11 @@
             empData.forEach(item => {
                 const targetJson = JSON.stringify(item).replace(/"/g, '&quot;');
 
+                // تمييز الكفالة بلون لطيف
+                let sponsorBadge = item.sponsorship === 'القوافل' 
+                    ? '<span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">القوافل</span>' 
+                    : '<span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">أخرى</span>';
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition-all">
                         <td class="p-3 text-right font-bold text-slate-800">${item.name}</td>
@@ -366,7 +377,7 @@
                         <td class="p-3 text-slate-600 font-mono">${item.phone || '-'}</td>
                         <td class="p-3 text-slate-600 font-mono">${item.nationalId || '-'}</td>
                         <td class="p-3 text-slate-700">${item.nationality}</td>
-                        <td class="p-3 text-slate-700">${item.sponsorship}</td>
+                        <td class="p-3">${sponsorBadge}</td>
                         <td class="p-3 text-slate-500 font-mono">${item.joinDate}</td>
                         <td class="p-3 text-slate-600 font-mono">${item.salary}</td>
                         <td class="p-3 text-slate-600 font-mono">${item.bonuses}</td>
@@ -377,7 +388,7 @@
                         <td class="p-3 text-rose-600 font-mono">${item.loans}</td>
                         <td class="p-3 font-bold text-rose-800 bg-rose-50 font-mono">${item.totalDeducted}</td>
                         <td class="p-3 font-black text-emerald-700 bg-emerald-50/70 font-mono">${item.netSalary} ر.س</td>
-                        <td class="p-3"><span class="bg-blue-50 text-blue-800 px-2.5 py-1 rounded-full text-[10px] font-bold">${item.paymentMethod || 'تحويل بنكي'}</span></td>
+                        <td class="p-3"><span class="bg-indigo-50 text-indigo-800 px-2.5 py-1 rounded-full text-[10px] font-bold">${item.paymentMethod || 'نقداً'}</span></td>
                         <td class="p-3 flex items-center justify-center gap-1.5">
                             <button onclick='selectEmpToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
                                 <i class="fa-solid fa-user-pen"></i> تعديل
@@ -398,9 +409,9 @@
             document.getElementById('emp-phone').value = item.phone === '-' ? '' : item.phone;
             document.getElementById('emp-national-id').value = item.nationalId === '-' ? '' : item.nationalId;
             document.getElementById('emp-nationality').value = item.nationality === '-' ? '' : item.nationality;
-            document.getElementById('emp-sponsorship').value = item.sponsorship === '-' ? '' : item.sponsorship;
+            document.getElementById('emp-sponsorship').value = item.sponsorship || 'القوافل';
             document.getElementById('emp-join-date').value = item.joinDate === '-' ? '' : item.joinDate;
-            document.getElementById('emp-payment-method').value = item.paymentMethod || 'تحويل بنكي';
+            document.getElementById('emp-payment-method').value = item.paymentMethod || 'نقداً';
             
             // تعبئة البيانات المالية
             document.getElementById('emp-salary').value = item.salary || "0.00";
@@ -414,7 +425,7 @@
             document.getElementById('emp-form-section').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // تصفية وتفريغ الحقول بالكامل وإعادة الإجماليات للصفر
+        // تفريغ الحقول بالكامل
         function clearEmpForm() {
             document.getElementById('emp-form').reset();
             document.getElementById('quick-search-emp').value = '';
@@ -425,7 +436,7 @@
 
         // حذف الموظف
         function deleteEmpRecord(id, name) {
-            if (!confirm(`⚠️ هل أنت متأكد من حذف الموظف (${name}) مع مسيره المالي بالكامل؟`)) return;
+            if (!confirm(`⚠️ هل أنت متأكد من حذف الموظف (${name})؟`)) return;
 
             let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
             empData = empData.filter(emp => String(emp.id) !== String(id));
@@ -433,10 +444,10 @@
             localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
             renderEmpTable();
             clearEmpForm();
-            alert(`تم حذف الموظف (${name}) وكل سجلاته المالية بنجاح.`);
+            alert(`تم حذف سجل الموظف بنجاح.`);
         }
 
-        // البحث الفوري العلوي للوصول للموظف المطلوب
+        // البحث الفوري العلوي
         function handleEmpSearch() {
             const query = document.getElementById('quick-search-emp').value.trim().toLowerCase();
             const dropdown = document.getElementById('search-dropdown-emp');
@@ -492,7 +503,7 @@
             });
         }
 
-        // تصدير المسير الكامل والحقول الـ 16 للإكسل
+        // تصدير المسير الكامل والحقول للإكسل
         function exportEmpDataToExcel() {
             const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
             if (empData.length === 0) {
@@ -526,7 +537,7 @@
             XLSX.writeFile(workbook, "مسيرات_موظفي_القوافل_الخمسة.xlsx");
         }
 
-        // استيراد ذكي لملفات الإكسل الخارجية ومطابقة الأعمدة آلياً
+        // استيراد ذكي لملفات الإكسل
         function importEmpDataFromExcel(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -547,30 +558,42 @@
                 let importedCount = 0;
 
                 importedRows.forEach(row => {
-                    const name = row["الاسم"] || row["اسم الموظف"] || row["اسم الموظف الكامل"] || "";
+                    const name = row["الاسم"] || row["اسم الموظف"] || "";
                     if (!name) return;
 
-                    const salary = parseFloat(row["الراتب المستحق"] || row["الراتب"] || 0);
-                    const bonuses = parseFloat(row["المكافآت"] || row["المكافأة"] || 0);
-                    const absence = parseFloat(row["غياب"] || row["الغياب"] || 0);
-                    const accidents = parseFloat(row["حوادث"] || row["الحادث"] || 0);
-                    const penalties = parseFloat(row["خصومات والجزاءات"] || row["الجزاءات"] || row["الخصومات"] || 0);
-                    const loans = parseFloat(row["سلف"] || row["السلف"] || 0);
+                    const salary = parseFloat(row["الراتب المستحق"] || 0);
+                    const bonuses = parseFloat(row["المكافآت"] || 0);
+                    const absence = parseFloat(row["غياب"] || 0);
+                    const accidents = parseFloat(row["حوادث"] || 0);
+                    const penalties = parseFloat(row["خصومات والجزاءات"] || 0);
+                    const loans = parseFloat(row["سلف"] || 0);
 
                     const totalEarned = salary + bonuses;
                     const totalDeducted = absence + accidents + penalties + loans;
                     const netSalary = totalEarned - totalDeducted;
 
+                    // معالجة ذكية للقيم المدخلة من الكفالة للتأكد من مطابقتها للقائمة
+                    let sponsorshipVal = "القوافل";
+                    if(row["الكفالة"] && row["الكفالة"].includes("أخرى")) sponsorshipVal = "أخرى";
+
+                    // معالجة ذكية لطريقة الدفع لتطابق الخيارات المنسدلة الجديدة
+                    let paymentVal = "نقداً";
+                    const rowPay = row["طريقة الدفع"] || "";
+                    if (rowPay.includes("تحويل")) paymentVal = "تحويل بنكي";
+                    else if (rowPay.includes("مدد")) paymentVal = "مدد";
+                    else if (rowPay.includes("جود")) paymentVal = "زاد الجود";
+                    else if (rowPay.includes("خزينة") || rowPay.includes("الخزينة")) paymentVal = "الخزينة";
+
                     let record = {
                         id: Date.now() + Math.random(),
                         name: name.trim(),
                         role: row["المسمى الوظيفي"] || "سائق دينا",
-                        phone: row["رقم الجوال"] || row["الجوال"] || row["رقم الهاتف"] || "-",
-                        nationalId: row["الهوية"] || row["رقم الهوية"] || row["الإقامة"] || "-",
+                        phone: row["رقم الجوال"] || "-",
+                        nationalId: row["الهوية"] || "-",
                         nationality: row["الجنسية"] || "-",
-                        sponsorship: row["الكفالة"] || row["الكفيل"] || "-",
-                        joinDate: row["تاريخ الالتحاق"] || row["تاريخ المباشرة"] || "-",
-                        paymentMethod: row["طريقة الدفع"] || "تحويل بنكي",
+                        sponsorship: sponsorshipVal,
+                        joinDate: row["تاريخ الالتحاق"] || "-",
+                        paymentMethod: paymentVal,
                         salary: salary.toFixed(2),
                         bonuses: bonuses.toFixed(2),
                         totalEarned: totalEarned.toFixed(2),
