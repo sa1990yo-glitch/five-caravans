@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مؤسسة القوافل الخمسة - سجل الموظفين</title>
-    <!-- مكتبة أيقونات FontAwesome و Tailwind CSS للتصميم الاحترافي -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- مكتبة XLSX لتصدير واستيراد ملفات الإكسل -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
@@ -16,7 +14,6 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex">
 
-    <!-- الشريط الجانبي الثابت (Sidebar) -->
     <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
         <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
             <div class="text-2xl text-blue-500">🚚</div>
@@ -45,10 +42,8 @@
         </nav>
     </div>
 
-    <!-- المحتوى الرئيسي للموقع -->
     <div class="flex-1 p-8 overflow-x-hidden">
         
-        <!-- الهيدر العلوي -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">سجل الموظفين والسائقين الأساسي</h2>
@@ -67,14 +62,12 @@
             </div>
         </div>
 
-        <!-- شاشة إدخال وتعديل بيانات الموظف -->
         <div id="emp-form-section" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
             <div class="flex items-center justify-between mb-6 border-b pb-3 border-slate-100 flex-wrap gap-4">
                 <div class="flex items-center gap-2 text-blue-600 font-bold">
                     <i class="fa-solid fa-user-plus text-lg"></i>
                     <h3>إضافة / تعديل بيانات موظف</h3>
                 </div>
-                <!-- البحث السريع للوصول الفوري للموظف وتعديله -->
                 <div class="relative w-full sm:w-96">
                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-blue-500">
                         <i class="fa-solid fa-magnifying-glass text-sm"></i>
@@ -85,13 +78,11 @@
             </div>
             
             <form id="emp-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <!-- 1. اسم الموظف -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف الكامل</label>
                     <input type="text" id="emp-name" placeholder="أدخل اسم الموظف..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-semibold" required>
                 </div>
 
-                <!-- 2. المسمى الوظيفي -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">المسمى الوظيفي</label>
                     <select id="emp-role" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
@@ -104,355 +95,28 @@
                     </select>
                 </div>
 
-                <!-- 3. رقم الجوال -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">رقم الجوال</label>
                     <input type="text" id="emp-phone" placeholder="05xxxxxxxx" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
                 </div>
 
-                <!-- 4. الجنسية -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الجنسية</label>
                     <input type="text" id="emp-nationality" placeholder="أدخل الجنسية..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
                 </div>
 
-                <!-- 5. الراتب الأساسي -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">الراتب الأساسي (ريال)</label>
                     <input type="number" id="emp-salary" placeholder="0.00" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500" required>
                 </div>
 
-                <!-- 6. تاريخ مباشرة العمل -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">تاريخ مباشرة العمل</label>
                     <input type="date" id="emp-start-date" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
                 </div>
 
-                <!-- 7. حالة الموظف الحالية -->
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-2">حالة الموظف</label>
                     <select id="emp-status" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
                         <option value="على رأس العمل">على رأس العمل 🟢</option>
-                        <option value="في إجازة">في إجازة 🟡</option>
-                        <option value="مستقيل">مستقيل 🔴</option>
-                        <option value="خروج نهائي">خروج نهائي 🛑</option>
-                    </select>
-                </div>
-
-                <!-- أزرار التحكم بالنموذج -->
-                <div class="flex gap-2">
-                    <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-floppy-disk"></i> حفظ الموظف
-                    </button>
-                    <button type="button" onclick="clearEmpForm()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs transition-all">
-                        إلغاء
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- جدول الموظفين الرئيسي -->
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
-            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-users-viewfinder text-blue-600 text-lg"></i>
-                    <h3 class="font-bold text-slate-800">قائمة موظفي وسائقي المؤسسة</h3>
-                </div>
-                
-                <div class="relative w-full sm:w-80">
-                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                        <i class="fa-solid fa-filter text-sm"></i>
-                    </span>
-                    <input type="text" id="emp-table-search" oninput="filterEmpTable()" placeholder="ابحث باسم الموظف، الوظيفة أو الجنسية..." class="w-full pl-4 pr-9 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-medium">
-                </div>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-center border-collapse text-xs" id="emp-main-table">
-                    <thead>
-                        <tr class="bg-slate-900 text-white font-bold whitespace-nowrap">
-                            <th class="p-4 text-right">اسم الموظف الكامل</th>
-                            <th class="p-4">المسمى الوظيفي</th>
-                            <th class="p-4">رقم الجوال</th>
-                            <th class="p-4">الجنسية</th>
-                            <th class="p-4">الراتب الأساسي</th>
-                            <th class="p-4">تاريخ المباشرة</th>
-                            <th class="p-4">الحالة</th>
-                            <th class="p-4">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="emp-table-body" class="divide-y divide-slate-100 text-slate-600 font-semibold whitespace-nowrap">
-                        <!-- البيانات تضاف هنا برمجياً -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderEmpTable();
-
-            // معالجة حفظ الموظف
-            document.getElementById('emp-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const name = document.getElementById('emp-name').value.trim();
-                const role = document.getElementById('emp-role').value;
-                const phone = document.getElementById('emp-phone').value.trim();
-                const nationality = document.getElementById('emp-nationality').value.trim();
-                const salary = document.getElementById('emp-salary').value;
-                const startDate = document.getElementById('emp-start-date').value;
-                const status = document.getElementById('emp-status').value;
-
-                if (!name || !salary) return;
-
-                let empData = JSON.parse(localStorage.getItem('five_caravans_employees')) || [];
-                let existingIndex = empData.findIndex(emp => emp.name.toLowerCase() === name.toLowerCase());
-
-                let record = {
-                    id: existingIndex !== -1 ? empData[existingIndex].id : Date.now(),
-                    name: name,
-                    role: role,
-                    phone: phone || '-',
-                    nationality: nationality || '-',
-                    salary: parseFloat(salary).toFixed(2),
-                    startDate: startDate || '-',
-                    status: status
-                };
-
-                if (existingIndex !== -1) {
-                    empData[existingIndex] = record;
-                } else {
-                    empData.unshift(record);
-                }
-
-                localStorage.setItem('five_caravans_employees', JSON.stringify(empData));
-                renderEmpTable();
-                clearEmpForm();
-                alert("تم حفظ سجل الموظف بنجاح! ✨");
-            });
-        });
-
-        // بناء وعرض جدول الموظفين
-        function renderEmpTable() {
-            const tbody = document.getElementById('emp-table-body');
-            const empData = JSON.parse(localStorage.getItem('five_caravans_employees')) || [];
-
-            if (empData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-slate-400 bg-white italic text-center">لا يوجد موظفون مسجلون حالياً. أضف موظفاً جديداً.</td></tr>`;
-                return;
-            }
-
-            tbody.innerHTML = '';
-            empData.forEach(item => {
-                let statusBadge = '';
-                if (item.status === 'على رأس العمل') {
-                    statusBadge = '<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-[10px] font-bold">على رأس العمل 🟢</span>';
-                } else if (item.status === 'في إجازة') {
-                    statusBadge = '<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-[10px] font-bold">في إجازة 🟡</span>';
-                } else if (item.status === 'مستقيل') {
-                    statusBadge = '<span class="bg-rose-100 text-rose-800 px-2.5 py-1 rounded-full text-[10px] font-bold">مستقيل 🔴</span>';
-                } else {
-                    statusBadge = '<span class="bg-slate-200 text-slate-800 px-2.5 py-1 rounded-full text-[10px] font-bold">خروج نهائي 🛑</span>';
-                }
-
-                const targetJson = JSON.stringify(item).replace(/"/g, '&quot;');
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition-all">
-                        <td class="p-4 text-right font-bold text-slate-800">${item.name}</td>
-                        <td class="p-4 text-slate-700 font-medium">${item.role}</td>
-                        <td class="p-4 text-slate-600 font-mono">${item.phone}</td>
-                        <td class="p-4 text-slate-700">${item.nationality}</td>
-                        <td class="p-4 font-bold text-emerald-600 font-mono">${item.salary} ر.س</td>
-                        <td class="p-4 text-slate-500 font-mono">${item.startDate}</td>
-                        <td class="p-4">${statusBadge}</td>
-                        <td class="p-4 flex items-center justify-center gap-2">
-                            <button onclick='selectEmpToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 transition-all text-xs">
-                                <i class="fa-solid fa-user-pen"></i> تعديل
-                            </button>
-                            <button onclick="deleteEmpRecord('${item.id}', '${item.name}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center gap-1 transition-all text-xs">
-                                <i class="fa-solid fa-trash-can"></i> حذف
-                            </button>
-                        </td>
-                    </tr>`;
-            });
-        }
-
-        // اختيار الموظف وتعبئته بالنموذج
-        function selectEmpToForm(item) {
-            document.getElementById('quick-search-emp').value = item.name;
-            document.getElementById('emp-name').value = item.name;
-            document.getElementById('emp-role').value = item.role || 'سائق دينا';
-            document.getElementById('emp-phone').value = item.phone === '-' ? '' : item.phone;
-            document.getElementById('emp-nationality').value = item.nationality === '-' ? '' : item.nationality;
-            document.getElementById('emp-salary').value = item.salary;
-            document.getElementById('emp-start-date').value = item.startDate === '-' ? '' : item.startDate;
-            document.getElementById('emp-status').value = item.status || 'على رأس العمل';
-            
-            document.getElementById('emp-form-section').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // تصفية وتفريغ الحقول
-        function clearEmpForm() {
-            document.getElementById('emp-form').reset();
-            document.getElementById('quick-search-emp').value = '';
-        }
-
-        // حذف موظف نهائياً
-        function deleteEmpRecord(id, name) {
-            if (!confirm(`⚠️ هل أنت متأكد من حذف الموظف (${name}) نهائياً من النظام؟`)) return;
-
-            let empData = JSON.parse(localStorage.getItem('five_caravans_employees')) || [];
-            empData = empData.filter(emp => String(emp.id) !== String(id));
-
-            localStorage.setItem('five_caravans_employees', JSON.stringify(empData));
-            renderEmpTable();
-            clearEmpForm();
-            alert(`تم حذف الموظف (${name}) بنجاح! 🗑️`);
-        }
-
-        // البحث السريع العلوي للتعديل الفوري
-        function handleEmpSearch() {
-            const query = document.getElementById('quick-search-emp').value.trim().toLowerCase();
-            const dropdown = document.getElementById('search-dropdown-emp');
-            
-            if (query === '') {
-                dropdown.innerHTML = '';
-                dropdown.classList.add('hidden');
-                return;
-            }
-
-            const empData = JSON.parse(localStorage.getItem('five_caravans_employees')) || [];
-            const filtered = empData.filter(emp => emp.name.toLowerCase().includes(query));
-
-            if (filtered.length === 0) {
-                dropdown.innerHTML = `<div class="p-3 text-slate-400 text-xs text-center italic">لا يوجد موظف مسجل بهذا الاسم.</div>`;
-            } else {
-                dropdown.innerHTML = '';
-                filtered.forEach(item => {
-                    const el = document.createElement('div');
-                    el.className = "p-3 border-b border-slate-50 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-all text-xs";
-                    el.innerHTML = `
-                        <span class="font-bold text-slate-800">${item.name}</span>
-                        <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px] font-bold">${item.role}</span>
-                    `;
-                    el.onclick = function() {
-                        selectEmpToForm(item);
-                        dropdown.classList.add('hidden');
-                    };
-                    dropdown.appendChild(el);
-                });
-            }
-            dropdown.classList.remove('hidden');
-        }
-
-        // فلترة الجدول الرئيسي أثناء الكتابة
-        function filterEmpTable() {
-            const query = document.getElementById('emp-table-search').value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#emp-table-body tr');
-
-            rows.forEach(row => {
-                if (row.cells.length < 4) return;
-                const nameText = row.cells[0].textContent.toLowerCase();
-                const roleText = row.cells[1].textContent.toLowerCase();
-                const natText = row.cells[3].textContent.toLowerCase();
-                
-                if (nameText.includes(query) || roleText.includes(query) || natText.includes(query)) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        }
-
-        // تصدير البيانات إلى ملف إكسل
-        function exportEmpDataToExcel() {
-            const empData = JSON.parse(localStorage.getItem('five_caravans_employees')) || [];
-            if (empData.length === 0) {
-                alert("لا توجد بيانات لتصديرها!");
-                return;
-            }
-
-            const excelData = empData.map(item => ({
-                "اسم الموظف الكامل": item.name,
-                "المسمى الوظيفي": item.role,
-                "رقم الجوال": item.phone,
-                "الجنسية": item.nationality,
-                "الراتب الأساسي": item.salary,
-                "تاريخ مباشرة العمل": item.startDate,
-                "الحالة": item.status
-            }));
-
-            const worksheet = XLSX.utils.json_to_sheet(excelData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "سجل الموظفين");
-            XLSX.writeFile(workbook, "سجل_موظفي_القوافل_الخمسة.xlsx");
-        }
-
-        // استيراد الموظفين من ملف إكسل
-        function importEmpDataFromExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const data = new Uint8Array(e.target.result);
-                const workbook = XLSX.read(data, { type: 'array' });
-                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                const importedRows = XLSX.utils.sheet_to_json(worksheet);
-
-                if (importedRows.length === 0) {
-                    alert("الملف فارغ أو غير متوافق!");
-                    return;
-                }
-
-                let empData = JSON.parse(localStorage.getItem('five_caravans_employees')) || [];
-                let importedCount = 0;
-
-                importedRows.forEach(row => {
-                    const name = row["اسم الموظف الكامل"] || row["الاسم"] || row["اسم الموظف"] || "";
-                    const salary = row["الراتب الأساسي"] || row["الراتب"] || 0;
-                    if (!name) return;
-
-                    let record = {
-                        id: Date.now() + Math.random(),
-                        name: name.trim(),
-                        role: row["المسمى الوظيفي"] || "سائق دينا",
-                        phone: row["رقم الجوال"] || "-",
-                        nationality: row["الجنسية"] || "-",
-                        salary: parseFloat(salary).toFixed(2),
-                        startDate: row["تاريخ مباشرة العمل"] || row["تاريخ المباشرة"] || "-",
-                        status: row["الحالة"] || "على رأس العمل"
-                    };
-
-                    let existingIndex = empData.findIndex(e => e.name.toLowerCase() === name.trim().toLowerCase());
-                    if (existingIndex !== -1) {
-                        empData[existingIndex] = record;
-                    } else {
-                        empData.unshift(record);
-                    }
-                    importedCount++;
-                });
-
-                localStorage.setItem('five_caravans_employees', JSON.stringify(empData));
-                renderEmpTable();
-                alert(`تم استيراد وتحديث ${importedCount} موظف بنجاح! 🎉`);
-                event.target.value = '';
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // إغلاق نافذة البحث عند النقر خارجها
-        document.addEventListener('click', function(e) {
-            const dropdown = document.getElementById('search-dropdown-emp');
-            const searchInput = document.getElementById('quick-search-emp');
-            if (e.target !== dropdown && e.target !== searchInput) {
-                dropdown.classList.add('hidden');
-            }
-        });
-    </script>
-</body>
-</html>
+                        <option value="في إجازة">في إجازة
