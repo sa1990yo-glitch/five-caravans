@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مؤسسة القوافل الخمسة - سجل الإقامات والتراخيص</title>
+    <!-- مكتبة أيقونات FontAwesome و Tailwind CSS للواجهة الاحترافية -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -13,6 +14,7 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex">
 
+    <!-- الشريط الجانبي الثابت (Sidebar) -->
     <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
         <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
             <div class="text-2xl text-blue-500">🚚</div>
@@ -38,8 +40,10 @@
         </nav>
     </div>
 
+    <!-- المحتوى الرئيسي -->
     <div class="flex-1 p-8 overflow-x-hidden">
         
+        <!-- الهيدر العلوي -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">إدارة الإقامات، الرخص والتأمين الطبي</h2>
@@ -47,6 +51,7 @@
             </div>
         </div>
 
+        <!-- عمليات الاستيراد والتصدير للسجل -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
             <div class="flex items-center gap-2 text-blue-600 font-bold mb-4">
                 <i class="fa-solid fa-right-left text-lg"></i>
@@ -68,6 +73,7 @@
             </div>
         </div>
 
+        <!-- شاشة تسجيل البيانات بتنسيق مرتب ومتناسق -->
         <div id="doc-form-section" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
             <div class="flex items-center justify-between mb-6 border-b pb-3 border-slate-100 flex-wrap gap-4">
                 <div class="flex items-center gap-2 text-blue-600 font-bold">
@@ -83,21 +89,417 @@
                 </div>
             </div>
             
-            <form id="doc-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
-                    <input type="text" id="doc-emp-name" placeholder="أدخل اسم الموظف..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500" required>
+            <form id="doc-form" class="space-y-4">
+                <!-- الصف الأول -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
+                        <input type="text" id="doc-emp-name" placeholder="أدخل اسم الموظف..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500" required>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2">رقم الإقامة</label>
+                        <input type="text" id="doc-national-id" placeholder="أدخل 10 أرقام..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2">تاريخ انتهاء الإقامة</label>
+                        <input type="date" id="doc-id-expiry" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2">تاريخ انتهاء رخصة العمل</label>
+                        <input type="date" id="doc-license-expiry" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">رقم الإقامة</label>
-                    <input type="text" id="doc-national-id" placeholder="أدخل 10 أرقام..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
+                <!-- الصف الثاني -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2">تاريخ انتهاء التأمين الطبي</label>
+                        <input type="date" id="doc-insurance-expiry" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2">فئة التأمين الطبي</label>
+                        <select id="doc-insurance-class" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
+                            <option value="basic">basic 🟢</option>
+                            <option value="الفئة A">الفئة A 💎</option>
+                            <option value="الفئة B">الفئة B ⭐</option>
+                            <option value="الفئة C">الفئة C 🔵</option>
+                            <option value="الفئة VIP">الفئة VIP ✨</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2">حالة المعاملة والتجديد</label>
+                        <select id="doc-status" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
+                            <option value="مجدد وساري">مجدد وساري ✅</option>
+                            <option value="تحت الإجراء">تحت الإجراء ⚙️</option>
+                            <option value="مطلوب تجديد">مطلوب تجديد ⚠️</option>
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-floppy-disk"></i> حفظ البيانات
+                        </button>
+                        <button type="button" onclick="clearDocForm()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs transition-all">
+                            إلغاء
+                        </button>
+                    </div>
                 </div>
+            </form>
+        </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">تاريخ انتهاء الإقامة</label>
-                    <input type="date" id="doc-id-expiry" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
+        <!-- جدول البيانات الرئيسي -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-id-card-clip text-blue-600 text-lg"></i>
+                    <h3 class="font-bold text-slate-800">سجل الإقامات ورخص العمل والتأمين الطبي الموحد</h3>
                 </div>
+                <div class="relative w-full sm:w-80">
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-filter text-sm"></i>
+                    </span>
+                    <input type="text" id="doc-table-search" oninput="filterDocTable()" placeholder="ابحث باسم الموظف أو رقم الإقامة..." class="w-full pl-4 pr-9 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-medium">
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full text-center border-collapse text-xs" id="doc-main-table">
+                    <thead>
+                        <tr class="bg-slate-950 text-white font-bold whitespace-nowrap">
+                            <th class="p-4 text-right">اسم الموظف / السائق</th>
+                            <th class="p-4">رقم الإقامة</th>
+                            <th class="p-4 bg-slate-900 border-l border-slate-800">تاريخ انتهاء الإقامة</th>
+                            <th class="p-4 bg-slate-900">أيام الإقامة</th>
+                            <th class="p-4 bg-slate-900 border-r border-slate-800">حالة الإقامة</th>
+                            <th class="p-4 bg-slate-800 border-l border-slate-700">تاريخ رخصة العمل</th>
+                            <th class="p-4 bg-slate-800">أيام رخصة العمل</th>
+                            <th class="p-4 bg-slate-800 border-r border-slate-700">حالة رخصة العمل</th>
+                            <th class="p-4 bg-indigo-950 border-l border-indigo-900">تاريخ انتهاء التأمين</th>
+                            <th class="p-4 bg-indigo-950">أيام التأمين</th>
+                            <th class="p-4 bg-indigo-950">فئة التأمين</th>
+                            <th class="p-4 bg-indigo-950 border-r border-indigo-900">حالة التأمين</th>
+                            <th class="p-4">الحالة العامة للستندات</th>
+                            <th class="p-4">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="doc-table-body" class="divide-y divide-slate-100 text-slate-600 font-semibold whitespace-nowrap">
+                        <!-- البيانات برمجياً -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-                <div>
-                    <label class="block
+    </div>
+
+    <!-- مكتبة XLSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            renderDocTable();
+
+            document.getElementById('doc-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('doc-emp-name').value.trim();
+                const nationalId = document.getElementById('doc-national-id').value.trim();
+                const idExpiry = document.getElementById('doc-id-expiry').value;
+                const licenseExpiry = document.getElementById('doc-license-expiry').value;
+                const insuranceExpiry = document.getElementById('doc-insurance-expiry').value;
+                const insuranceClass = document.getElementById('doc-insurance-class').value;
+                const docStatus = document.getElementById('doc-status').value;
+
+                if (!name) return;
+
+                let docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
+                let existingIndex = docData.findIndex(doc => doc.name.toLowerCase() === name.toLowerCase());
+
+                let record = {
+                    id: existingIndex !== -1 ? docData[existingIndex].id : Date.now(),
+                    name: name,
+                    nationalId: nationalId || '-',
+                    idExpiry: idExpiry || '',
+                    licenseExpiry: licenseExpiry || '',
+                    insuranceExpiry: insuranceExpiry || '',
+                    insuranceClass: insuranceClass,
+                    docStatus: docStatus
+                };
+
+                if (existingIndex !== -1) {
+                    docData[existingIndex] = record;
+                } else {
+                    docData.unshift(record);
+                }
+
+                localStorage.setItem('five_caravans_documents', JSON.stringify(docData));
+                renderDocTable();
+                clearDocForm();
+                alert("تم حفظ البيانات بنجاح! 🗂️");
+            });
+        });
+
+        function calculateRemainingDays(expiryDateStr) {
+            if (!expiryDateStr || expiryDateStr === '-') return { days: '-', badge: '<span class="text-slate-400 text-[11px] font-normal">غير محدد</span>', text: 'غير محدد' };
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const expiry = new Date(expiryDateStr);
+            if (isNaN(expiry.getTime())) return { days: '-', badge: '<span class="text-slate-400 text-[11px] font-normal">غير محدد</span>', text: 'غير محدد' };
+            expiry.setHours(0,0,0,0);
+
+            const diffTime = expiry - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            let badge = '';
+            let text = '';
+            if (diffDays <= 0) {
+                badge = `<span class="bg-red-500 text-white px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm block w-full text-center">🔴 منتهية</span>`;
+                text = 'منتهية';
+            } else if (diffDays <= 30) {
+                badge = `<span class="bg-amber-400 text-slate-900 px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm block w-full text-center">🟡 باقي أقل من شهر</span>`;
+                text = 'باقي اقل من شهر';
+            } else {
+                badge = `<span class="bg-emerald-500 text-white px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm block w-full text-center">🟢 سارية</span>`;
+                text = 'سارية';
+            }
+
+            return { days: diffDays, badge: badge, text: text };
+        }
+
+        function renderDocTable() {
+            const tbody = document.getElementById('doc-table-body');
+            const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
+
+            if (docData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="14" class="py-12 text-slate-400 bg-white italic text-center text-sm">سجل الإقامات فارغ حالياً. قم برفع الملف للاستيراد.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            docData.forEach(item => {
+                const targetJson = JSON.stringify(item).replace(/"/g, '&quot;');
+
+                const idResult = calculateRemainingDays(item.idExpiry);
+                const licenseResult = calculateRemainingDays(item.licenseExpiry);
+                const insResult = calculateRemainingDays(item.insuranceExpiry);
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition-all">
+                        <td class="p-3 text-right font-bold text-slate-800 border-l border-slate-100">${item.name}</td>
+                        <td class="p-3 text-slate-600 font-mono">${item.nationalId || '-'}</td>
+                        <td class="p-3 text-slate-500 font-mono bg-slate-50/40 border-l border-slate-100">${item.idExpiry || '-'}</td>
+                        <td class="p-3 text-slate-700 font-bold font-mono bg-slate-50/40">${idResult.days}</td>
+                        <td class="p-3 bg-slate-50/40 border-r border-slate-100 w-32">${idResult.badge}</td>
+                        <td class="p-3 text-slate-500 font-mono bg-blue-50/20 border-l border-slate-100">${item.licenseExpiry || '-'}</td>
+                        <td class="p-3 text-slate-700 font-bold font-mono bg-blue-50/20">${licenseResult.days}</td>
+                        <td class="p-3 bg-blue-50/20 border-r border-slate-100 w-32">${licenseResult.badge}</td>
+                        <td class="p-3 text-slate-500 font-mono bg-indigo-50/20 border-l border-slate-100">${item.insuranceExpiry || '-'}</td>
+                        <td class="p-3 text-slate-700 font-bold font-mono bg-indigo-50/20">${insResult.days}</td>
+                        <td class="p-3 text-slate-600 bg-indigo-50/20">${item.insuranceClass || '-'}</td>
+                        <td class="p-3 bg-indigo-50/20 border-r border-slate-100 w-32">${insResult.badge}</td>
+                        <td class="p-3">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                item.docStatus === 'مجدد وساري' ? 'bg-emerald-50 text-emerald-700' : 
+                                item.docStatus === 'تحت الإجراء' ? 'bg-amber-50 text-amber-700' : 'bg-rose-50 text-rose-700'
+                            }">${item.docStatus || 'مجدد وساري'}</span>
+                        </td>
+                        <td class="p-3 flex items-center justify-center gap-1.5">
+                            <button onclick='selectDocToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
+                                <i class="fa-solid fa-user-pen"></i> تعديل
+                            </button>
+                            <button onclick="deleteDocRecord('${item.id}', '${item.name}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
+                                <i class="fa-solid fa-trash-can"></i> حذف
+                            </button>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function importResFromExcel() {
+            const fileInput = document.getElementById('res-excel-file-input');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("الرجاء اختيار ملف إكسل أولاً! 📂");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonRows = XLSX.utils.sheet_to_json(worksheet);
+
+                if (jsonRows.length === 0) {
+                    alert("الملف فارغ أو غير متوافق!");
+                    return;
+                }
+
+                const parseDate = (val) => {
+                    if (!val || String(val).trim() === '' || String(val).trim() === '-') return '';
+                    if (typeof val === 'number') {
+                        const dateObj = new Date((val - 25569) * 86400 * 1000);
+                        return isNaN(dateObj.getTime()) ? '' : dateObj.toISOString().split('T')[0];
+                    }
+                    const str = String(val).trim();
+                    if (str.match(/^\d{4}-\d{2}-\d{2}$/)) return str;
+                    
+                    const parsed = Date.parse(str);
+                    if (!isNaN(parsed)) {
+                        return new Date(parsed).toISOString().split('T')[0];
+                    }
+                    return '';
+                };
+
+                const formattedDocs = jsonRows.map((row, idx) => {
+                    const empName = row['اسم الموظف / السائق'] || row['الاسم'] || row['اسم الموظف'] || '';
+                    if (!empName || String(empName).trim() === '') return null;
+
+                    return {
+                        id: Date.now() + idx,
+                        name: String(empName).trim(),
+                        nationalId: row['رقم الإقامة'] || row['الهوية'] || '-',
+                        idExpiry: parseDate(row['تاريخ انتهاء الإقامة'] || row['تاريخ الإقامة']),
+                        licenseExpiry: parseDate(row['تاريخ رخصة العمل'] || row['تاريخ انتهاء رخصة العمل']),
+                        insuranceExpiry: parseDate(row['تاريخ انتهاء التأمين'] || row['تاريخ التأمين']),
+                        insuranceClass: row['فئة التأمين'] || 'basic',
+                        docStatus: row['حالة التأمين'] || row['حالة الإقامة'] || 'مجدد وساري'
+                    };
+                }).filter(doc => doc !== null);
+
+                if (formattedDocs.length === 0) {
+                    alert("لم يتم العثور على أي أسماء موظفين صحيحة في الملف لرفعها!");
+                    return;
+                }
+
+                localStorage.setItem('five_caravans_documents', JSON.stringify(formattedDocs));
+                renderDocTable();
+                alert(`تم استرداد ${formattedDocs.length} سجل بنجاح دون أي مشاكل! 🎉`);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function exportResToExcel() {
+            const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
+            if (docData.length === 0) {
+                alert("لا توجد بيانات لتصديرها حالياً!");
+                return;
+            }
+
+            const exportRows = docData.map(item => {
+                const idResult = calculateRemainingDays(item.idExpiry);
+                const licenseResult = calculateRemainingDays(item.licenseExpiry);
+                const insResult = calculateRemainingDays(item.insuranceExpiry);
+
+                return {
+                    'اسم الموظف / السائق': item.name,
+                    'رقم الإقامة': item.nationalId,
+                    'تاريخ انتهاء الإقامة': item.idExpiry || '',
+                    'أيام الإقامة': idResult.days,
+                    'حالة الإقامة': idResult.text,
+                    'تاريخ رخصة العمل': item.licenseExpiry || '',
+                    'أيام رخصة العمل': licenseResult.days,
+                    'حالة رخصة العمل': licenseResult.text,
+                    'تاريخ انتهاء التأمين': item.insuranceExpiry || '',
+                    'أيام التأمين': insResult.days,
+                    'فئة التأمين': item.insuranceClass,
+                    'حالة التأمين': insResult.text
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(exportRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "ورقة1");
+
+            if(!worksheet['!views']) worksheet['!views'] = [];
+            worksheet['!views'].push({RTL: true});
+
+            XLSX.writeFile(workbook, "الاقامات النظام.xlsx");
+        }
+
+        function selectDocToForm(item) {
+            document.getElementById('quick-search-doc').value = item.name;
+            document.getElementById('doc-emp-name').value = item.name;
+            document.getElementById('doc-national-id').value = item.nationalId === '-' ? '' : item.nationalId;
+            document.getElementById('doc-id-expiry').value = item.idExpiry || '';
+            document.getElementById('doc-license-expiry').value = item.licenseExpiry || '';
+            document.getElementById('doc-insurance-expiry').value = item.insuranceExpiry || '';
+            document.getElementById('doc-insurance-class').value = item.insuranceClass || 'basic';
+            document.getElementById('doc-status').value = item.docStatus || 'مجدد وساري';
+
+            document.getElementById('doc-form-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function clearDocForm() {
+            document.getElementById('doc-form').reset();
+            document.getElementById('quick-search-doc').value = '';
+        }
+
+        function deleteDocRecord(id, name) {
+            if (!confirm(`⚠️ هل أنت متأكد من حذف سجل مستندات الموظف (${name})؟`)) return;
+            let docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
+            docData = docData.filter(doc => String(doc.id) !== String(id));
+            localStorage.setItem('five_caravans_documents', JSON.stringify(docData));
+            renderDocTable();
+            clearDocForm();
+        }
+
+        function handleDocSearch() {
+            const query = document.getElementById('quick-search-doc').value.trim().toLowerCase();
+            const dropdown = document.getElementById('search-dropdown-doc');
+            
+            if (query === '') {
+                dropdown.innerHTML = '';
+                dropdown.classList.add('hidden');
+                return;
+            }
+
+            const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
+            const filtered = docData.filter(doc => doc.name.toLowerCase().includes(query) || doc.nationalId.includes(query));
+
+            if (filtered.length === 0) {
+                dropdown.innerHTML = `<div class="p-3 text-slate-400 text-xs text-center italic">لا توجد نتائج متطابقة...</div>`;
+            } else {
+                dropdown.innerHTML = '';
+                filtered.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = "p-3 border-b border-slate-50 hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-all text-xs";
+                    el.innerHTML = `
+                        <span class="font-bold text-slate-800">${item.name}</span>
+                        <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-[10px] font-mono">${item.nationalId}</span>
+                    `;
+                    el.onclick = function() {
+                        selectDocToForm(item);
+                        dropdown.classList.add('hidden');
+                    };
+                    dropdown.appendChild(el);
+                });
+            }
+            dropdown.classList.remove('hidden');
+        }
+
+        function filterDocTable() {
+            const query = document.getElementById('doc-table-search').value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#doc-table-body tr');
+
+            rows.forEach(row => {
+                if (row.cells.length < 2) return;
+                const nameText = row.cells[0].textContent.toLowerCase();
+                const idText = row.cells[1].textContent.toLowerCase();
+                
+                if (nameText.includes(query) || idText.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('search-dropdown-doc');
+            const searchInput = document.getElementById('quick-search-doc');
+            if (e.target !== dropdown && e.target !== searchInput) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
