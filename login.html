@@ -9,6 +9,12 @@
     @import url('https://fonts.googleapis.com/css2?family=Almarai:wght=400;700&display=swap');
     body { font-family: 'Almarai', sans-serif; }
   </style>
+  <script>
+    // 💡 ميزة ذكية: إذا كان المستخدم مسجلاً دخوله بالفعل، وجهه فوراً إلى لوحة التحكم
+    if (localStorage.getItem('isLoggedIn') === 'true') {
+      window.location.href = "index.html";
+    }
+  </script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen px-4">
 
@@ -50,12 +56,20 @@
   </div>
 
   <script>
-    document.getElementById('login-form').addEventListener('submit', function(e) {
+    const loginForm = document.getElementById('login-form');
+    const usernameInput = document.getElementById('username');
+    const passwordInput = document.getElementById('password');
+    const errorDiv = document.getElementById('error-message');
+
+    // إخفاء رسالة الخطأ تلقائياً عند البدء بالكتابة مجدداً
+    usernameInput.addEventListener('input', () => errorDiv.classList.add('hidden'));
+    passwordInput.addEventListener('input', () => errorDiv.classList.add('hidden'));
+
+    loginForm.addEventListener('submit', function(e) {
       e.preventDefault(); // منع إعادة تحميل الصفحة
       
-      const user = document.getElementById('username').value.trim();
-      const pass = document.getElementById('password').value;
-      const errorDiv = document.getElementById('error-message');
+      const user = usernameInput.value.trim();
+      const pass = passwordInput.value;
 
       // 🔴 يمكنك تعديل اسم المستخدم وكلمة المرور من هنا كما تحب:
       if (user === "admin" && pass === "123456") {
