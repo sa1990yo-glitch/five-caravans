@@ -5,12 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مؤسسة القوافل الخمسة - لوحة التحكم العامة</title>
     
-    <script>
-      if (localStorage.getItem('isLoggedIn') !== 'true') {
-        window.location.href = "login.html";
-      }
-    </script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -163,11 +157,14 @@
     </div>
 
     <script>
-        // دالة تسجيل الخروج البرمجية للزر الأحمر
+        // 1. التحقق الفوري من حالة تسجيل الدخول أولاً لتجنب أي حلقة تكرارية معلقة
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = "login.html";
+        }
+
+        // 2. دالة تسجيل الخروج البرمجية للزر الأحمر
         function logout() {
-            // مسح حالة تسجيل الدخول من المتصفح
             localStorage.removeItem('isLoggedIn');
-            // التوجيه فوراً لصفحة تسجيل الدخول
             window.location.href = "login.html";
         }
 
@@ -181,7 +178,7 @@
             const empData = JSON.parse(localStorage.getItem('five_caravans_employees')) || [];
             const loanData = JSON.parse(localStorage.getItem('five_caravans_loans')) || [];
 
-            // 1. حساب إحصائيات الإقامات والرخص والتأمين
+            // حساب إحصائيات الإقامات والرخص والتأمين
             let criticalCount = 0;
             let expiredCount = 0;
             const today = new Date();
@@ -207,14 +204,14 @@
             document.getElementById('stat-critical-res').innerText = criticalCount;
             document.getElementById('stat-expired-docs').innerText = expiredCount;
 
-            // 2. حساب مبالغ السلف الإجمالية
+            // حساب مبالغ السلف الإجمالية
             let totalLoansAmount = 0;
             loanData.forEach(l => {
                 totalLoansAmount += parseFloat(l.amount || 0);
             });
             document.getElementById('stat-total-loans').innerText = totalLoansAmount.toLocaleString('en-US') + ' ﷼';
 
-            // 3. بناء جدول الإقامات المصغر باللوحة رئيسية
+            // بناء جدول الإقامات المصغر باللوحة رئيسية
             const resBody = document.getElementById('dash-res-body');
             if(docData.length === 0) {
                 resBody.innerHTML = `<tr><td colspan="4" class="p-4 text-slate-400 italic">لا توجد بيانات مستندات متوفرة حالياً.</td></tr>`;
@@ -241,7 +238,7 @@
                 });
             }
 
-            // 4. بناء ملخص السلف والقروض
+            // بناء ملخص السلف والقروض
             const loansContainer = document.getElementById('dash-loans-container');
             if(loanData.length === 0) {
                 loansContainer.innerHTML = `<p class="text-slate-400 italic text-xs text-center py-4">لا توجد سلف مالية نشطة حالياً.</p>`;
@@ -259,7 +256,7 @@
                 });
             }
 
-            // 5. بناء كروت الموظفين والالتحاق الجديد بالأسفل
+            // بناء كروت الموظفين والالتحاق الجديد بالأسفل
             const empCards = document.getElementById('dash-emp-cards');
             const sampleEmpList = empData.length > 0 ? empData : docData;
             if(sampleEmpList.length === 0) {
