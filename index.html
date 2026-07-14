@@ -5,378 +5,262 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مؤسسة القوافل الخمسة - لوحة التحكم العامة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary-color: #0f172a;
-            --secondary-color: #1e293b;
-            --accent-color: #2563eb;
-            --accent-hover: #1d4ed8;
-            --bg-color: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #334155;
-            --text-muted: #64748b;
-            --border-color: #e2e8f0;
-            --success-color: #10b981;
-            --warning-color: #f59e0b;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* السايد بار (الشريط الجانبي) */
-        .sidebar {
-            width: 260px;
-            background-color: var(--primary-color);
-            color: white;
-            padding: 20px 0;
-            flex-shrink: 0;
-        }
-
-        .sidebar-brand {
-            padding: 10px 20px 20px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            text-align: center;
-        }
-
-        .sidebar-brand h3 {
-            font-size: 18px;
-            margin-bottom: 5px;
-            color: #fff;
-        }
-
-        .sidebar-brand p {
-            font-size: 12px;
-            color: #94a3b8;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            margin-top: 20px;
-        }
-
-        .sidebar-menu li a {
-            display: flex;
-            align-items: center;
-            padding: 14px 20px;
-            color: #cbd5e1;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-
-        .sidebar-menu li a i {
-            margin-left: 10px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .sidebar-menu li.active a, .sidebar-menu li a:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-right: 4px solid var(--accent-color);
-        }
-
-        /* المحتوى الرئيسي */
-        .main-content {
-            flex-grow: 1;
-            padding: 30px;
-            overflow-y: auto;
-        }
-
-        .page-header {
-            background-color: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            border: 1px solid var(--border-color);
-        }
-
-        .page-header h1 {
-            font-size: 22px;
-            color: var(--primary-color);
-            margin-bottom: 5px;
-        }
-
-        .page-header p {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        /* توزيع الشاشات لمنع التداخل */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr; /* إعطاء مساحة أكبر لجدول العرض المباشر */
-            gap: 25px;
-            align-items: start;
-        }
-
-        @media (max-width: 1024px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr; /* تحويلها لعمود واحد في الشاشات الصغيرة */
-            }
-        }
-
-        /* الكروت والشاشات */
-        .dashboard-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-
-        .card-header {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 15px 20px;
-            font-size: 15px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .card-body {
-            padding: 20px;
-        }
-
-        /* تنسيق الفورم والحقول */
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            color: var(--text-main);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 14px;
-            background-color: #f8fafc;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            background-color: #fff;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        /* الحقول المشروطة (تظهر وتختفي بسلاسة دون تخريب التصميم) */
-        .conditional-fields {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
-        }
-
-        .conditional-fields.show {
-            max-height: 200px; /* تمدد تلقائي عند الحاجة */
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-top: 10px;
-        }
-
-        .btn-submit:hover {
-            background-color: var(--accent-color);
-        }
-
-        /* تنسيق جدول العرض المباشر */
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-        }
-
-        .custom-table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-            font-size: 14px;
-        }
-
-        .custom-table th {
-            background-color: #f1f5f9;
-            color: var(--primary-color);
-            padding: 14px 16px;
-            font-weight: 600;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .custom-table td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-main);
-        }
-
-        .custom-table tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .empty-message {
-            text-align: center;
-            padding: 40px;
-            color: var(--text-muted);
-            font-style: italic;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            background-color: #f1f5f9;
-            color: var(--text-muted);
-        }
-        
-        .status-badge.review {
-            background-color: #fef3c7;
-            color: #d97706;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-slate-100 min-h-screen flex">
 
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <h3>القوافل الخمسة</h3>
-            <p>للخدمات اللوجستية</p>
+    <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
+        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
+            <div class="text-2xl text-blue-500">🚚</div>
+            <div>
+                <h1 class="font-bold text-base leading-tight">القوافل الخمسة</h1>
+                <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
+            </div>
         </div>
-        <ul class="sidebar-menu">
-            <li class="active"><a href="index.html"><i class="fa-solid asleep fa-chart-line"></i> لوحة التحكم العامة</a></li>
-            <li><a href="residence.html"><i class="fa-solid fa-users"></i> سجلات الموظفين والإقامات</a></li>
-            <li><a href="requests.html"><i class="fa-solid fa-file-invoice"></i> طلبات التعديل (قوى)</a></li>
-            <li><a href="loans.html"><i class="fa-solid fa-sack-dollar"></i> سجلات السلف المالية</a></li>
-            <li><a href="penalties.html"><i class="fa-solid fa-scale-balanced"></i> الجزاءات والخصومات</a></li>
-            <li><a href="leaves.html"><i class="fa-solid fa-calendar-days"></i> إدارة الإجازات</a></li>
-        </ul>
+        
+        <nav class="flex-1 flex flex-col gap-1.5">
+            <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i> لوحة التحكم العامة
+            </a>
+            <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-address-card w-5 text-center"></i> سجل الإقامات والتراخيص
+            </a>
+            <a href="requests.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-users w-5 text-center"></i> سجل الموظفين
+            </a>
+            <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
+            </a>
+        </nav>
     </div>
 
-    <div class="main-content">
-        <div class="page-header">
-            <h1>لوحة التحكم العامة</h1>
-            <p>متابعة الحركات اليومية والطلبات المباشرة بالمنشأة لعام 2026</p>
+    <div class="flex-1 p-8 overflow-x-hidden">
+        
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">لوحة التحكم القيادية العامة</h2>
+                <p class="text-slate-500 text-sm mt-1">ملخص فوري شامل لكافة العمليات، المستندات، شؤون الموظفين، والمالية للمؤسسة.</p>
+            </div>
+            <div class="bg-blue-50 text-blue-700 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2">
+                <i class="fa-regular fa-calendar-days"></i>
+                <span id="live-date">تحديث تلقائي...</span>
+            </div>
         </div>
 
-        <div class="dashboard-grid">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 mb-1">إجمالي قوة العمل</p>
+                    <h3 id="stat-total-emp" class="text-3xl font-black text-slate-800">0</h3>
+                    <span class="text-[10px] text-slate-400 block mt-1">سجل الموظفين النشطين</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 mb-1">إقامات حرجة ( < 30 يوم)</p>
+                    <h3 id="stat-critical-res" class="text-3xl font-black text-amber-600">0</h3>
+                    <span class="text-[10px] text-amber-500 font-medium block mt-1">تتطلب إجراء تجديد سريع</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 mb-1">السُّلف المالية النشطة</p>
+                    <h3 id="stat-total-loans" class="text-3xl font-black text-emerald-600">0 ﷼</h3>
+                    <span class="text-[10px] text-slate-400 block mt-1">مبالغ قيد التحصيل من الرواتب</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-sack-dollar"></i>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-xs font-bold text-slate-400 mb-1">مستندات منتهية</p>
+                    <h3 id="stat-expired-docs" class="text-3xl font-black text-rose-600">0</h3>
+                    <span class="text-[10px] text-rose-500 font-medium block mt-1">بحاجة لإصدار فوري</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl shadow-inner">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <i class="fa-solid fa-pen-to-square"></i> شاشة إدخال الحركات والترحيل
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 lg:col-span-2">
+                <div class="flex items-center justify-between mb-4 border-b pb-3">
+                    <div class="flex items-center gap-2 text-slate-800 font-bold">
+                        <i class="fa-solid fa-address-card text-blue-600"></i>
+                        <h3>حالة مستندات السائقين (آخر التحديثات)</h3>
+                    </div>
+                    <a href="residence.html" class="text-xs text-blue-600 font-bold hover:underline">عرض السجل الكامل ←</a>
                 </div>
-                <div class="card-body">
-                    <form id="loan-input-form">
-                        <div class="form-group">
-                            <label>اسم الموظف / السائق</label>
-                            <input type="text" id="loan-emp-name" class="form-control" placeholder="أحمد ناصر" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>نوع الإجراء</label>
-                            <select id="action-type" class="form-control" onchange="toggleLoanFields(this.value)">
-                                <option value="">-- اختر الإجراء --</option>
-                                <option value="loan">💰 طلب سلفة مالية</option>
-                                <option value="penalty">⚖️ جزاءات وخصومات</option>
-                                <option value="leave">📅 طلب إجازة</option>
-                            </select>
-                        </div>
-
-                        <div id="loan-conditional-fields" class="conditional-fields">
-                            <div class="form-group">
-                                <label>إجمالي مبلغ السلفة (ريال)</label>
-                                <input type="number" id="loan-total-amount" class="form-control" placeholder="0.00">
-                            </div>
-                            <div class="form-group">
-                                <label>عدد أشهر الأقساط</label>
-                                <input type="number" id="loan-months" class="form-control" placeholder="اتركه فارغاً لدفعة واحدة">
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>الحالة الإدارية للطلب</label>
-                            <select id="loan-status" class="form-control">
-                                <option value="review">⏳ تحت المراجعة</option>
-                                <option value="approved">✅ معتمد</option>
-                            </select>
-                        </div>
-
-                        <button type="submit" class="btn-submit">
-                            ترحيل البيانات وحفظها 🚀
-                        </button>
-                    </form>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-center text-xs">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 font-bold">
+                                <th class="p-3 text-right">السائق</th>
+                                <th class="p-3">الإقامة</th>
+                                <th class="p-3">رخصة العمل</th>
+                                <th class="p-3">التأمين الطبى</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-res-body" class="divide-y divide-slate-100 font-semibold text-slate-600">
+                            </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <i class="fa-solid fa-desktop"></i> شاشة العرض المباشر للحركات
-                </div>
-                <div class="card-body">
-                    <div class="table-container">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>الموظف</th>
-                                    <th>نوع الإجراء</th>
-                                    <th>العمليات / التفاصيل</th>
-                                    <th>الحالة</th>
-                                    <th>التاريخ</th>
-                                    <th>الإجراء</th>
-                                </tr>
-                            </thead>
-                            <tbody id="loans-table-body">
-                                <tr>
-                                    <td colspan="6" class="empty-message">لا توجد حركات مسجلة حالياً لشاشة العرض المباشر.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6">
+                <div class="flex items-center justify-between mb-4 border-b pb-3">
+                    <div class="flex items-center gap-2 text-slate-800 font-bold">
+                        <i class="fa-solid fa-wallet text-emerald-600"></i>
+                        <h3>مراقبة أقساط السلف والمدفوعات</h3>
                     </div>
+                    <a href="loans.html" class="text-xs text-emerald-600 font-bold hover:underline">إدارة السلف ←</a>
                 </div>
+                <div class="space-y-4" id="dash-loans-container">
+                    </div>
             </div>
 
         </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 p-6 mt-8">
+            <div class="flex items-center justify-between mb-4 border-b pb-3">
+                <div class="flex items-center gap-2 text-slate-800 font-bold">
+                    <i class="fa-solid fa-users text-indigo-600"></i>
+                    <h3>سجل الموظفين والالتحاق الجديد</h3>
+                </div>
+                <a href="requests.html" class="text-xs text-indigo-600 font-bold hover:underline">سجل الموظفين الكامل ←</a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="dash-emp-cards">
+                </div>
+        </div>
+
     </div>
 
     <script>
-        // دالة إظهار وإخفاء حقول السلفة بسلاسة دون التأثير على أبعاد الصناديق
-        function toggleLoanFields(value) {
-            const container = document.getElementById('loan-conditional-fields');
-            if (value === 'loan') {
-                container.classList.add('show');
+        document.addEventListener("DOMContentLoaded", function() {
+            // عرض التاريخ الحالي للوحة التحكم
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('live-date').innerText = new Date().toLocaleDateString('ar-SA', options);
+
+            // استدعاء وتجميع البيانات من الـ LocalStorage لكل واجهة
+            const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
+            const empData = JSON.parse(localStorage.getItem('five_caravans_employees')) || []; // يدعم ربطه مع سجل الموظفين الخاص بك
+            const loanData = JSON.parse(localStorage.getItem('five_caravans_loans')) || []; // يدعم ربطه مع سجل السلف
+
+            // 1. حساب إحصائيات الإقامات والرخص والتأمين
+            let criticalCount = 0;
+            let expiredCount = 0;
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            docData.forEach(item => {
+                const checkExpiry = (dateStr) => {
+                    if (!dateStr) return;
+                    const exp = new Date(dateStr);
+                    if(isNaN(exp.getTime())) return;
+                    exp.setHours(0,0,0,0);
+                    const diff = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
+                    if (diff <= 0) expiredCount++;
+                    else if (diff <= 30) criticalCount++;
+                };
+                checkExpiry(item.idExpiry);
+                checkExpiry(item.licenseExpiry);
+                checkExpiry(item.insuranceExpiry);
+            });
+
+            // تحديث كروت الأرقام العلوية في الواجهة
+            document.getElementById('stat-total-emp').innerText = empData.length > 0 ? empData.length : docData.length;
+            document.getElementById('stat-critical-res').innerText = criticalCount;
+            document.getElementById('stat-expired-docs').innerText = expiredCount;
+
+            // 2. حساب مبالغ السلف الإجمالية
+            let totalLoansAmount = 0;
+            loanData.forEach(l => {
+                totalLoansAmount += parseFloat(l.amount || 0);
+            });
+            document.getElementById('stat-total-loans').innerText = totalLoansAmount.toLocaleString('en-US') + ' ﷼';
+
+            // 3. بناء جدول الإقامات المصغر باللوحة رئيسية
+            const resBody = document.getElementById('dash-res-body');
+            if(docData.length === 0) {
+                resBody.innerHTML = `<tr><td colspan="4" class="p-4 text-slate-400 italic">لا توجد بيانات مستندات متوفرة حالياً.</td></tr>`;
             } else {
-                container.classList.remove('show');
+                resBody.innerHTML = '';
+                docData.slice(0, 5).forEach(item => { // عرض آخر 5 سائقين مضافين
+                    const getBadge = (dateStr) => {
+                        if(!dateStr) return '❌ غير محدد';
+                        const exp = new Date(dateStr);
+                        if(isNaN(exp.getTime())) return '❌ غير محدد';
+                        const diff = Math.ceil((exp - today) / (1000 * 60 * 60 * 24));
+                        if(diff <= 0) return '🔴 منتهي';
+                        if(diff <= 30) return '🟡 قريب';
+                        return '🟢 ساري';
+                    };
+
+                    resBody.innerHTML += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="p-3 text-right font-bold text-slate-800">${item.name}</td>
+                            <td class="p-3 font-mono text-xs">${getBadge(item.idExpiry)}</td>
+                            <td class="p-3 font-mono text-xs">${getBadge(item.licenseExpiry)}</td>
+                            <td class="p-3 font-mono text-xs">${getBadge(item.insuranceExpiry)}</td>
+                        </tr>`;
+                });
             }
-        }
+
+            // 4. بناء ملخص السلف والقروض
+            const loansContainer = document.getElementById('dash-loans-container');
+            if(loanData.length === 0) {
+                loansContainer.innerHTML = `<p class="text-slate-400 italic text-xs text-center py-4">لا توجد سلف مالية نشطة حالياً.</p>`;
+            } else {
+                loansContainer.innerHTML = '';
+                loanData.slice(0, 4).forEach(l => {
+                    loansContainer.innerHTML += `
+                        <div class="p-3 bg-slate-50 border rounded-xl flex justify-between items-center text-xs">
+                            <div>
+                                <h4 class="font-bold text-slate-800">${l.employeeName || 'موظف'}</h4>
+                                <span class="text-[10px] text-slate-400">القسط الشهري: ${l.monthlyInstallment || 0} ﷼</span>
+                            </div>
+                            <span class="bg-emerald-50 text-emerald-700 font-bold px-2.5 py-1 rounded-lg border border-emerald-200">${l.amount || 0} ﷼</span>
+                        </div>`;
+                });
+            }
+
+            // 5. بناء كروت الموظفين والالتحاق الجديد بالأسفل
+            const empCards = document.getElementById('dash-emp-cards');
+            const sampleEmpList = empData.length > 0 ? empData : docData;
+            if(sampleEmpList.length === 0) {
+                empCards.innerHTML = `<div class="col-span-3 text-slate-400 italic text-xs text-center py-4">لا توجد سجلات موظفين مسجلة.</div>`;
+            } else {
+                empCards.innerHTML = '';
+                sampleEmpList.slice(0, 3).forEach(emp => {
+                    empCards.innerHTML += `
+                        <div class="bg-slate-50 border border-slate-200/80 p-4 rounded-xl flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center text-sm font-black">
+                                ${emp.name ? emp.name.charAt(0) : 'م'}
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-xs text-slate-800">${emp.name || 'اسم الموظف'}</h4>
+                                <p class="text-[10px] text-slate-400 font-mono mt-0.5">رقم الهوية/الإقامة: ${emp.nationalId || '-'}</p>
+                            </div>
+                        </div>`;
+                });
+            }
+        });
     </script>
 </body>
 </html>
