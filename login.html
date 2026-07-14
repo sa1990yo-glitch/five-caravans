@@ -1,3 +1,13 @@
+<script>
+  // إذا كان مسجلاً دخوله سابقاً، يفتح له الموقع مباشرة دون الحاجة لصفحة الدخول
+  if (localStorage.getItem('isLoggedIn') === 'true') {
+    window.location.href = "index.html";
+  }
+</script>
+
+
+
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
