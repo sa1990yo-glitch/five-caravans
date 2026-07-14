@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الضبط والإعدادات - القوافل الخمسة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700;900&display=swap');
+        body { font-family: 'Cairo', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex">
+
+    <!-- القائمة الجانبية (نفس التصميم الموحد) -->
+    <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
+        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
+            <div class="text-2xl text-blue-500">🚚</div>
+            <div>
+                <h1 class="font-bold text-base leading-tight" id="sidebar-brand-name">القوافل الخمسة</h1>
+                <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
+            </div>
+        </div>
+        
+        <nav class="flex-1 flex flex-col gap-1.5">
+            <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-chart-line w-5 text-center"></i> لوحة التحكم العامة
+            </a>
+            <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-address-card w-5 text-center"></i> سجل الإقامات والتراخيص
+            </a>
+            <a href="requests.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-users w-5 text-center"></i> سجل الموظفين
+            </a>
+            <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
+            </a>
+
+            <!-- ⚙️ زر الضبط نشط هنا -->
+            <a href="settings.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
+                <i class="fa-solid fa-sliders w-5 text-center"></i> الضبط والإعدادات
+            </a>
+
+            <!-- 🔴 زر تسجيل الخروج -->
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/50 text-right">
+                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
+            </button>
+        </nav>
+    </div>
+
+    <!-- محتوى الصفحة الرئيسي -->
+    <div class="flex-1 p-8 overflow-x-hidden">
+        
+        <!-- الهيدر -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-800">ضبط وإعدادات النظام العميق</h2>
+                <p class="text-slate-500 text-sm mt-1">تعديل الصلاحيات، تغيير الرموز السرية، وإدارة هوية ومخازن بيانات المؤسسة.</p>
+            </div>
+            <div class="bg-blue-50 text-blue-700 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2">
+                <i class="fa-solid fa-gears"></i>
+                <span>لوحة التحكم الأمنية</span>
+            </div>
+        </div>
+
+        <div class="max-w-4xl bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+            <!-- تبويبات وعناصر الضبط -->
+            <div class="p-8 space-y-8 text-sm">
+                
+                <!-- القسم الأول: الأمان ورمز المرور -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-slate-800 text-base flex items-center gap-2 border-b pb-3 border-slate-100">
+                        <i class="fa-solid fa-key text-blue-500"></i> رمز مرور الإدارة (Passcode)
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-slate-500 font-bold mb-2">رمز المرور الحالي</label>
+                            <input type="password" id="current-pass" placeholder="••••" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 font-mono text-center tracking-widest text-base focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 font-bold mb-2">رمز المرور الجديد</label>
+                            <input type="password" id="new-pass" placeholder="••••" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 font-mono text-center tracking-widest text-base focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400">ملاحظة: هذا الرمز يتم طلبه فوراً عند محاولة الدخول للوحة من متصفح جديد أو بعد تسجيل الخروج.</p>
+                </div>
+
+                <!-- القسم الثاني: تعديلات وصلاحيات عامة -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-slate-800 text-base flex items-center gap-2 border-b pb-3 border-slate-100">
+                        <i class="fa-solid fa-user-shield text-emerald-500"></i> الصلاحيات واسم المنشأة
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-slate-500 font-bold mb-2">اسم المنشأة في النظام</label>
+                            <input type="text" id="setting-company-name" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-700">
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 font-bold mb-2">صلاحية تذكر تسجيل الدخول</label>
+                            <select id="setting-security-level" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-700">
+                                <option value="normal">تذكرني دائماً على هذا المتصفح</option>
+                                <option value="high">اطلب الرمز عند كل تحديث أو دخول جديد</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- القسم الثالث: إدارة قواعد البيانات والتصفير -->
+                <div class="space-y-4">
+                    <h4 class="font-bold text-slate-800 text-base flex items-center gap-2 border-b pb-3 border-slate-100">
+                        <i class="fa-solid fa-database text-rose-500"></i> خيارات متقدمة وإدارة البيانات
+                    </h4>
+                    <div class="p-5 bg-rose-50/50 rounded-2xl border border-rose-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+                        <div>
+                            <p class="font-bold text-rose-800 text-sm">حذف كافة البيانات وتصفير النظام</p>
+                            <p class="text-xs text-rose-500/80 mt-1 leading-relaxed">تنبيه: هذا الإجراء سيقوم بمسح كافة السائقين، الإقامات، الموظفين، السلف المالية وإعادتها فارغة كلياً. يرجى الحذر قبل الضغط!</p>
+                        </div>
+                        <button onclick="resetSystemData()" class="bg-rose-600 hover:bg-rose-500 active:scale-[0.98] text-white font-bold px-5 py-3 rounded-xl transition-all shadow-md shadow-rose-600/10 shrink-0 text-xs">
+                            <i class="fa-solid fa-trash-can"></i> تصفير النظام كلياً
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- أزرار الحفظ بالأسفل -->
+            <div class="p-6 border-t border-slate-100 bg-slate-50/80 flex items-center justify-end gap-3">
+                <a href="index.html" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 rounded-2xl transition-all text-xs">إلغاء وتراجع</a>
+                <button onclick="saveSettings()" class="bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold px-8 py-3 rounded-2xl transition-all shadow-lg shadow-blue-600/15 text-xs">حفظ كافة التغييرات</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🌐 كود الـ JavaScript الخاص بالصفحة -->
+    <script>
+        // التحقق من تسجيل الدخول
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = "login.html";
+        }
+
+        // دالة تسجيل الخروج
+        function logout() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = "login.html";
+        }
+
+        // عند تحميل الصفحة، نقوم بجلب القيم وتعبئتها في الحقول
+        document.addEventListener("DOMContentLoaded", function() {
+            const savedCompanyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
+            document.getElementById('sidebar-brand-name').innerText = savedCompanyName;
+            
+            document.getElementById('setting-company-name').value = savedCompanyName;
+            document.getElementById('setting-security-level').value = localStorage.getItem('SECURITY_LEVEL') || "normal";
+        });
+
+        // دالة حفظ التغييرات
+        function saveSettings() {
+            const companyNameInput = document.getElementById('setting-company-name').value.trim();
+            const secLevelInput = document.getElementById('setting-security-level').value;
+            const currentPassInput = document.getElementById('current-pass').value;
+            const newPassInput = document.getElementById('new-pass').value;
+
+            // 1. حفظ اسم المنشأة
+            if (companyNameInput) {
+                localStorage.setItem('COMPANY_NAME', companyNameInput);
+                document.getElementById('sidebar-brand-name').innerText = companyNameInput;
+            }
+
+            // 2. حفظ خيار الأمان
+            localStorage.setItem('SECURITY_LEVEL', secLevelInput);
+
+            // 3. معالجة وتغيير كلمة المرور
+            if (currentPassInput || newPassInput) {
+                const activePasscode = localStorage.getItem('SECRET_PASSCODE') || "5555";
+                
+                if (currentPassInput !== activePasscode) {
+                    alert('⚠️ عذراً! رمز المرور الحالي غير صحيح.');
+                    return;
+                }
+                if (newPassInput.trim().length < 4) {
+                    alert('⚠️ يجب أن يتكون رمز المرور الجديد من 4 خانات على الأقل!');
+                    return;
+                }
+                
+                localStorage.setItem('SECRET_PASSCODE', newPassInput.trim());
+                alert('🔑 تم تحديث رمز مرور الإدارة بنجاح!');
+            }
+
+            alert('✅ تم حفظ وضبط الإعدادات بنجاح في النظام!');
+            window.location.href = "index.html"; // العودة للرئيسية بعد الحفظ
+        }
+
+        // دالة تصفير وحذف قواعد البيانات
+        function resetSystemData() {
+            if (confirm('🚨 تحذير خطير!\nهل أنت متأكد من مسح وتصفير كافة بيانات السائقين، الإقامات، السلف، والرواتب كلياً؟ هذا الإجراء يفرغ النظام تماماً.')) {
+                localStorage.removeItem('five_caravans_documents');
+                localStorage.removeItem('five_caravans_employees');
+                localStorage.removeItem('five_caravans_loans');
+                
+                alert('🧹 تم تصفير بيانات لوحة التحكم بنجاح!');
+                window.location.href = "index.html";
+            }
+        }
+    </script>
+</body>
+</html>
