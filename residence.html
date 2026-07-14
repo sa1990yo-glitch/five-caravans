@@ -31,8 +31,8 @@
             <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
                 <i class="fa-solid fa-address-card w-5 text-center"></i> سجل الإقامات والتراخيص
             </a>
-            <a href="employees.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-users w-5 text-center"></i> سجل الرواتب والمسيرات
+            <a href="requests.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-users w-5 text-center"></i> سجل الموظفين
             </a>
             <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
                 <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
@@ -48,6 +48,30 @@
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">إدارة الإقامات، الرخص والتأمين الطبي</h2>
                 <p class="text-slate-500 text-sm mt-1">تتبع تواريخ صلاحية المستندات الثبوتية للسائقين والموظفين مع تنبيهات ذكية بالمدد المتبقية.</p>
+            </div>
+        </div>
+
+        <!-- 📤 قسم الاستيراد والتصدير الجديد 📥 -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
+            <div class="flex items-center gap-2 text-blue-600 font-bold mb-4">
+                <i class="fa-solid fa-right-left text-lg"></i>
+                <h3>عمليات الاستيراد والتصدير للسجل</h3>
+            </div>
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
+                <!-- جهة الاستيراد -->
+                <div class="flex flex-col sm:flex-row gap-3 items-center w-full lg:w-auto flex-1">
+                    <span class="text-xs font-bold text-slate-600 whitespace-nowrap">تحميل ملف الإقامات:</span>
+                    <input type="file" id="res-excel-file-input" accept=".xlsx, .xls, .csv" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer" />
+                    <button onclick="importResFromExcel()" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> استيراد من إكسل
+                    </button>
+                </div>
+                <!-- جهة التصدير -->
+                <div class="w-full lg:w-auto border-t lg:border-t-0 lg:border-r border-slate-200 pt-4 lg:pt-0 lg:pr-6 flex justify-end">
+                    <button onclick="exportResToExcel()" class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-2.5 rounded-xl text-xs transition-all shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-file-excel"></i> تصدير السجل الحالي إلى إكسل
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -176,6 +200,8 @@
 
     </div>
 
+    <!-- مكتبة قراءة وتصدير ملفات الإكسل XLSX الموثوقة -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             renderDocTable();
@@ -223,7 +249,7 @@
 
         // دالة حساب فارق الأيام من تاريخ اليوم الفعلي
         function calculateRemainingDays(expiryDateStr) {
-            if (!expiryDateStr) return { days: '-', badge: '<span class="text-slate-400 text-[11px] font-normal">غير محدد</span>' };
+            if (!expiryDateStr) return { days: '-', badge: '<span class="text-slate-400 text-[11px] font-normal">غير محدد</span>', text: 'غير محدد' };
             
             const today = new Date();
             today.setHours(0,0,0,0);
@@ -234,18 +260,19 @@
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
             let badge = '';
+            let text = '';
             if (diffDays <= 0) {
-                // منتهي -> أحمر
                 badge = `<span class="bg-red-500 text-white px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm block w-full text-center">🔴 منتهية</span>`;
+                text = 'منتهية';
             } else if (diffDays <= 30) {
-                // متبقي أقل من شهر -> أصفر
                 badge = `<span class="bg-amber-400 text-slate-900 px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm block w-full text-center">🟡 باقي أقل من شهر</span>`;
+                text = 'باقي اقل من شهر';
             } else {
-                // أكبر من شهر -> أخضر ساري
                 badge = `<span class="bg-emerald-500 text-white px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm block w-full text-center">🟢 سارية</span>`;
+                text = 'سارية';
             }
 
-            return { days: diffDays, badge: badge };
+            return { days: diffDays, badge: badge, text: text };
         }
 
         // بناء وعرض جدول المستندات
@@ -254,7 +281,7 @@
             const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
 
             if (docData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="14" class="py-12 text-slate-400 bg-white italic text-center text-sm">سجل الإقامات فارغ حالياً. قم بإدخال أول موظف بالأعلى.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="14" class="py-12 text-slate-400 bg-white italic text-center text-sm">سجل الإقامات فارغ حالياً. قم بإدخال أول موظف بالأعلى أو قم باستيراد ملف إكسل.</td></tr>`;
                 return;
             }
 
@@ -262,14 +289,12 @@
             docData.forEach(item => {
                 const targetJson = JSON.stringify(item).replace(/"/g, '&quot;');
 
-                // حساب الأيام والحالات للثلاث بنود
                 const idResult = calculateRemainingDays(item.idExpiry);
                 const licenseResult = calculateRemainingDays(item.licenseExpiry);
                 const insResult = calculateRemainingDays(item.insuranceExpiry);
 
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50/80 transition-all">
-                        <!-- اسم الموظف ورقم الإقامة -->
                         <td class="p-3 text-right font-bold text-slate-800 border-l border-slate-100">${item.name}</td>
                         <td class="p-3 text-slate-600 font-mono">${item.nationalId || '-'}</td>
                         
@@ -306,6 +331,104 @@
                         </td>
                     </tr>`;
             });
+        }
+
+        /* 📥 دالة استيراد السجلات من الإكسل 📥 */
+        function importResFromExcel() {
+            const fileInput = document.getElementById('res-excel-file-input');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert("الرجاء اختيار ملف إكسل أولاً! 📂");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const jsonRows = XLSX.utils.sheet_to_json(worksheet);
+
+                if (jsonRows.length === 0) {
+                    alert("الملف فارغ أو غير متوافق!");
+                    return;
+                }
+
+                // رسم خريطة البيانات لتتوافق مع بنية السجلات في الموقع
+                const formattedDocs = jsonRows.map((row, idx) => {
+                    // تحويل تواريخ الإكسل التسلسلية إذا وجدت
+                    const parseDate = (val) => {
+                        if (!val) return '';
+                        if (typeof val === 'number') {
+                            // تحويل تاريخ اكسل الرقمي
+                            const dateObj = new Date((val - 25569) * 86400 * 1000);
+                            return dateObj.toISOString().split('T')[0];
+                        }
+                        return String(val).trim();
+                    };
+
+                    return {
+                        id: Date.now() + idx,
+                        name: row['اسم الموظف / السائق'] || row['الاسم'] || '',
+                        nationalId: row['رقم الإقامة'] || row['الهوية'] || '-',
+                        idExpiry: parseDate(row['تاريخ انتهاء الإقامة'] || row['تاريخ الإقامة']),
+                        licenseExpiry: parseDate(row['تاريخ انتهاء رخصة العمل'] || row['تاريخ رخصة العمل']),
+                        insuranceExpiry: parseDate(row['تاريخ انتهاء التأمين'] || row['تاريخ التأمين']),
+                        insuranceClass: row['فئة التأمين'] || 'الفئة C',
+                        docStatus: row['الحالة العامة للمستندات'] || 'مجدد وساري'
+                    };
+                }).filter(doc => doc.name !== ''); // تصفية الصفوف بدون أسماء
+
+                localStorage.setItem('five_caravans_documents', JSON.stringify(formattedDocs));
+                renderDocTable();
+                alert(`تم استيراد ${formattedDocs.length} سجل بنجاح! 🎉`);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        /* 📤 دالة تصدير السجلات الحالية إلى إكسل منسق 📤 */
+        function exportResToExcel() {
+            const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
+            if (docData.length === 0) {
+                alert("لا توجد بيانات لتصديرها حالياً!");
+                return;
+            }
+
+            // تجهيز مصفوفة البيانات المصدرة مع حساب الأيام والحالات تلقائياً
+            const exportRows = docData.map(item => {
+                const idResult = calculateRemainingDays(item.idExpiry);
+                const licenseResult = calculateRemainingDays(item.licenseExpiry);
+                const insResult = calculateRemainingDays(item.insuranceExpiry);
+
+                return {
+                    'اسم الموظف / السائق': item.name,
+                    'رقم الإقامة': item.nationalId,
+                    'تاريخ انتهاء الإقامة': item.idExpiry || '',
+                    'أيام الإقامة المتبقية': idResult.days,
+                    'حالة الإقامة': idResult.text,
+                    'تاريخ انتهاء رخصة العمل': item.licenseExpiry || '',
+                    'أيام رخصة العمل المتبقية': licenseResult.days,
+                    'حالة رخصة العمل': licenseResult.text,
+                    'تاريخ انتهاء التأمين': item.insuranceExpiry || '',
+                    'أيام التأمين المتبقية': insResult.days,
+                    'فئة التأمين': item.insuranceClass,
+                    'حالة التأمين': insResult.text,
+                    'الحالة العامة للمستندات': item.docStatus
+                };
+            });
+
+            // إنشاء شيت إكسل وتحويل البيانات
+            const worksheet = XLSX.utils.json_to_sheet(exportRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "مستندات الموظفين");
+
+            // تعديل اتجاه الشيت ليكون RTL تلقائياً
+            if(!worksheet['!views']) worksheet['!views'] = [];
+            worksheet['!views'].push({RTL: true});
+
+            // تحميل الملف
+            XLSX.writeFile(workbook, "سجل_الإقامات_والتراخيص_القوافل_الخمسة.xlsx");
         }
 
         // تحويل السطر المسجل للنموذج العلوي للتحديث
