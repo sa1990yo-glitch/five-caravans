@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مؤسسة القوافل الخمسة - ضبط وإعدادات النظام العميق</title>
+    <title>مؤسسة القوافل الخمسة - إدارة المستخدمين والصلاحيات</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -53,120 +53,224 @@
 
     <div class="flex-1 p-8 overflow-x-hidden">
         
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex items-center justify-between gap-4">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-                <h2 class="text-2xl font-bold text-slate-800">ضبط وإعدادات النظام العميق</h2>
-                <p class="text-slate-500 text-sm mt-1">تعديل الصلاحيات، التحكم في واجهات إدخال البيانات، وتعديل وحذف السجلات عبر النظام بالكامل.</p>
+                <h2 class="text-2xl font-bold text-slate-800">إدارة المستخدمين وصلاحيات الوصول</h2>
+                <p class="text-slate-500 text-sm mt-1">إنشاء حسابات الموظفين، تحديد أدوارهم (مدير، مدخل بيانات، مستعرض)، وإدارة أمان المنشأة.</p>
             </div>
-            <div>
-                <button class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
-                    <i class="fa-solid fa-shield-halved"></i> لوحة التحكم الأمنية
-                </button>
+            <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl text-xs font-bold">
+                <i class="fa-solid fa-user-shield text-sm"></i>
+                <span>المستخدم الحالي: <span id="current-logged-role" class="text-blue-600">مدير النظام</span></span>
             </div>
         </div>
 
-        <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60 max-w-5xl mx-auto">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-6 border-b pb-3 border-slate-100">
+                <i class="fa-solid fa-user-plus text-blue-600"></i> إنشاء حساب مستخدم جديد
+            </h3>
             
-            <form id="settings-form" onsubmit="saveSystemSettings(event)" class="space-y-8">
-                
+            <form id="user-creation-form" onsubmit="handleCreateUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div>
-                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
-                        <i class="fa-solid fa-key text-blue-500"></i> رمز مرور الإدارة (Passcode)
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-2">رمز المرور الحالي</label>
-                            <input type="password" id="current-passcode" placeholder="••••" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-center tracking-widest font-bold">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-2">رمز المرور الجديد</label>
-                            <input type="password" id="new-passcode" placeholder="••••" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-center tracking-widest font-bold">
-                        </div>
-                    </div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">اسم المستخدم (بالإنجليزي أو العربي)</label>
+                    <input type="text" id="new-username" placeholder="مثال: ahmad_admin" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500" required>
                 </div>
-
                 <div>
-                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
-                        <i class="fa-solid fa-user-gear text-teal-500"></i> الصلاحيات واسم المنشأة
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-2">اسم المنشأة في النظام</label>
-                            <input type="text" id="company-name" placeholder="مؤسسة القوافل الخمسة" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-500 mb-2">صلاحية تذكر تسجيل الدخول</label>
-                            <select id="login-session-preference" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer">
-                                <option value="always">تذكرني دائماً على هذا المتصفح</option>
-                                <option value="session">تسجيل خروج آلي عند إغلاق التبويب</option>
-                            </select>
-                        </div>
-                    </div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">كلمة المرور</label>
+                    <input type="password" id="new-password" placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-blue-500" required>
                 </div>
-
                 <div>
-                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
-                        <i class="fa-solid fa-sliders text-amber-500"></i> صلاحيات التعديل والحذف في الواجهات
-                    </h3>
-                    <p class="text-xs text-slate-500 mb-4">تحكم بشكل مباشر في إمكانية تعديل البيانات أو تصفيرها أو حذفها داخل كل صفحة لحماية بياناتك من الخطأ أو التلاعب غير المصرح به.</p>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="p-5 bg-amber-50/50 border border-amber-200/60 rounded-2xl flex items-center justify-between gap-4">
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-800">تفعيل إمكانية "التعديل والإضافة"</h4>
-                                <p class="text-[11px] text-slate-500 mt-1">عند الإيقاف، سيتم قفل كافة حقول الإدخال والنموذج في الواجهات ولن يستطيع أحد حفظ أو تعديل أي سجل.</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="allow-editing-global" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
-                            </label>
-                        </div>
-
-                        <div class="p-5 bg-rose-50/30 border border-rose-200/40 rounded-2xl flex items-center justify-between gap-4">
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-800">تفعيل إمكانية "حذف السجلات"</h4>
-                                <p class="text-[11px] text-slate-500 mt-1">عند الإيقاف، ستختفي أزرار الحذف الحمراء من كافة الجداول في جميع الصفحات لضمان سلامة الأرشيف السنوي.</p>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="allow-deletion-global" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-600"></div>
-                            </label>
-                        </div>
-                    </div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">نوع الصلاحية (الدور)</label>
+                    <select id="new-user-role" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer">
+                        <option value="admin">مدير نظام (كامل الصلاحيات بما فيها الإعدادات والحذف)</option>
+                        <option value="editor">مدخل بيانات (إضافة وتعديل فقط، بدون حذف أو إعدادات)</option>
+                        <option value="viewer">مستعرض / محاسب (قراءة وتصدير فقط، بدون أي تعديل)</option>
+                    </select>
                 </div>
-
                 <div>
-                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
-                        <i class="fa-solid fa-toggle-on text-indigo-500"></i> إظهار أو إخفاء الواجهات من القائمة الجانبية
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                            <div class="flex items-center gap-2.5">
-                                <i class="fa-solid fa-chart-line text-slate-600 text-base"></i>
-                                <span class="text-xs font-bold text-slate-700">لوحة التحكم العامة</span>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="allow-index" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                            </label>
-                        </div>
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-user-check"></i> إضافة المستخدم
+                    </button>
+                </div>
+            </form>
+        </div>
 
-                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                            <div class="flex items-center gap-2.5">
-                                <i class="fa-solid fa-users text-slate-600 text-base"></i>
-                                <span class="text-xs font-bold text-slate-700">سجلات الموظفين والإقامات</span>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="allow-residence" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                            </label>
-                        </div>
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/50">
+                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear text-slate-700"></i> قائمة الحسابات النشطة وصلاحياتها
+                </h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-center border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-900 text-white font-bold">
+                            <th class="p-3 text-right">اسم المستخدم</th>
+                            <th class="p-3">نوع الصلاحية</th>
+                            <th class="p-3">صلاحية الإضافة والتعديل</th>
+                            <th class="p-3">صلاحية الحذف والتصفير</th>
+                            <th class="p-3">دخول الإعدادات</th>
+                            <th class="p-3">الإجراء</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-list-tbody" class="divide-y divide-slate-100 text-slate-600 font-semibold">
+                        </tbody>
+                </table>
+            </div>
+        </div>
 
-                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                            <div class="flex items-center gap-2.5">
-                                <i class="fa-solid fa-file-invoice text-slate-600 text-base"></i>
-                                <span class="text-xs font-bold text-slate-700">طلبات قوى</span>
-                            </div>
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" id="allow-requests" class="sr-only peer" checked>
-                                <div class="w-11 h-6 bg
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
+            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
+                <i class="fa-solid fa-building text-teal-600"></i> إعدادات المنشأة العامة
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-2">اسم المنشأة الرئيسي في النظام</label>
+                    <input type="text" id="company-name" placeholder="مؤسسة القوافل الخمسة" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="flex items-end">
+                    <button onclick="saveCompanyNameOnly()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl text-xs transition-all w-full md:w-auto">
+                        حفظ اسم المنشأة
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // التحقق الأمني من تسجيل الدخول الفعلي
+        if (localStorage.getItem('isLoggedIn') !== 'true') {
+            window.location.href = "login.html";
+        }
+
+        // التحقق من أن المستخدم الحالي هو "Admin"؛ وإلا يتم طرده من الإعدادات منعاً للعبث
+        const currentUserRole = localStorage.getItem('currentUserRole') || 'admin';
+        if (currentUserRole !== 'admin') {
+            alert("⚠️ عذراً، لا تمتلك صلاحية دخول صفحة الإعدادات والمستخدمين.");
+            window.location.href = "index.html";
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // تحديث الواجهة والاسم والجدول عند التحميل
+            const companyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
+            document.getElementById('company-name').value = companyName;
+            document.getElementById('sidebar-brand-name').innerText = companyName;
+
+            // تحديث مسمى الدور الحالي في الهيدر
+            document.getElementById('current-logged-role').innerText = "مدير النظام (كامل الصلاحيات)";
+
+            // رندرة قائمة المستخدمين
+            renderUsersTable();
+        });
+
+        // رندرة وإدارة حسابات المستخدمين من الـ LocalStorage
+        function renderUsersTable() {
+            const tbody = document.getElementById('users-list-tbody');
+            
+            // جلب المستخدمين؛ وإذا كانت الذاكرة فارغة نقوم بإنشاء حساب المدير الافتراضي كبداية
+            let users = JSON.parse(localStorage.getItem('system_users')) || [];
+            if (users.length === 0) {
+                users = [
+                    { username: "admin", password: "123", role: "admin" } // حساب المدير الافتراضي
+                ];
+                localStorage.setItem('system_users', JSON.stringify(users));
+            }
+
+            tbody.innerHTML = '';
+            users.forEach(user => {
+                let roleText = "";
+                let roleColor = "";
+                let canEdit = "❌";
+                let canDelete = "❌";
+                let canSettings = "❌";
+
+                if (user.role === 'admin') {
+                    roleText = "مدير نظام (Super Admin)";
+                    roleColor = "text-rose-600 bg-rose-50 border-rose-200";
+                    canEdit = "✅";
+                    canDelete = "✅";
+                    canSettings = "✅";
+                } else if (user.role === 'editor') {
+                    roleText = "مدخل بيانات (Data Entry)";
+                    roleColor = "text-amber-600 bg-amber-50 border-amber-200";
+                    canEdit = "✅";
+                } else {
+                    roleText = "مستعرض / محاسب (Viewer)";
+                    roleColor = "text-slate-600 bg-slate-100 border-slate-200";
+                }
+
+                // منع حذف مدير النظام الأساسي (admin) كإجراء حماية
+                const deleteBtnHtml = user.username === 'admin' 
+                    ? `<span class="text-slate-300 italic">غير قابل للحذف</span>`
+                    : `<button onclick="deleteUser('${user.username}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1 rounded-lg font-bold transition-all">حذف المستخدم</button>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition-all">
+                        <td class="p-3 text-right font-bold text-slate-800">${user.username}</td>
+                        <td class="p-3"><span class="px-2.5 py-1 rounded-full border ${roleColor} font-bold text-[10px]">${roleText}</span></td>
+                        <td class="p-3 text-sm">${canEdit}</td>
+                        <td class="p-3 text-sm">${canDelete}</td>
+                        <td class="p-3 text-sm">${canSettings}</td>
+                        <td class="p-3">${deleteBtnHtml}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // إنشاء وإضافة مستخدم جديد
+        function handleCreateUser(e) {
+            e.preventDefault();
+            const username = document.getElementById('new-username').value.trim().toLowerCase();
+            const password = document.getElementById('new-password').value.trim();
+            const role = document.getElementById('new-user-role').value;
+
+            if (!username || !password) return;
+
+            let users = JSON.parse(localStorage.getItem('system_users')) || [];
+
+            // التأكد من عدم تكرار نفس اسم المستخدم
+            const isExists = users.some(u => u.username.toLowerCase() === username);
+            if (isExists) {
+                alert("⚠️ اسم المستخدم هذا مسجل مسبقاً! يرجى اختيار اسم آخر.");
+                return;
+            }
+
+            users.push({ username, password, role });
+            localStorage.setItem('system_users', JSON.stringify(users));
+
+            renderUsersTable();
+            document.getElementById('user-creation-form').reset();
+            alert(`🎉 تم إضافة المستخدم الجديد (${username}) وتعيين صلاحياته بنجاح!`);
+        }
+
+        // حذف مستخدم من اللوحة
+        function deleteUser(username) {
+            const confirmDelete = confirm(`⚠️ هل أنت متأكد من رغبتك في حذف حساب المستخدم (${username}) نهائياً؟`);
+            if (!confirmDelete) return;
+
+            let users = JSON.parse(localStorage.getItem('system_users')) || [];
+            users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+            localStorage.setItem('system_users', JSON.stringify(users));
+
+            renderUsersTable();
+            alert("تم حذف المستخدم بنجاح! 🗑️");
+        }
+
+        // حفظ اسم المنشأة فقط
+        function saveCompanyNameOnly() {
+            const newCompName = document.getElementById('company-name').value.trim() || "مؤسسة القوافل الخمسة";
+            localStorage.setItem('COMPANY_NAME', newCompName);
+            document.getElementById('sidebar-brand-name').innerText = newCompName;
+            alert("تم تحديث اسم المنشأة بنجاح! ✨");
+        }
+
+        // تسجيل الخروج
+        function handleLogout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUserRole');
+            localStorage.removeItem('currentUsername');
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
