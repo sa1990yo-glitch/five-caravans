@@ -159,12 +159,12 @@
             renderUsersTable();
         });
 
-        // رندرة الجدول التفاعلي بدقة تامة وبدون أي تداخل في الخلايا
+        // رندرة الجدول التفاعلي بدقة تامة
         function renderUsersTable() {
             const tbody = document.getElementById('users-list-tbody');
             let users = JSON.parse(localStorage.getItem('system_users')) || [];
             
-            // في حال عدم وجود مستخدمين، أنشئ الحساب الرئيسي
+            // في حال عدم وجود مستخدمين، أنشئ الحساب الرئيسي الافتراضي
             if (users.length === 0) {
                 users = [
                     { 
@@ -181,7 +181,7 @@
 
             tbody.innerHTML = '';
             users.forEach((user) => {
-                // تعيين القيم الافتراضية
+                // تعيين القيم الافتراضية لحماية الحسابات القديمة إن وجدت
                 if (user.canEdit === undefined) user.canEdit = (user.role === 'admin' || user.role === 'editor');
                 if (user.canDelete === undefined) user.canDelete = (user.role === 'admin');
                 if (user.canSettings === undefined) user.canSettings = (user.role === 'admin');
@@ -197,21 +197,4 @@
                     roleColor = "text-amber-600 bg-amber-50 border-amber-200";
                 } else {
                     roleText = "مستعرض / محاسب (Viewer)";
-                    roleColor = "text-slate-600 bg-slate-100 border-slate-200";
-                }
-
-                const isAdminPrimary = user.username === 'admin';
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition-all">
-                        <td class="p-4 text-right font-bold text-slate-800 whitespace-nowrap">${user.username}</td>
-                        
-                        <td class="p-4">
-                            <span class="px-2.5 py-1 rounded-full border ${roleColor} font-bold text-[10px] inline-block whitespace-nowrap">${roleText}</span>
-                        </td>
-                        
-                        <td class="p-4">
-                            <div class="flex items-center justify-center">
-                                <input type="checkbox" 
-                                       ${user.canEdit ? 'checked' : ''} 
-                                       ${isAdminPrimary ? 'disabled' :
+                    roleColor = "text-slate-600 bg-slate-100
