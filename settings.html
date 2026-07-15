@@ -1,276 +1,191 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مؤسسة القوافل الخمسة - إدارة المستخدمين والصلاحيات</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
-        body { font-family: 'Cairo', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-100 min-h-screen flex">
-
-    <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
-        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
-            <div class="text-2xl text-blue-500">🚚</div>
-            <div>
-                <h1 class="font-bold text-base leading-tight" id="sidebar-brand-name">القوافل الخمسة</h1>
-                <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
-            </div>
-        </div>
-        
-        <nav class="flex-1 flex flex-col gap-1.5" id="sidebar-nav">
-            <a href="index.html" id="nav-index" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-chart-line w-5 text-center"></i> لوحة التحكم العامة
-            </a>
-            <a href="residence.html" id="nav-residence" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-users w-5 text-center"></i> سجلات الموظفين والإقامات
-            </a>
-            <a href="requests.html" id="nav-requests" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-file-invoice w-5 text-center"></i> طلبات التعديل (قوى)
-            </a>
-            <a href="loans.html" id="nav-loans" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
-            </a>
-            <a href="penalties.html" id="nav-penalties" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-scale-balanced w-5 text-center"></i> الجزاءات والخصومات
-            </a>
-            <a href="leaves.html" id="nav-leaves" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-calendar-days w-5 text-center"></i> إدارة الإجازات
-            </a>
-            <a href="settings.html" id="nav-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
-                <i class="fa-solid fa-sliders w-5 text-center"></i> الضبط والإعدادات
-            </a>
-
-            <a href="javascript:void(0)" onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/40">
-                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
-            </a>
-        </nav>
+<!-- الصندوق الخاص بجدول إدارة المستخدمين الحاليين -->
+<div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
+    <div class="p-5 border-b border-slate-100 bg-slate-50/50">
+        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-users-gear text-slate-700"></i> قائمة الحسابات النشطة وصلاحياتها
+        </h3>
     </div>
-
-    <div class="flex-1 p-8 overflow-x-hidden">
-        
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-                <h2 class="text-2xl font-bold text-slate-800">إدارة المستخدمين وصلاحيات الوصول</h2>
-                <p class="text-slate-500 text-sm mt-1">إنشاء حسابات الموظفين، تحديد أدوارهم (مدير، مدخل بيانات، مستعرض)، وإدارة أمان المنشأة.</p>
-            </div>
-            <div class="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl text-xs font-bold">
-                <i class="fa-solid fa-user-shield text-sm"></i>
-                <span>المستخدم الحالي: <span id="current-logged-role" class="text-blue-600">مدير النظام</span></span>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
-            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-6 border-b pb-3 border-slate-100">
-                <i class="fa-solid fa-user-plus text-blue-600"></i> إنشاء حساب مستخدم جديد
-            </h3>
-            
-            <form id="user-creation-form" onsubmit="handleCreateUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">اسم المستخدم (بالإنجليزي أو العربي)</label>
-                    <input type="text" id="new-username" placeholder="مثال: ahmad_admin" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">كلمة المرور</label>
-                    <input type="password" id="new-password" placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">نوع الصلاحية (الدور)</label>
-                    <select id="new-user-role" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="admin">مدير نظام (كامل الصلاحيات بما فيها الإعدادات والحذف)</option>
-                        <option value="editor">مدخل بيانات (إضافة وتعديل فقط، بدون حذف أو إعدادات)</option>
-                        <option value="viewer">مستعرض / محاسب (قراءة وتصدير فقط، بدون أي تعديل)</option>
-                    </select>
-                </div>
-                <div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-user-check"></i> إضافة المستخدم
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
-            <div class="p-5 border-b border-slate-100 bg-slate-50/50">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-users-gear text-slate-700"></i> قائمة الحسابات النشطة وصلاحياتها
-                </h3>
-            </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-center border-collapse text-xs">
-                    <thead>
-                        <tr class="bg-slate-900 text-white font-bold">
-                            <th class="p-3 text-right">اسم المستخدم</th>
-                            <th class="p-3">نوع الصلاحية</th>
-                            <th class="p-3">صلاحية الإضافة والتعديل</th>
-                            <th class="p-3">صلاحية الحذف والتصفير</th>
-                            <th class="p-3">دخول الإعدادات</th>
-                            <th class="p-3">الإجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-list-tbody" class="divide-y divide-slate-100 text-slate-600 font-semibold">
-                        </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
-            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
-                <i class="fa-solid fa-building text-teal-600"></i> إعدادات المنشأة العامة
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">اسم المنشأة الرئيسي في النظام</label>
-                    <input type="text" id="company-name" placeholder="مؤسسة القوافل الخمسة" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="flex items-end">
-                    <button onclick="saveCompanyNameOnly()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl text-xs transition-all w-full md:w-auto">
-                        حفظ اسم المنشأة
-                    </button>
-                </div>
-            </div>
-        </div>
-
+    <div class="overflow-x-auto">
+        <table class="w-full text-center border-collapse text-xs">
+            <thead>
+                <tr class="bg-slate-900 text-white font-bold">
+                    <th class="p-4 text-right">اسم المستخدم</th>
+                    <th class="p-4">نوع الصلاحية المبدئية</th>
+                    <th class="p-4">صلاحية الإضافة والتعديل</th>
+                    <th class="p-4">صلاحية الحذف والتصفير</th>
+                    <th class="p-4">دخول الإعدادات</th>
+                    <th class="p-4">الإجراء</th>
+                </tr>
+            </thead>
+            <tbody id="users-list-tbody" class="divide-y divide-slate-100 text-slate-600 font-semibold font-sans">
+                <!-- سيتم رندرة المستخدمين مع مربعات الاختيار التفاعلية هنا -->
+            </tbody>
+        </table>
     </div>
+</div>
 
-    <script>
-        // التحقق الأمني من تسجيل الدخول الفعلي
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = "login.html";
-        }
+<script>
+    // التحقق الأمني من تسجيل الدخول الفعلي
+    if (localStorage.getItem('isLoggedIn') !== 'true') {
+        window.location.href = "login.html";
+    }
 
-        // التحقق من أن المستخدم الحالي هو "Admin"؛ وإلا يتم طرده من الإعدادات منعاً للعبث
-        const currentUserRole = localStorage.getItem('currentUserRole') || 'admin';
-        if (currentUserRole !== 'admin') {
-            alert("⚠️ عذراً، لا تمتلك صلاحية دخول صفحة الإعدادات والمستخدمين.");
-            window.location.href = "index.html";
-        }
+    // التحقق من أن المستخدم الحالي هو "Admin"
+    const currentUserRole = localStorage.getItem('currentUserRole') || 'admin';
+    if (currentUserRole !== 'admin') {
+        alert("⚠️ عذراً، لا تمتلك صلاحية دخول صفحة الإعدادات والمستخدمين.");
+        window.location.href = "index.html";
+    }
 
-        document.addEventListener("DOMContentLoaded", function() {
-            // تحديث الواجهة والاسم والجدول عند التحميل
-            const companyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
-            document.getElementById('company-name').value = companyName;
-            document.getElementById('sidebar-brand-name').innerText = companyName;
+    document.addEventListener("DOMContentLoaded", function() {
+        const companyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
+        document.getElementById('company-name').value = companyName;
+        document.getElementById('sidebar-brand-name').innerText = companyName;
 
-            // تحديث مسمى الدور الحالي في الهيدر
-            document.getElementById('current-logged-role').innerText = "مدير النظام (كامل الصلاحيات)";
+        // رندرة الجدول التفاعلي
+        renderUsersTable();
+    });
 
-            // رندرة قائمة المستخدمين
-            renderUsersTable();
-        });
-
-        // رندرة وإدارة حسابات المستخدمين من الـ LocalStorage
-        function renderUsersTable() {
-            const tbody = document.getElementById('users-list-tbody');
-            
-            // جلب المستخدمين؛ وإذا كانت الذاكرة فارغة نقوم بإنشاء حساب المدير الافتراضي كبداية
-            let users = JSON.parse(localStorage.getItem('system_users')) || [];
-            if (users.length === 0) {
-                users = [
-                    { username: "admin", password: "123", role: "admin" } // حساب المدير الافتراضي
-                ];
-                localStorage.setItem('system_users', JSON.stringify(users));
-            }
-
-            tbody.innerHTML = '';
-            users.forEach(user => {
-                let roleText = "";
-                let roleColor = "";
-                let canEdit = "❌";
-                let canDelete = "❌";
-                let canSettings = "❌";
-
-                if (user.role === 'admin') {
-                    roleText = "مدير نظام (Super Admin)";
-                    roleColor = "text-rose-600 bg-rose-50 border-rose-200";
-                    canEdit = "✅";
-                    canDelete = "✅";
-                    canSettings = "✅";
-                } else if (user.role === 'editor') {
-                    roleText = "مدخل بيانات (Data Entry)";
-                    roleColor = "text-amber-600 bg-amber-50 border-amber-200";
-                    canEdit = "✅";
-                } else {
-                    roleText = "مستعرض / محاسب (Viewer)";
-                    roleColor = "text-slate-600 bg-slate-100 border-slate-200";
+    // رندرة جدول المستخدمين بمربعات اختيار تفاعلية (Checkboxes)
+    function renderUsersTable() {
+        const tbody = document.getElementById('users-list-tbody');
+        let users = JSON.parse(localStorage.getItem('system_users')) || [];
+        
+        if (users.length === 0) {
+            users = [
+                { 
+                    username: "admin", 
+                    password: "123", 
+                    role: "admin",
+                    canEdit: true,
+                    canDelete: true,
+                    canSettings: true
                 }
-
-                // منع حذف مدير النظام الأساسي (admin) كإجراء حماية
-                const deleteBtnHtml = user.username === 'admin' 
-                    ? `<span class="text-slate-300 italic">غير قابل للحذف</span>`
-                    : `<button onclick="deleteUser('${user.username}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-3 py-1 rounded-lg font-bold transition-all">حذف المستخدم</button>`;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition-all">
-                        <td class="p-3 text-right font-bold text-slate-800">${user.username}</td>
-                        <td class="p-3"><span class="px-2.5 py-1 rounded-full border ${roleColor} font-bold text-[10px]">${roleText}</span></td>
-                        <td class="p-3 text-sm">${canEdit}</td>
-                        <td class="p-3 text-sm">${canDelete}</td>
-                        <td class="p-3 text-sm">${canSettings}</td>
-                        <td class="p-3">${deleteBtnHtml}</td>
-                    </tr>
-                `;
-            });
+            ];
+            localStorage.setItem('system_users', JSON.stringify(users));
         }
 
-        // إنشاء وإضافة مستخدم جديد
-        function handleCreateUser(e) {
-            e.preventDefault();
-            const username = document.getElementById('new-username').value.trim().toLowerCase();
-            const password = document.getElementById('new-password').value.trim();
-            const role = document.getElementById('new-user-role').value;
+        tbody.innerHTML = '';
+        users.forEach((user, index) => {
+            // تعيين القيم الافتراضية للصلاحيات الفردية إن لم تكن موجودة مسبقاً
+            if (user.canEdit === undefined) user.canEdit = (user.role === 'admin' || user.role === 'editor');
+            if (user.canDelete === undefined) user.canDelete = (user.role === 'admin');
+            if (user.canSettings === undefined) user.canSettings = (user.role === 'admin');
 
-            if (!username || !password) return;
+            let roleText = "";
+            let roleColor = "";
 
-            let users = JSON.parse(localStorage.getItem('system_users')) || [];
-
-            // التأكد من عدم تكرار نفس اسم المستخدم
-            const isExists = users.some(u => u.username.toLowerCase() === username);
-            if (isExists) {
-                alert("⚠️ اسم المستخدم هذا مسجل مسبقاً! يرجى اختيار اسم آخر.");
-                return;
+            if (user.role === 'admin') {
+                roleText = "مدير نظام (Super Admin)";
+                roleColor = "text-rose-600 bg-rose-50 border-rose-200";
+            } else if (user.role === 'editor') {
+                roleText = "مدخل بيانات (Data Entry)";
+                roleColor = "text-amber-600 bg-amber-50 border-amber-200";
+            } else {
+                roleText = "مستعرض / محاسب (Viewer)";
+                roleColor = "text-slate-600 bg-slate-100 border-slate-200";
             }
 
-            users.push({ username, password, role });
+            // حماية حساب الـ admin الرئيسي بحيث تظل مربعاته مفعّلة وغير قابلة للتعديل لمنع قفل النظام بالخطأ
+            const isAdminPrimary = user.username === 'admin';
+
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50/80 transition-all">
+                    <td class="p-4 text-right font-bold text-slate-800">${user.username}</td>
+                    <td class="p-4">
+                        <span class="px-2.5 py-1 rounded-full border ${roleColor} font-bold text-[10px]">${roleText}</span>
+                    </td>
+                    
+                    <!-- مربع صلاحية الإضافة والتعديل -->
+                    <td class="p-4">
+                        <input type="checkbox" 
+                               ${user.canEdit ? 'checked' : ''} 
+                               ${isAdminPrimary ? 'disabled' : ''} 
+                               onchange="togglePermission('${user.username}', 'canEdit', this.checked)"
+                               class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
+                    </td>
+
+                    <!-- مربع صلاحية الحذف والتصفير -->
+                    <td class="p-4">
+                        <input type="checkbox" 
+                               ${user.canDelete ? 'checked' : ''} 
+                               ${isAdminPrimary ? 'disabled' : ''} 
+                               onchange="togglePermission('${user.username}', 'canDelete', this.checked)"
+                               class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
+                    </td>
+
+                    <!-- مربع صلاحية دخول الإعدادات -->
+                    <td class="p-4">
+                        <input type="checkbox" 
+                               ${user.canSettings ? 'checked' : ''} 
+                               ${isAdminPrimary ? 'disabled' : ''} 
+                               onchange="togglePermission('${user.username}', 'canSettings', this.checked)"
+                               class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
+                    </td>
+
+                    <td class="p-4">
+                        ${isAdminPrimary 
+                            ? `<span class="text-slate-400 italic text-[11px]">غير قابل للحذف</span>`
+                            : `<button onclick="deleteUser('${user.username}')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white px-3 py-1.5 rounded-xl font-bold transition-all text-[11px]">حذف المستخدم</button>`
+                        }
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    // دالة تغيير الصلاحيات الفردية وحفظها فوراً عند الضغط على المربع
+    function togglePermission(username, permissionType, isChecked) {
+        let users = JSON.parse(localStorage.getItem('system_users')) || [];
+        const userIndex = users.findIndex(u => u.username.toLowerCase() === username.toLowerCase());
+
+        if (userIndex !== -1) {
+            users[userIndex][permissionType] = isChecked;
             localStorage.setItem('system_users', JSON.stringify(users));
+            
+            // إشعار صغير وناعم للتأكيد بدون تعطيل تجربة المستخدم
+            console.log(`تم تحديث صلاحية (${permissionType}) للمستخدم (${username}) إلى: ${isChecked}`);
+        }
+    }
 
-            renderUsersTable();
-            document.getElementById('user-creation-form').reset();
-            alert(`🎉 تم إضافة المستخدم الجديد (${username}) وتعيين صلاحياته بنجاح!`);
+    // إضافة مستخدم جديد وحفظه
+    function handleCreateUser(e) {
+        e.preventDefault();
+        const username = document.getElementById('new-username').value.trim().toLowerCase();
+        const password = document.getElementById('new-password').value.trim();
+        const role = document.getElementById('new-user-role').value;
+
+        if (!username || !password) return;
+
+        let users = JSON.parse(localStorage.getItem('system_users')) || [];
+
+        const isExists = users.some(u => u.username.toLowerCase() === username);
+        if (isExists) {
+            alert("⚠️ اسم المستخدم هذا مسجل مسبقاً!");
+            return;
         }
 
-        // حذف مستخدم من اللوحة
-        function deleteUser(username) {
-            const confirmDelete = confirm(`⚠️ هل أنت متأكد من رغبتك في حذف حساب المستخدم (${username}) نهائياً؟`);
-            if (!confirmDelete) return;
+        // إسناد الصلاحيات المبدئية عند الإنشاء بناءً على الدور المحدد
+        const canEdit = (role === 'admin' || role === 'editor');
+        const canDelete = (role === 'admin');
+        const canSettings = (role === 'admin');
 
-            let users = JSON.parse(localStorage.getItem('system_users')) || [];
-            users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
-            localStorage.setItem('system_users', JSON.stringify(users));
+        users.push({ username, password, role, canEdit, canDelete, canSettings });
+        localStorage.setItem('system_users', JSON.stringify(users));
 
-            renderUsersTable();
-            alert("تم حذف المستخدم بنجاح! 🗑️");
-        }
+        renderUsersTable();
+        document.getElementById('user-creation-form').reset();
+    }
 
-        // حفظ اسم المنشأة فقط
-        function saveCompanyNameOnly() {
-            const newCompName = document.getElementById('company-name').value.trim() || "مؤسسة القوافل الخمسة";
-            localStorage.setItem('COMPANY_NAME', newCompName);
-            document.getElementById('sidebar-brand-name').innerText = newCompName;
-            alert("تم تحديث اسم المنشأة بنجاح! ✨");
-        }
+    // حذف مستخدم
+    function deleteUser(username) {
+        const confirmDelete = confirm(`⚠️ هل أنت متأكد من رغبتك في حذف حساب المستخدم (${username}) نهائياً؟`);
+        if (!confirmDelete) return;
 
-        // تسجيل الخروج
-        function handleLogout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('currentUserRole');
-            localStorage.removeItem('currentUsername');
-            window.location.href = "login.html";
-        }
-    </script>
-</body>
-</html>
+        let users = JSON.parse(localStorage.getItem('system_users')) || [];
+        users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+        localStorage.setItem('system_users', JSON.stringify(users));
+
+        renderUsersTable();
+    }
+</script>
