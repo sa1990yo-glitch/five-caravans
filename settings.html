@@ -139,32 +139,30 @@
     </div>
 
     <script>
-        // تحقق تسجيل الدخول
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = "login.html";
-        }
-
-        // تحقق رتبة الأدمن لدخول الصفحة
-        const currentUserRole = localStorage.getItem('currentUserRole') || 'admin';
-        if (currentUserRole !== 'admin') {
-            alert("⚠️ عذراً، لا تمتلك صلاحية دخول صفحة الإعدادات.");
-            window.location.href = "index.html";
-        }
-
+        // دالة تشغيل بمجرد تحميل الصفحة بالكامل
         document.addEventListener("DOMContentLoaded", function() {
+            // مزامنة اسم المنشأة
             const companyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
             document.getElementById('company-name').value = companyName;
             document.getElementById('sidebar-brand-name').innerText = companyName;
 
+            // رندرة الجدول مباشرة للتأكد من اشتغاله مهما كانت الرتبة الحالية
             renderUsersTable();
         });
 
-        // رندرة الجدول التفاعلي بدقة تامة
+        // رندرة الجدول بدقة وحيوية كاملة
         function renderUsersTable() {
             const tbody = document.getElementById('users-list-tbody');
-            let users = JSON.parse(localStorage.getItem('system_users')) || [];
+            if (!tbody) return;
+
+            let users = [];
+            try {
+                users = JSON.parse(localStorage.getItem('system_users')) || [];
+            } catch (e) {
+                users = [];
+            }
             
-            // في حال عدم وجود مستخدمين، أنشئ الحساب الرئيسي الافتراضي
+            // تهيئة الحسابات الافتراضية إذا كانت الذاكرة فارغة تماماً
             if (users.length === 0) {
                 users = [
                     { 
@@ -174,6 +172,14 @@
                         canEdit: true,
                         canDelete: true,
                         canSettings: true
+                    },
+                    {
+                        username: "salah",
+                        password: "123",
+                        role: "editor",
+                        canEdit: true,
+                        canDelete: false,
+                        canSettings: false
                     }
                 ];
                 localStorage.setItem('system_users', JSON.stringify(users));
@@ -181,10 +187,10 @@
 
             tbody.innerHTML = '';
             users.forEach((user) => {
-                // تعيين القيم الافتراضية لحماية الحسابات القديمة إن وجدت
-                if (user.canEdit === undefined) user.canEdit = (user.role === 'admin' || user.role === 'editor');
-                if (user.canDelete === undefined) user.canDelete = (user.role === 'admin');
-                if (user.canSettings === undefined) user.canSettings = (user.role === 'admin');
+                // ضبط المتغيرات لضمان عدم وجود undefined
+                const uEdit = user.canEdit !== false; 
+                const uDel = !!user.canDelete;
+                const uSet = !!user.canSettings;
 
                 let roleText = "";
                 let roleColor = "";
@@ -197,4 +203,127 @@
                     roleColor = "text-amber-600 bg-amber-50 border-amber-200";
                 } else {
                     roleText = "مستعرض / محاسب (Viewer)";
-                    roleColor = "text-slate-600 bg-slate-100
+                    roleColor = "text-slate-600 bg-slate-100 border-slate-200";
+                }
+
+                const isAdminPrimary = user.username.toLowerCase() === 'admin';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50/80 transition-all">
+                        <td class="p-4 text-right font-bold text-slate-800 whitespace-nowrap">${user.username}</td>
+                        <td class="p-4">
+                            <span class="px-2.5 py-1 rounded-full border ${roleColor} font-bold text-[10px] inline-block whitespace-nowrap">${roleText}</span>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center justify-center">
+                                <input type="checkbox" 
+                                       ${uEdit ? 'checked' : ''} 
+                                       ${isAdminPrimary ? 'disabled' : ''} 
+                                       onchange="togglePermission('${user.username}', 'canEdit', this.checked)"
+                                       class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center justify-center">
+                                <input type="checkbox" 
+                                       ${uDel ? 'checked' : ''} 
+                                       ${isAdminPrimary ? 'disabled' : ''} 
+                                       onchange="togglePermission('${user.username}', 'canDelete', this.checked)"
+                                       class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            <div class="flex items-center justify-center">
+                                <input type="checkbox" 
+                                       ${uSet ? 'checked' : ''} 
+                                       ${isAdminPrimary ? 'disabled' : ''} 
+                                       onchange="togglePermission('${user.username}', 'canSettings', this.checked)"
+                                       class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
+                            </div>
+                        </td>
+                        <td class="p-4">
+                            ${isAdminPrimary 
+                                ? `<span class="text-slate-400 italic text-[11px] whitespace-nowrap">غير قابل للحذف</span>`
+                                : `<button onclick="deleteUser('${user.username}')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white px-3 py-1.5 rounded-xl font-bold transition-all text-[11px] whitespace-nowrap">حذف</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        // تعديل الصلاحيات التفاعلية وحفظها فوراً
+        function togglePermission(username, permissionType, isChecked) {
+            let users = JSON.parse(localStorage.getItem('system_users')) || [];
+            const idx = users.findIndex(u => u.username.toLowerCase() === username.toLowerCase());
+
+            if (idx !== -1) {
+                users[idx][permissionType] = isChecked;
+                localStorage.setItem('system_users', JSON.stringify(users));
+                console.log("Updated: " + username + " -> " + permissionType + " = " + isChecked);
+            }
+        }
+
+        // إضافة مستخدم جديد
+        function handleCreateUser(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('new-username');
+            const passwordInput = document.getElementById('new-password');
+            const roleSelect = document.getElementById('new-user-role');
+
+            const username = usernameInput.value.trim().toLowerCase();
+            const password = passwordInput.value.trim();
+            const role = roleSelect.value;
+
+            if (!username || !password) return;
+
+            let users = JSON.parse(localStorage.getItem('system_users')) || [];
+
+            const isExists = users.some(u => u.username.toLowerCase() === username);
+            if (isExists) {
+                alert("⚠️ اسم المستخدم هذا مسجل مسبقاً!");
+                return;
+            }
+
+            const canEdit = (role === 'admin' || role === 'editor');
+            const canDelete = (role === 'admin');
+            const canSettings = (role === 'admin');
+
+            users.push({ username, password, role, canEdit, canDelete, canSettings });
+            localStorage.setItem('system_users', JSON.stringify(users));
+
+            renderUsersTable();
+            document.getElementById('user-creation-form').reset();
+            alert("🎉 تم إضافة المستخدم بنجاح ومزامنته في الجدول!");
+        }
+
+        // حذف مستخدم
+        function deleteUser(username) {
+            const confirmDelete = confirm("⚠️ هل أنت متأكد من رغبتك في حذف حساب المستخدم (" + username + ") نهائياً؟");
+            if (!confirmDelete) return;
+
+            let users = JSON.parse(localStorage.getItem('system_users')) || [];
+            users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
+            localStorage.setItem('system_users', JSON.stringify(users));
+
+            renderUsersTable();
+        }
+
+        // حفظ اسم المنشأة
+        function saveCompanyNameOnly() {
+            const newCompName = document.getElementById('company-name').value.trim() || "مؤسسة القوافل الخمسة";
+            localStorage.setItem('COMPANY_NAME', newCompName);
+            document.getElementById('sidebar-brand-name').innerText = newCompName;
+            alert("تم تحديث اسم المنشأة بنجاح! ✨");
+        }
+
+        // تسجيل الخروج
+        function handleLogout() {
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('currentUserRole');
+            localStorage.removeItem('currentUsername');
+            window.location.href = "login.html";
+        }
+    </script>
+</body>
+</html>
