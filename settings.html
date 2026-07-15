@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الضبط والإعدادات - القوافل الخمسة</title>
+    <title>مؤسسة القوافل الخمسة - ضبط وإعدادات النظام العميق</title>
+    <!-- مكتبة أيقونات FontAwesome و Tailwind CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
         body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex">
 
-    <!-- القائمة الجانبية (نفس التصميم الموحد) -->
+    <!-- الشريط الجانبي الثابت (Sidebar) -->
     <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
         <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
             <div class="text-2xl text-blue-500">🚚</div>
@@ -23,185 +24,332 @@
             </div>
         </div>
         
-        <nav class="flex-1 flex flex-col gap-1.5">
-            <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+        <nav class="flex-1 flex flex-col gap-1.5" id="sidebar-nav">
+            <!-- سيتم التحكم بظهور الروابط ديناميكياً حسب الصلاحيات والواجهات المفعلة -->
+            <a href="index.html" id="nav-index" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
                 <i class="fa-solid fa-chart-line w-5 text-center"></i> لوحة التحكم العامة
             </a>
-            <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-address-card w-5 text-center"></i> سجل الإقامات والتراخيص
+            <a href="residence.html" id="nav-residence" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-users w-5 text-center"></i> سجلات الموظفين والإقامات
             </a>
-            <a href="requests.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-users w-5 text-center"></i> سجل الموظفين
+            <a href="requests.html" id="nav-requests" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-file-invoice w-5 text-center"></i> طلبات التعديل (قوى)
             </a>
-            <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+            <a href="loans.html" id="nav-loans" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
                 <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
             </a>
-
-            <!-- ⚙️ زر الضبط نشط هنا -->
-            <a href="settings.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
+            <a href="penalties.html" id="nav-penalties" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-scale-balanced w-5 text-center"></i> الجزاءات والخصومات
+            </a>
+            <a href="leaves.html" id="nav-leaves" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-calendar-days w-5 text-center"></i> إدارة الإجازات
+            </a>
+            <a href="settings.html" id="nav-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
                 <i class="fa-solid fa-sliders w-5 text-center"></i> الضبط والإعدادات
             </a>
 
-            <!-- 🔴 زر تسجيل الخروج -->
-            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/50 text-right">
+            <!-- زر تسجيل الخروج -->
+            <a href="javascript:void(0)" onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/40">
                 <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
-            </button>
+            </a>
         </nav>
     </div>
 
-    <!-- محتوى الصفحة الرئيسي -->
+    <!-- المحتوى الرئيسي -->
     <div class="flex-1 p-8 overflow-x-hidden">
         
-        <!-- الهيدر -->
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- الهيدر العلوي المطابق لتصميمك -->
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">ضبط وإعدادات النظام العميق</h2>
                 <p class="text-slate-500 text-sm mt-1">تعديل الصلاحيات، تغيير الرموز السرية، وإدارة هوية ومخازن بيانات المؤسسة.</p>
             </div>
-            <div class="bg-blue-50 text-blue-700 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2">
-                <i class="fa-solid fa-gears"></i>
-                <span>لوحة التحكم الأمنية</span>
+            <div>
+                <button class="bg-blue-50 text-blue-600 hover:bg-blue-100 font-bold px-4 py-2 rounded-xl text-xs flex items-center gap-2 transition-all">
+                    <i class="fa-solid fa-shield-halved"></i> لوحة التحكم الأمنية
+                </button>
             </div>
         </div>
 
-        <div class="max-w-4xl bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
-            <!-- تبويبات وعناصر الضبط -->
-            <div class="p-8 space-y-8 text-sm">
+        <!-- الصندوق الرئيسي الأبيض للإعدادات -->
+        <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60 max-w-5xl mx-auto">
+            
+            <form id="settings-form" onsubmit="saveSystemSettings(event)" class="space-y-8">
                 
-                <!-- القسم الأول: الأمان ورمز المرور -->
-                <div class="space-y-4">
-                    <h4 class="font-bold text-slate-800 text-base flex items-center gap-2 border-b pb-3 border-slate-100">
+                <!-- 🔑 قسم رمز مرور الإدارة -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
                         <i class="fa-solid fa-key text-blue-500"></i> رمز مرور الإدارة (Passcode)
-                    </h4>
+                    </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-slate-500 font-bold mb-2">رمز المرور الحالي</label>
-                            <input type="password" id="current-pass" placeholder="••••" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 font-mono text-center tracking-widest text-base focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                            <label class="block text-xs font-bold text-slate-500 mb-2">رمز المرور الحالي</label>
+                            <input type="password" id="current-passcode" placeholder="••••" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-center tracking-widest font-bold">
                         </div>
                         <div>
-                            <label class="block text-slate-500 font-bold mb-2">رمز المرور الجديد</label>
-                            <input type="password" id="new-pass" placeholder="••••" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 font-mono text-center tracking-widest text-base focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                            <label class="block text-xs font-bold text-slate-500 mb-2">رمز المرور الجديد</label>
+                            <input type="password" id="new-passcode" placeholder="••••" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 text-center tracking-widest font-bold">
                         </div>
                     </div>
-                    <p class="text-xs text-slate-400">ملاحظة: هذا الرمز يتم طلبه فوراً عند محاولة الدخول للوحة من متصفح جديد أو بعد تسجيل الخروج.</p>
+                    <p class="text-[11px] text-slate-400 mt-2">ملاحظة: هذا الرمز يتم طلبه فوراً عند محاولة الدخول للوحة من متصفح جديد أو بعد تسجيل الخروج.</p>
                 </div>
 
-                <!-- القسم الثاني: تعديلات وصلاحيات عامة -->
-                <div class="space-y-4">
-                    <h4 class="font-bold text-slate-800 text-base flex items-center gap-2 border-b pb-3 border-slate-100">
-                        <i class="fa-solid fa-user-shield text-emerald-500"></i> الصلاحيات واسم المنشأة
-                    </h4>
+                <!-- 👥 قسم الصلاحيات واسم المنشأة -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
+                        <i class="fa-solid fa-user-gear text-teal-500"></i> الصلاحيات واسم المنشأة
+                    </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label class="block text-slate-500 font-bold mb-2">اسم المنشأة في النظام</label>
-                            <input type="text" id="setting-company-name" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-700">
+                            <label class="block text-xs font-bold text-slate-500 mb-2">اسم المنشأة في النظام</label>
+                            <input type="text" id="company-name" placeholder="مؤسسة القوافل الخمسة" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
                         </div>
                         <div>
-                            <label class="block text-slate-500 font-bold mb-2">صلاحية تذكر تسجيل الدخول</label>
-                            <select id="setting-security-level" class="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 focus:outline-none focus:border-blue-500 focus:bg-white transition-all font-bold text-slate-700">
-                                <option value="normal">تذكرني دائماً على هذا المتصفح</option>
-                                <option value="high">اطلب الرمز عند كل تحديث أو دخول جديد</option>
+                            <label class="block text-xs font-bold text-slate-500 mb-2">صلاحية تذكر تسجيل الدخول</label>
+                            <select id="login-session-preference" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer">
+                                <option value="always">تذكرني دائماً على هذا المتصفح</option>
+                                <option value="session">تسجيل خروج آلي عند إغلاق التبويب</option>
                             </select>
                         </div>
                     </div>
                 </div>
 
-                <!-- القسم الثالث: إدارة قواعد البيانات والتصفير -->
-                <div class="space-y-4">
-                    <h4 class="font-bold text-slate-800 text-base flex items-center gap-2 border-b pb-3 border-slate-100">
-                        <i class="fa-solid fa-database text-rose-500"></i> خيارات متقدمة وإدارة البيانات
-                    </h4>
-                    <div class="p-5 bg-rose-50/50 rounded-2xl border border-rose-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                        <div>
-                            <p class="font-bold text-rose-800 text-sm">حذف كافة البيانات وتصفير النظام</p>
-                            <p class="text-xs text-rose-500/80 mt-1 leading-relaxed">تنبيه: هذا الإجراء سيقوم بمسح كافة السائقين، الإقامات، الموظفين، السلف المالية وإعادتها فارغة كلياً. يرجى الحذر قبل الضغط!</p>
+                <!-- 🛡️ قسم التحكم في صلاحيات تفعيل وتعديل الواجهات (مُضاف حديثاً) -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
+                        <i class="fa-solid fa-toggle-on text-indigo-500"></i> صلاحيات الوصول وتفعيل الواجهات البرمجية
+                    </h3>
+                    <p class="text-xs text-slate-500 mb-4">قم بتنشيط أو إلغاء تنشيط واجهات النظام للتحكم الكامل في ظهورها داخل شريط التنقل وحظر الدخول غير المصرح به.</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <!-- واجهة لوحة التحكم -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-chart-line text-slate-600 text-base"></i>
+                                <span class="text-xs font-bold text-slate-700">لوحة التحكم العامة</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="allow-index" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
                         </div>
-                        <button onclick="resetSystemData()" class="bg-rose-600 hover:bg-rose-500 active:scale-[0.98] text-white font-bold px-5 py-3 rounded-xl transition-all shadow-md shadow-rose-600/10 shrink-0 text-xs">
+
+                        <!-- واجهة سجل الموظفين والإقامات -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-users text-slate-600 text-base"></i>
+                                <span class="text-xs font-bold text-slate-700">سجلات الموظفين والإقامات</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="allow-residence" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- واجهة طلبات التعديل قوى -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-file-invoice text-slate-600 text-base"></i>
+                                <span class="text-xs font-bold text-slate-700">طلبات قوى</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="allow-requests" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- واجهة سجلات السلف المالية -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-sack-dollar text-slate-600 text-base"></i>
+                                <span class="text-xs font-bold text-slate-700">سجلات السُّلف المالية</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="allow-loans" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- واجهة الجزاءات والخصومات -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-scale-balanced text-slate-600 text-base"></i>
+                                <span class="text-xs font-bold text-slate-700">الجزاءات والخصومات</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="allow-penalties" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+
+                        <!-- واجهة إدارة الإجازات -->
+                        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-calendar-days text-slate-600 text-base"></i>
+                                <span class="text-xs font-bold text-slate-700">إدارة الإجازات</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="allow-leaves" class="sr-only peer" checked>
+                                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🗄️ خيارات متقدمة وإدارة البيانات -->
+                <div>
+                    <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
+                        <i class="fa-solid fa-database text-rose-500"></i> خيارات متقدمة وإدارة البيانات
+                    </h3>
+                    <div class="bg-rose-50 border border-rose-100 p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <h4 class="text-xs font-bold text-rose-800">حذف كافة البيانات وتصفير النظام</h4>
+                            <p class="text-[11px] text-rose-600 mt-1 leading-relaxed">تنبيه: هذا الإجراء سيقوم بمسح كافة السائقين، الإقامات، الموظفين، السلف المالية وإعادتها فارغة كلياً. يرجى الحذر قبل الضغط!</p>
+                        </div>
+                        <button type="button" onclick="wipeAllSystemData()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md transition-all whitespace-nowrap">
                             <i class="fa-solid fa-trash-can"></i> تصفير النظام كلياً
                         </button>
                     </div>
                 </div>
 
-            </div>
+                <!-- أزرار الإجراءات السفلية للمطابقة -->
+                <div class="flex items-center gap-3 pt-6 border-t border-slate-100">
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3 rounded-xl text-xs shadow-md transition-all">
+                        حفظ كافة التغييرات
+                    </button>
+                    <button type="button" onclick="resetFormToDefaults()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 rounded-xl text-xs transition-all">
+                        إلغاء وتراجع
+                    </button>
+                </div>
 
-            <!-- أزرار الحفظ بالأسفل -->
-            <div class="p-6 border-t border-slate-100 bg-slate-50/80 flex items-center justify-end gap-3">
-                <a href="index.html" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-6 py-3 rounded-2xl transition-all text-xs">إلغاء وتراجع</a>
-                <button onclick="saveSettings()" class="bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold px-8 py-3 rounded-2xl transition-all shadow-lg shadow-blue-600/15 text-xs">حفظ كافة التغييرات</button>
-            </div>
+            </form>
         </div>
-
     </div>
 
-    <!-- 🌐 كود الـ JavaScript الخاص بالصفحة -->
     <script>
-        // التحقق من تسجيل الدخول
+        // التحقق من الدخول الفعلي
         if (localStorage.getItem('isLoggedIn') !== 'true') {
             window.location.href = "login.html";
         }
 
-        // دالة تسجيل الخروج
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = "login.html";
-        }
-
-        // عند تحميل الصفحة، نقوم بجلب القيم وتعبئتها في الحقول
         document.addEventListener("DOMContentLoaded", function() {
-            const savedCompanyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
-            document.getElementById('sidebar-brand-name').innerText = savedCompanyName;
-            
-            document.getElementById('setting-company-name').value = savedCompanyName;
-            document.getElementById('setting-security-level').value = localStorage.getItem('SECURITY_LEVEL') || "normal";
+            loadInitialSettings();
+            applyActiveViewsToSidebar();
         });
 
-        // دالة حفظ التغييرات
-        function saveSettings() {
-            const companyNameInput = document.getElementById('setting-company-name').value.trim();
-            const secLevelInput = document.getElementById('setting-security-level').value;
-            const currentPassInput = document.getElementById('current-pass').value;
-            const newPassInput = document.getElementById('new-pass').value;
+        // تحميل الإعدادات الحالية من الذاكرة وتعبئة الحقول
+        function loadInitialSettings() {
+            const companyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
+            document.getElementById('company-name').value = companyName;
+            
+            const brandElement = document.getElementById('sidebar-brand-name');
+            if (brandElement) brandElement.innerText = companyName;
 
-            // 1. حفظ اسم المنشأة
-            if (companyNameInput) {
-                localStorage.setItem('COMPANY_NAME', companyNameInput);
-                document.getElementById('sidebar-brand-name').innerText = companyNameInput;
-            }
+            const sessionPreference = localStorage.getItem('SESSION_PREFERENCE') || "always";
+            document.getElementById('login-session-preference').value = sessionPreference;
 
-            // 2. حفظ خيار الأمان
-            localStorage.setItem('SECURITY_LEVEL', secLevelInput);
-
-            // 3. معالجة وتغيير كلمة المرور
-            if (currentPassInput || newPassInput) {
-                const activePasscode = localStorage.getItem('SECRET_PASSCODE') || "5555";
-                
-                if (currentPassInput !== activePasscode) {
-                    alert('⚠️ عذراً! رمز المرور الحالي غير صحيح.');
-                    return;
-                }
-                if (newPassInput.trim().length < 4) {
-                    alert('⚠️ يجب أن يتكون رمز المرور الجديد من 4 خانات على الأقل!');
-                    return;
-                }
-                
-                localStorage.setItem('SECRET_PASSCODE', newPassInput.trim());
-                alert('🔑 تم تحديث رمز مرور الإدارة بنجاح!');
-            }
-
-            alert('✅ تم حفظ وضبط الإعدادات بنجاح في النظام!');
-            window.location.href = "index.html"; // العودة للرئيسية بعد الحفظ
+            // تحميل صلاحيات تفعيل الواجهات الافتراضية (تعتبر مفعلة true إن لم تكن مسجلة مسبقاً)
+            const pages = ['index', 'residence', 'requests', 'loans', 'penalties', 'leaves'];
+            pages.forEach(page => {
+                const isAllowed = localStorage.getItem(`ALLOW_PAGE_${page.toUpperCase()}`) !== 'false';
+                document.getElementById(`allow-${page}`).checked = isAllowed;
+            });
         }
 
-        // دالة تصفير وحذف قواعد البيانات
-        function resetSystemData() {
-            if (confirm('🚨 تحذير خطير!\nهل أنت متأكد من مسح وتصفير كافة بيانات السائقين، الإقامات، السلف، والرواتب كلياً؟ هذا الإجراء يفرغ النظام تماماً.')) {
-                localStorage.removeItem('five_caravans_documents');
-                localStorage.removeItem('five_caravans_employees');
-                localStorage.removeItem('five_caravans_loans');
-                
-                alert('🧹 تم تصفير بيانات لوحة التحكم بنجاح!');
-                window.location.href = "index.html";
+        // حفظ الإعدادات والصلاحيات وحفظها
+        function saveSystemSettings(event) {
+            event.preventDefault();
+
+            // 1. تحديث اسم المنشأة
+            const newCompName = document.getElementById('company-name').value.trim() || "مؤسسة القوافل الخمسة";
+            localStorage.setItem('COMPANY_NAME', newCompName);
+
+            // 2. تحديث صلاحية تسجيل الدخول
+            const newSessionPref = document.getElementById('login-session-preference').value;
+            localStorage.setItem('SESSION_PREFERENCE', newSessionPref);
+
+            // 3. تحديث صلاحيات الواجهات والتحكم بظهورها
+            const pages = ['index', 'residence', 'requests', 'loans', 'penalties', 'leaves'];
+            pages.forEach(page => {
+                const isChecked = document.getElementById(`allow-${page}`).checked;
+                localStorage.setItem(`ALLOW_PAGE_${page.toUpperCase()}`, isChecked);
+            });
+
+            // 4. معالجة وتغيير الرقم السري إذا تم إدخال قيم جديدة
+            const currentPass = document.getElementById('current-passcode').value;
+            const newPass = document.getElementById('new-passcode').value;
+
+            if (newPass) {
+                const savedPass = localStorage.getItem('SYSTEM_PASSCODE') || "1234"; // الرقم السري الافتراضي
+                if (currentPass !== savedPass) {
+                    alert("⚠️ فشل تغيير رمز المرور: رمز المرور الحالي غير صحيح!");
+                    return;
+                }
+                localStorage.setItem('SYSTEM_PASSCODE', newPass);
+                alert("تم تحديث رمز المرور بنجاح! 🔑");
             }
+
+            // تطبيق التعديلات فورياً على الـ Sidebar
+            applyActiveViewsToSidebar();
+            
+            // تحديث اسم الهيدر
+            const brandElement = document.getElementById('sidebar-brand-name');
+            if (brandElement) brandElement.innerText = newCompName;
+
+            alert("تم حفظ كافة الإعدادات والتحكم بالصلاحيات بنجاح! 💾✨");
+            
+            // تفريغ حقول الباسورد للأمان
+            document.getElementById('current-passcode').value = '';
+            document.getElementById('new-passcode').value = '';
+        }
+
+        // إخفاء وإظهار الروابط في الـ Sidebar ديناميكياً بناءً على الصلاحيات
+        function applyActiveViewsToSidebar() {
+            const pages = ['index', 'residence', 'requests', 'loans', 'penalties', 'leaves'];
+            pages.forEach(page => {
+                const isAllowed = localStorage.getItem(`ALLOW_PAGE_${page.toUpperCase()}`) !== 'false';
+                const navElement = document.getElementById(`nav-${page}`);
+                if (navElement) {
+                    if (isAllowed) {
+                        navElement.classList.remove('hidden');
+                    } else {
+                        navElement.classList.add('hidden');
+                    }
+                }
+            });
+        }
+
+        // دالة التراجع وإعادة تعيين القيم الافتراضية للنموذج الحالي دون حفظ
+        function resetFormToDefaults() {
+            loadInitialSettings();
+            alert("تم التراجع عن التعديلات غير المحفوظة ↩️");
+        }
+
+        // دالة تصفير وحذف النظام بالكامل المذكورة في تصميمك
+        function wipeAllSystemData() {
+            const firstConfirm = confirm("⚠️ هل أنت متأكد تماماً من رغبتك في تصفير النظام بالكامل؟ سيتم مسح كافة سجلات الموظفين والسلف والبيانات المخزنة نهائياً ولا يمكن استرجاعها!");
+            if (!firstConfirm) return;
+
+            const finalConfirm = prompt("للأمان القصوى وتأكيد عملية المسح الشامل، يرجى كتابة كلمة (تصفير) في الحقل أدناه:");
+            if (finalConfirm === "تصفير") {
+                // مسح المخازن المعنية بالبيانات مع الحفاظ على إعدادات الدخول والاسم الأساسي للمؤسسة
+                localStorage.removeItem('five_caravans_loans');
+                localStorage.removeItem('five_caravans_employees');
+                localStorage.removeItem('five_caravans_penalties');
+                localStorage.removeItem('five_caravans_leaves');
+                localStorage.removeItem('five_caravans_requests');
+                
+                alert("تم مسح كافة قواعد البيانات وتصفير النظام بنجاح! 🗑️🧹");
+                window.location.reload();
+            } else {
+                alert("تم إلغاء عملية التصفير لعدم كتابة كلمة التأكيد بشكل صحيح.");
+            }
+        }
+
+        // دالة تسجيل الخروج
+        function handleLogout() {
+            localStorage.removeItem('isLoggedIn');
+            window.location.href = "login.html";
         }
     </script>
 </body>
