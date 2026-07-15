@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مؤسسة القوافل الخمسة - إدارة وتعديل السلف المالية</title>
+    <!-- مكتبة أيقونات FontAwesome و Tailwind CSS للتصميم الاحترافي -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- مكتبة XLSX لتصدير واستيراد ملفات الإكسل -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
@@ -14,6 +16,7 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex">
 
+    <!-- الشريط الجانبي الثابت (Sidebar) -->
     <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
         <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
             <div class="text-2xl text-blue-500">🚚</div>
@@ -45,15 +48,13 @@
             <a href="settings.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
                 <i class="fa-solid fa-sliders w-5 text-center"></i> الضبط والإعدادات
             </a>
-
-            <a href="javascript:void(0)" onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-350 transition-all mt-auto border border-rose-950/40">
-                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
-            </a>
         </nav>
     </div>
 
+    <!-- المحتوى الرئيسي للموقع -->
     <div class="flex-1 p-8 overflow-x-hidden">
         
+        <!-- الهيدر العلوي -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">إدارة وتعديل السلف المالية السنوية</h2>
@@ -72,12 +73,14 @@
             </div>
         </div>
 
+        <!-- شاشة تسجيل وتعديل السلف الذكية -->
         <div id="loan-form-section" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
             <div class="flex items-center justify-between mb-6 border-b pb-3 border-slate-100 flex-wrap gap-4">
                 <div class="flex items-center gap-2 text-blue-600 font-bold">
                     <i class="fa-solid fa-pen-to-square text-lg"></i>
                     <h3>إدخال سلفة جديدة أو تعديل بيانات موظف حالي</h3>
                 </div>
+                <!-- حقل البحث السريع الذكي -->
                 <div class="relative w-full sm:w-96">
                     <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-blue-500">
                         <i class="fa-solid fa-magnifying-glass text-sm"></i>
@@ -88,16 +91,19 @@
             </div>
             
             <form id="loan-form" class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
+                <!-- 1. اسم الموظف -->
                 <div class="md:col-span-1">
                     <label class="block text-xs font-bold text-slate-600 mb-2">اسم الموظف / السائق</label>
                     <input type="text" id="loan-emp-name" placeholder="أدخل اسم الموظف..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 font-semibold" required>
                 </div>
 
+                <!-- 2. حقل إجمالي السلفة الأصلي -->
                 <div class="md:col-span-1">
                     <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي السلفة الأصلي (ريال)</label>
                     <input type="number" id="loan-total-amount" placeholder="0" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-800 focus:outline-none focus:border-blue-500" required>
                 </div>
 
+                <!-- 3. اختيار شهر التعديل/السداد -->
                 <div class="md:col-span-1">
                     <label class="block text-xs font-bold text-slate-600 mb-2">تحديث قسط شهر معين (اختياري)</label>
                     <select id="loan-month" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer">
@@ -117,11 +123,13 @@
                     </select>
                 </div>
 
+                <!-- 4. قيمة قسط الشهر -->
                 <div class="md:col-span-1">
                     <label class="block text-xs font-bold text-slate-600 mb-2">قيمة القسط للشهر المختار (ريال)</label>
                     <input type="number" id="loan-pay-amount" placeholder="اكتب 0 لإلغاء القسط" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
                 </div>
 
+                <!-- أزرار التحكم والعمليات -->
                 <div class="md:col-span-4 flex gap-3">
                     <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-floppy-disk"></i> حفظ التعديلات وتحديث السجل
@@ -133,6 +141,7 @@
             </form>
         </div>
 
+        <!-- جدول سلف الموظفين السنوي -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
@@ -171,7 +180,8 @@
                         </tr>
                     </thead>
                     <tbody id="loans-table-body" class="divide-y divide-slate-100 text-slate-600 font-semibold whitespace-nowrap">
-                        </tbody>
+                        <!-- الخلايا تظهر هنا -->
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -183,17 +193,6 @@
             'january', 'february', 'march', 'april', 'may', 'june', 
             'july', 'august', 'september', 'october', 'november', 'december'
         ];
-
-        // 🛑 تحقق أمان تسجيل الدخول قبل تحميل باقي البيانات
-        if (localStorage.getItem('isLoggedIn') !== 'true') {
-            window.location.href = "login.html";
-        }
-
-        // 🛑 دالة تسجيل الخروج الفعالة
-        function handleLogout() {
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = "login.html";
-        }
 
         document.addEventListener("DOMContentLoaded", function() {
             // تحديث اسم المؤسسة ديناميكياً من الإعدادات
@@ -299,9 +298,11 @@
                         <td class="p-3 ${remainingBadgeClass} text-sm">${remaining.toLocaleString()} ريال</td>
                         <td class="p-3 bg-slate-900 text-white font-bold">${originalTotal.toLocaleString()} ريال</td>
                         <td class="p-3 flex items-center justify-center gap-1.5">
+                            <!-- زر التعديل -->
                             <button onclick='selectLoanToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 transition-all text-[11px]" title="تعديل السلفة">
                                 <i class="fa-solid fa-pen-to-square"></i> تعديل
                             </button>
+                            <!-- زر الحذف -->
                             <button onclick="deleteLoanRecord('${loan.id}', '${loan.name}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2.5 py-1.5 rounded-lg font-bold flex items-center justify-center gap-1 transition-all text-[11px]" title="حذف السجل نهائياً">
                                 <i class="fa-solid fa-trash-can"></i> حذف
                             </button>
@@ -320,7 +321,6 @@
             // فلترة السجلات واستثناء السجل المطلوب حذفه
             loans = loans.filter(loan => {
                 if (loan.id && String(loan.id) === String(id)) return false;
-                // حماية إضافية في حال تكرار الاسم دون وجود id فريد
                 if (!loan.id && loan.name.toLowerCase() === name.toLowerCase()) return false;
                 return true;
             });
@@ -391,4 +391,110 @@
             rows.forEach(row => {
                 if (row.cells.length < 1) return;
                 const nameText = row.cells[0].textContent.toLowerCase();
-                if (nameText.includes
+                if (nameText.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // إغلاق الدوب داون عند النقر في الخارج
+        document.addEventListener('click', function(e) {
+            const dropdown = document.getElementById('search-dropdown-loan');
+            const searchInput = document.getElementById('quick-search-loan');
+            if (e.target !== dropdown && e.target !== searchInput) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // تصدير ملفات الإكسل
+        function exportLoansToExcel() {
+            const loans = JSON.parse(localStorage.getItem('five_caravans_loans')) || [];
+            if (loans.length === 0) {
+                alert("لا توجد بيانات لتصديرها!");
+                return;
+            }
+
+            const excelData = loans.map(loan => {
+                let totalPaid = 0;
+                monthsKeys.forEach(m => totalPaid += (parseFloat(loan[m]) || 0));
+                const remaining = Math.max(0, (parseFloat(loan.totalAmount) || 0) - totalPaid);
+
+                return {
+                    "اسم الموظف": loan.name,
+                    "يناير": loan.january || 0, "فبراير": loan.february || 0, "مارس": loan.march || 0,
+                    "أبريل": loan.april || 0, "مايو": loan.may || 0, "يونيو": loan.june || 0,
+                    "يوليو": loan.july || 0, "أغسطس": loan.august || 0, "سبتمبر": loan.september || 0,
+                    "أكتوبر": loan.october || 0, "نوفمبر": loan.november || 0, "ديسمبر": loan.december || 0,
+                    "المتبقي الحالي": remaining, "إجمالي السلفة الأصلي": loan.totalAmount || 0
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(excelData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "سلف الموظفين");
+            XLSX.writeFile(workbook, "سجل_السلف_المالية_المحدث_2026.xlsx");
+        }
+
+        // استيراد ملفات الإكسل
+        function importLoansFromExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                const importedRows = XLSX.utils.sheet_to_json(worksheet);
+
+                if (importedRows.length === 0) {
+                    alert("الملف فارغ أو غير متوافق!");
+                    return;
+                }
+
+                let loans = JSON.parse(localStorage.getItem('five_caravans_loans')) || [];
+                let importedCount = 0;
+
+                importedRows.forEach(row => {
+                    const name = row["اسم الموظف"] || row["الاسم"] || "";
+                    if (!name) return;
+
+                    let loanData = {
+                        id: Date.now() + Math.random(),
+                        name: name.trim(),
+                        january: parseFloat(row["يناير"] || 0),
+                        february: parseFloat(row["فبراير"] || 0),
+                        march: parseFloat(row["مارس"] || 0),
+                        april: parseFloat(row["أبريل"] || 0),
+                        may: parseFloat(row["مايو"] || 0),
+                        june: parseFloat(row["يونيو"] || 0),
+                        july: parseFloat(row["يوليو"] || 0),
+                        august: parseFloat(row["أغسطس"] || 0),
+                        september: parseFloat(row["سبتمبر"] || 0),
+                        october: parseFloat(row["أكتوبر"] || 0),
+                        november: parseFloat(row["نوفمبر"] || 0),
+                        december: parseFloat(row["ديسمبر"] || 0),
+                        totalAmount: parseFloat(row["إجمالي السلفة الأصلي"] || row["الإجمالي"] || 0)
+                    };
+
+                    let existingIndex = loans.findIndex(l => l.name.toLowerCase() === name.trim().toLowerCase());
+                    if (existingIndex !== -1) {
+                        loans[existingIndex] = loanData;
+                    } else {
+                        loans.unshift(loanData);
+                    }
+                    importedCount++;
+                });
+
+                localStorage.setItem('five_caravans_loans', JSON.stringify(loans));
+                renderLoansTable();
+                alert(`تم استيراد وتحديث ${importedCount} سجل سلف بنجاح! 🎉`);
+                event.target.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+</html>
