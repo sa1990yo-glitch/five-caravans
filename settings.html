@@ -3,326 +3,222 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مؤسسة القوافل الخمسة - إدارة الصلاحيات</title>
+    <title>إعدادات النظام والحسابات - مؤسسة القوافل الخمسة</title>
+    
+    <!-- مكتبة الأيقونات والخطوط وتصميم تايلوند المتناسق مع بقية النظام الداكن -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700;900&display=swap');
         body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col md:flex-row">
+<body class="bg-slate-950 text-slate-100 min-h-screen p-6 space-y-6">
 
-    <div class="w-full md:w-72 bg-slate-950 text-white flex flex-col md:min-h-screen p-4 shadow-xl z-20 flex-shrink-0">
-        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
-            <div class="text-2xl">🚚</div>
-            <div>
-                <h1 class="font-bold text-base leading-tight" id="sidebar-brand-name">القوافل الخمسة</h1>
-                <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
-            </div>
+    <!-- القسم الأول: إنشاء حساب مستخدم جديد -->
+    <div class="max-w-6xl mx-auto bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 shadow-xl backdrop-blur-md">
+        <div class="flex items-center gap-2 mb-6 border-b border-slate-800 pb-3">
+            <i class="fa-solid fa-user-plus text-blue-500 text-xl"></i>
+            <h2 class="text-md font-bold text-white">إنشاء حساب مستخدم جديد</h2>
         </div>
         
-        <nav class="flex-1 flex flex-col gap-1.5" id="sidebar-nav">
-            <a href="index.html" id="nav-index" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-chart-line w-5 text-center"></i> لوحة التحكم العامة
-            </a>
-            <a href="residence.html" id="nav-residence" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-users w-5 text-center"></i> سجلات الموظفين والإقامات
-            </a>
-            <a href="requests.html" id="nav-requests" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-file-invoice w-5 text-center"></i> طلبات التعديل (قوى)
-            </a>
-            <a href="loans.html" id="nav-loans" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
-            </a>
-            <a href="penalties.html" id="nav-penalties" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-scale-balanced w-5 text-center"></i> الجزاءات والخصومات
-            </a>
-            <a href="leaves.html" id="nav-leaves" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-calendar-days w-5 text-center"></i> إدارة الإجازات
-            </a>
-            <a href="settings.html" id="nav-settings" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
-                <i class="fa-solid fa-sliders w-5 text-center"></i> الضبط والإعدادات
-            </a>
-
-            <a href="javascript:void(0)" onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/40">
-                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
-            </a>
-        </nav>
-    </div>
-
-    <div class="flex-1 min-w-0 p-4 md:p-8 overflow-y-auto">
-        
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <!-- حقول الإدخال المتناسقة مع واجهتك -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div>
-                <h2 class="text-xl md:text-2xl font-bold text-slate-800">إدارة المستخدمين وصلاحيات الوصول</h2>
-                <p class="text-slate-500 text-xs md:text-sm mt-1">إنشاء حسابات الموظفين، التحكم الفوري بالصلاحيات عبر مربعات الاختيار.</p>
+                <label class="block text-slate-400 text-xs font-bold mb-2 mr-1">اسم المستخدم</label>
+                <input type="text" id="new-username" placeholder="مثال: salah" 
+                    class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-3 px-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-all text-sm">
             </div>
-            <div class="bg-blue-50 text-blue-700 px-4 py-2.5 rounded-xl text-xs font-bold whitespace-nowrap">
-                <i class="fa-solid fa-user-shield text-sm ml-1"></i>
-                <span>المستخدم الحالي: <span class="text-blue-600">مدير النظام</span></span>
+            <div>
+                <label class="block text-slate-400 text-xs font-bold mb-2 mr-1">كلمة المرور</label>
+                <input type="password" id="new-password" placeholder="••••••••" 
+                    class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-3 px-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-all text-sm">
             </div>
-        </div>
-
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
-            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-6 border-b pb-3 border-slate-100">
-                <i class="fa-solid fa-user-plus text-blue-600"></i> إنشاء حساب مستخدم جديد
-            </h3>
-            
-            <form id="user-creation-form" onsubmit="handleCreateUser(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">اسم المستخدم</label>
-                    <input type="text" id="new-username" placeholder="مثال: salah" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">كلمة المرور</label>
-                    <input type="password" id="new-password" placeholder="••••••••" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold focus:outline-none focus:border-blue-500" required>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">نوع الصلاحية المبدئية</label>
-                    <select id="new-user-role" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="admin">مدير نظام (Super Admin)</option>
-                        <option value="editor">مدخل بيانات (Data Entry)</option>
-                        <option value="viewer">مستعرض / محاسب (Viewer)</option>
-                    </select>
-                </div>
-                <div>
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-user-check"></i> إضافة المستخدم
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
-            <div class="p-5 border-b border-slate-100 bg-slate-50/50">
-                <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
-                    <i class="fa-solid fa-users-gear text-slate-700"></i> قائمة الحسابات النشطة وصلاحياتها
-                </h3>
+            <div>
+                <label class="block text-slate-400 text-xs font-bold mb-2 mr-1">نوع الصلاحية المبدئية</label>
+                <select id="new-role" class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-3 px-4 text-white focus:outline-none focus:border-blue-500 transition-all text-sm">
+                    <option value="Super Admin">مدير نظام (Super Admin)</option>
+                    <option value="Data Entry">مدخل بيانات (Data Entry)</option>
+                </select>
             </div>
-            
-            <div class="w-full overflow-x-auto">
-                <table class="w-full min-w-[800px] text-center border-collapse text-xs table-fixed">
-                    <thead>
-                        <tr class="bg-slate-900 text-white font-bold">
-                            <th class="p-4 text-right w-[150px]">اسم المستخدم</th>
-                            <th class="p-4 w-[180px]">نوع الصلاحية</th>
-                            <th class="p-4 w-[150px]">صلاحية الإضافة والتعديل</th>
-                            <th class="p-4 w-[150px]">صلاحية الحذف والتصفير</th>
-                            <th class="p-4 w-[150px]">دخول الإعدادات</th>
-                            <th class="p-4 w-[120px]">الإجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="users-list-tbody" class="divide-y divide-slate-100 text-slate-600 font-semibold">
-                        </tbody>
-                </table>
+            <div>
+                <button onclick="addUser()" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold py-3 rounded-2xl transition-all shadow-lg shadow-blue-600/15 flex items-center justify-center gap-2 text-sm">
+                    <i class="fa-solid fa-user-plus"></i> إضافة المستخدم
+                </button>
             </div>
         </div>
-
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60">
-            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4 border-b pb-2 border-slate-100">
-                <i class="fa-solid fa-building text-teal-600"></i> إعدادات المنشأة العامة
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-2">اسم المنشأة الرئيسي في النظام</label>
-                    <input type="text" id="company-name" placeholder="مؤسسة القوافل الخمسة" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-700 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="flex items-end">
-                    <button onclick="saveCompanyNameOnly()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl text-xs transition-all w-full md:w-auto">
-                        حفظ اسم المنشأة
-                    </button>
-                </div>
-            </div>
-        </div>
-
     </div>
 
+    <!-- القسم الثاني: قائمة الحسابات النشطة وصلاحياتها -->
+    <div class="max-w-6xl mx-auto bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 shadow-xl backdrop-blur-md">
+        <div class="flex items-center gap-2 mb-6 border-b border-slate-800 pb-3">
+            <i class="fa-solid fa-users-gear text-blue-500 text-xl"></i>
+            <h2 class="text-md font-bold text-white">قائمة الحسابات النشطة وصلاحياتها</h2>
+        </div>
+
+        <!-- جدول الحسابات الذكي -->
+        <div class="overflow-x-auto rounded-2xl border border-slate-800">
+            <table class="w-full text-right border-collapse">
+                <thead>
+                    <tr class="bg-slate-950 text-slate-400 text-xs font-bold border-b border-slate-800">
+                        <th class="p-4">اسم المستخدم</th>
+                        <th class="p-4">نوع الصلاحية</th>
+                        <th class="p-4 text-center">صلاحية الإضافة والتعديل</th>
+                        <th class="p-4 text-center">صلاحية الحذف والتصفير</th>
+                        <th class="p-4 text-center">دخول الإعدادات</th>
+                        <th class="p-4 text-center">الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body" class="text-sm divide-y divide-slate-800/50">
+                    <!-- سيتم توليد الأسطر هنا ديناميكياً بواسطة الجافا سكريبت -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- القسم الثالث: إعدادات المنشأة العامة -->
+    <div class="max-w-6xl mx-auto bg-slate-900/60 border border-slate-800/80 rounded-3xl p-6 shadow-xl backdrop-blur-md">
+        <div class="flex items-center gap-2 mb-6 border-b border-slate-800 pb-3">
+            <i class="fa-solid fa-building text-blue-500 text-xl"></i>
+            <h2 class="text-md font-bold text-white">إعدادات المنشأة العامة</h2>
+        </div>
+        
+        <div class="flex flex-col md:flex-row items-end gap-4">
+            <div class="flex-1">
+                <label class="block text-slate-400 text-xs font-bold mb-2 mr-1">اسم المنشأة الرئيسي في النظام</label>
+                <input type="text" id="company-name-input" placeholder="مثال: مؤسسة القوافل الخمسة" 
+                    class="w-full bg-slate-950 border border-slate-800 rounded-2xl py-3 px-4 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-all text-sm">
+            </div>
+            <div>
+                <button onclick="saveCompanyName()" class="bg-slate-950 hover:bg-slate-900 border border-slate-800 text-white font-bold py-3 px-8 rounded-2xl transition-all flex items-center justify-center gap-2 text-sm">
+                    حفظ اسم المنشأة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🌐 كود الربط الذكي والتحكم بالمصفوفة -->
     <script>
-        // دالة تشغيل بمجرد تحميل الصفحة بالكامل
-        document.addEventListener("DOMContentLoaded", function() {
-            // مزامنة اسم المنشأة
-            const companyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
-            document.getElementById('company-name').value = companyName;
-            document.getElementById('sidebar-brand-name').innerText = companyName;
+        // دالة تحويل الأرقام العربية إلى إنجليزية لمنع المشاكل في كلمات المرور
+        function convertArabicNumbers(str) {
+            return String(str).replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
+        }
 
-            // رندرة الجدول مباشرة للتأكد من اشتغاله مهما كانت الرتبة الحالية
+        // عند تشغيل الصفحة: جلب وعرض البيانات المخزنة
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1. تهيئة الحساب الافتراضي إذا لم تكن هناك مصفوفة مستخدمين مسبقاً
+            if (!localStorage.getItem('SYSTEM_USERS')) {
+                const defaultUsers = [
+                    { username: "admin", password: "5555", role: "Super Admin" }
+                ];
+                localStorage.setItem('SYSTEM_USERS', JSON.stringify(defaultUsers));
+            }
+            
+            // 2. عرض اسم الشركة الحالي في الحقل
+            const savedCompanyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
+            document.getElementById('company-name-input').value = savedCompanyName;
+
+            // 3. بناء وعرض جدول المستخدمين
             renderUsersTable();
         });
 
-        // رندرة الجدول بدقة وحيوية كاملة
+        // دالة بناء وتحديث جدول المستخدمين ديناميكياً بناءً على الذاكرة المحلية
         function renderUsersTable() {
-            const tbody = document.getElementById('users-list-tbody');
-            if (!tbody) return;
+            const users = JSON.parse(localStorage.getItem('SYSTEM_USERS')) || [];
+            const tbody = document.getElementById('users-table-body');
+            tbody.innerHTML = ''; // مسح الجدول الحالي لإعادة بنائه
 
-            let users = [];
-            try {
-                users = JSON.parse(localStorage.getItem('system_users')) || [];
-            } catch (e) {
-                users = [];
-            }
-            
-            // تهيئة الحسابات الافتراضية إذا كانت الذاكرة فارغة تماماً
-            if (users.length === 0) {
-                users = [
-                    { 
-                        username: "admin", 
-                        password: "123", 
-                        role: "admin",
-                        canEdit: true,
-                        canDelete: true,
-                        canSettings: true
-                    },
-                    {
-                        username: "salah",
-                        password: "123",
-                        role: "editor",
-                        canEdit: true,
-                        canDelete: false,
-                        canSettings: false
-                    }
-                ];
-                localStorage.setItem('system_users', JSON.stringify(users));
-            }
+            users.forEach((user, index) => {
+                const isSuperAdmin = user.role === "Super Admin";
+                
+                // تحديد شكل ولون شارة (Badge) الصلاحية بناء على نوعها لتطابق صورتك
+                const roleBadge = isSuperAdmin 
+                    ? `<span class="bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs px-2.5 py-1 rounded-full font-bold">مدير نظام (Super Admin)</span>`
+                    : `<span class="bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs px-2.5 py-1 rounded-full font-bold">مدخل بيانات (Data Entry)</span>`;
 
-            tbody.innerHTML = '';
-            users.forEach((user) => {
-                // ضبط المتغيرات لضمان عدم وجود undefined
-                const uEdit = user.canEdit !== false; 
-                const uDel = !!user.canDelete;
-                const uSet = !!user.canSettings;
-
-                let roleText = "";
-                let roleColor = "";
-
-                if (user.role === 'admin') {
-                    roleText = "مدير نظام (Super Admin)";
-                    roleColor = "text-rose-600 bg-rose-50 border-rose-200";
-                } else if (user.role === 'editor') {
-                    roleText = "مدخل بيانات (Data Entry)";
-                    roleColor = "text-amber-600 bg-amber-50 border-amber-200";
-                } else {
-                    roleText = "مستعرض / محاسب (Viewer)";
-                    roleColor = "text-slate-600 bg-slate-100 border-slate-200";
-                }
-
-                const isAdminPrimary = user.username.toLowerCase() === 'admin';
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition-all">
-                        <td class="p-4 text-right font-bold text-slate-800 whitespace-nowrap">${user.username}</td>
-                        <td class="p-4">
-                            <span class="px-2.5 py-1 rounded-full border ${roleColor} font-bold text-[10px] inline-block whitespace-nowrap">${roleText}</span>
-                        </td>
-                        <td class="p-4">
-                            <div class="flex items-center justify-center">
-                                <input type="checkbox" 
-                                       ${uEdit ? 'checked' : ''} 
-                                       ${isAdminPrimary ? 'disabled' : ''} 
-                                       onchange="togglePermission('${user.username}', 'canEdit', this.checked)"
-                                       class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
-                            </div>
-                        </td>
-                        <td class="p-4">
-                            <div class="flex items-center justify-center">
-                                <input type="checkbox" 
-                                       ${uDel ? 'checked' : ''} 
-                                       ${isAdminPrimary ? 'disabled' : ''} 
-                                       onchange="togglePermission('${user.username}', 'canDelete', this.checked)"
-                                       class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
-                            </div>
-                        </td>
-                        <td class="p-4">
-                            <div class="flex items-center justify-center">
-                                <input type="checkbox" 
-                                       ${uSet ? 'checked' : ''} 
-                                       ${isAdminPrimary ? 'disabled' : ''} 
-                                       onchange="togglePermission('${user.username}', 'canSettings', this.checked)"
-                                       class="w-4 h-4 text-blue-600 bg-slate-100 border-slate-300 rounded focus:ring-blue-500 cursor-pointer disabled:opacity-50">
-                            </div>
-                        </td>
-                        <td class="p-4">
-                            ${isAdminPrimary 
-                                ? `<span class="text-slate-400 italic text-[11px] whitespace-nowrap">غير قابل للحذف</span>`
-                                : `<button onclick="deleteUser('${user.username}')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white px-3 py-1.5 rounded-xl font-bold transition-all text-[11px] whitespace-nowrap">حذف</button>`
-                            }
-                        </td>
-                    </tr>
+                // بناء السطر بالكامل مع مربعات الصلاحيات (Checkboxes) التفاعلية
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-900/30 transition-all";
+                row.innerHTML = `
+                    <td class="p-4 font-semibold text-white">${user.username}</td>
+                    <td class="p-4">${roleBadge}</td>
+                    <td class="p-4 text-center">
+                        <input type="checkbox" ${isSuperAdmin ? 'checked disabled class="accent-slate-600"' : 'checked class="w-4 h-4 accent-blue-600"'}>
+                    </td>
+                    <td class="p-4 text-center">
+                        <input type="checkbox" ${isSuperAdmin ? 'checked disabled class="accent-slate-600"' : 'class="w-4 h-4 accent-blue-600"'}>
+                    </td>
+                    <td class="p-4 text-center">
+                        <input type="checkbox" ${isSuperAdmin ? 'checked disabled class="accent-slate-600"' : 'class="w-4 h-4 accent-blue-600"'}>
+                    </td>
+                    <td class="p-4 text-center">
+                        ${user.username.toLowerCase() === 'admin' 
+                            ? `<span class="text-xs text-slate-500 italic font-medium">غير قابل للحذف</span>` 
+                            : `<button onclick="deleteUser(${index})" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs px-3 py-1 rounded-xl transition-all">حذف</button>`
+                        }
+                    </td>
                 `;
+                tbody.appendChild(row);
             });
         }
 
-        // تعديل الصلاحيات التفاعلية وحفظها فوراً
-        function togglePermission(username, permissionType, isChecked) {
-            let users = JSON.parse(localStorage.getItem('system_users')) || [];
-            const idx = users.findIndex(u => u.username.toLowerCase() === username.toLowerCase());
+        // دالة إضافة مستخدم جديد وربطه مع قاعدة البيانات المحلية
+        function addUser() {
+            const usernameField = document.getElementById('new-username');
+            const passwordField = document.getElementById('new-password');
+            const roleField = document.getElementById('new-role');
 
-            if (idx !== -1) {
-                users[idx][permissionType] = isChecked;
-                localStorage.setItem('system_users', JSON.stringify(users));
-                console.log("Updated: " + username + " -> " + permissionType + " = " + isChecked);
-            }
-        }
+            const username = usernameField.value.trim().toLowerCase();
+            let password = passwordField.value.trim();
+            password = convertArabicNumbers(password); // حماية وتصحيح الأرقام المكتوبة
+            const role = roleField.value;
 
-        // إضافة مستخدم جديد
-        function handleCreateUser(e) {
-            e.preventDefault();
-            const usernameInput = document.getElementById('new-username');
-            const passwordInput = document.getElementById('new-password');
-            const roleSelect = document.getElementById('new-user-role');
-
-            const username = usernameInput.value.trim().toLowerCase();
-            const password = passwordInput.value.trim();
-            const role = roleSelect.value;
-
-            if (!username || !password) return;
-
-            let users = JSON.parse(localStorage.getItem('system_users')) || [];
-
-            const isExists = users.some(u => u.username.toLowerCase() === username);
-            if (isExists) {
-                alert("⚠️ اسم المستخدم هذا مسجل مسبقاً!");
+            if (!username || !password) {
+                alert("⚠️ الرجاء كتابة اسم المستخدم وكلمة المرور أولاً!");
                 return;
             }
 
-            const canEdit = (role === 'admin' || role === 'editor');
-            const canDelete = (role === 'admin');
-            const canSettings = (role === 'admin');
+            let users = JSON.parse(localStorage.getItem('SYSTEM_USERS')) || [];
 
-            users.push({ username, password, role, canEdit, canDelete, canSettings });
-            localStorage.setItem('system_users', JSON.stringify(users));
+            // التحقق من عدم تكرار الحساب
+            if (users.some(u => u.username.toLowerCase() === username)) {
+                alert("⚠️ اسم المستخدم هذا مسجل بالفعل في النظام!");
+                return;
+            }
 
+            // إضافة الحساب الجديد إلى المصفوفة المشتركة مع صفحة الـ login
+            users.push({ username, password, role });
+            localStorage.setItem('SYSTEM_USERS', JSON.stringify(users));
+
+            // تفريغ الحقول وتحديث الجدول فوراً
+            usernameField.value = '';
+            passwordField.value = '';
             renderUsersTable();
-            document.getElementById('user-creation-form').reset();
-            alert("🎉 تم إضافة المستخدم بنجاح ومزامنته في الجدول!");
+
+            alert(`✅ تم إضافة الحساب (${username}) بنجاح! يمكنه الآن التوجه لصفحة تسجيل الدخول والولوج للنظام.`);
         }
 
-        // حذف مستخدم
-        function deleteUser(username) {
-            const confirmDelete = confirm("⚠️ هل أنت متأكد من رغبتك في حذف حساب المستخدم (" + username + ") نهائياً؟");
-            if (!confirmDelete) return;
-
-            let users = JSON.parse(localStorage.getItem('system_users')) || [];
-            users = users.filter(u => u.username.toLowerCase() !== username.toLowerCase());
-            localStorage.setItem('system_users', JSON.stringify(users));
-
-            renderUsersTable();
+        // دالة حذف حساب من النظام
+        function deleteUser(index) {
+            let users = JSON.parse(localStorage.getItem('SYSTEM_USERS')) || [];
+            const deletedName = users[index].username;
+            
+            if (confirm(`هل أنت متأكد من حذف حساب المستخدم (${deletedName}) نهائياً؟`)) {
+                users.splice(index, 1);
+                localStorage.setItem('SYSTEM_USERS', JSON.stringify(users));
+                renderUsersTable();
+            }
         }
 
-        // حفظ اسم المنشأة
-        function saveCompanyNameOnly() {
-            const newCompName = document.getElementById('company-name').value.trim() || "مؤسسة القوافل الخمسة";
-            localStorage.setItem('COMPANY_NAME', newCompName);
-            document.getElementById('sidebar-brand-name').innerText = newCompName;
-            alert("تم تحديث اسم المنشأة بنجاح! ✨");
-        }
-
-        // تسجيل الخروج
-        function handleLogout() {
-            localStorage.removeItem('isLoggedIn');
-            localStorage.removeItem('currentUserRole');
-            localStorage.removeItem('currentUsername');
-            window.location.href = "login.html";
+        // دالة حفظ اسم المنشأة وتعميمه على النظام وصفحة الدخول
+        function saveCompanyName() {
+            const companyName = document.getElementById('company-name-input').value.trim();
+            if (!companyName) {
+                alert("⚠️ الرجاء إدخال اسم المنشأة!");
+                return;
+            }
+            localStorage.setItem('COMPANY_NAME', companyName);
+            alert("✅ تم حفظ وتحديث اسم المنشأة بنجاح في جميع صفحات النظام!");
         }
     </script>
 </body>
