@@ -7,7 +7,7 @@
     <!-- مكتبات التصميم والأيقونات وتنسيق الإكسل المتقدم -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- تم استخدام مكتبة exceljs لدعم الألوان والتنسيقات المتقدمة في المتصفح -->
+    <!-- مكتبات إدارة ملفات الأكسل في المتصفح -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
@@ -52,15 +52,22 @@
     <!-- المحتوى الرئيسي -->
     <div class="flex-1 p-8 overflow-x-hidden">
         
-        <!-- الهيدر العلوي -->
+        <!-- الهيدر العلوي المحتوي على أزرار التحكم -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">إدارة الجزاءات والخصومات السنوية</h2>
                 <p class="text-slate-500 text-sm mt-1">تسجيل قيم الخصومات الكلية المترتبة، وإدارة أقساط السداد الشهرية مع مراقبة المتبقي الفعلي بدقة.</p>
             </div>
             
-            <div class="flex items-center gap-3">
-                <button onclick="exportPenaltiesToExcel('active')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
+            <div class="flex items-center gap-2.5 flex-wrap">
+                <!-- زر الاستيراد بعد إعادته -->
+                <button onclick="document.getElementById('excel-file-input').click()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-file-import text-base text-blue-400"></i> استيراد البيانات من إكسل
+                </button>
+                <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="hidden" onchange="importPenaltiesFromExcel(this)">
+
+                <!-- زر التصدير الاحترافي بالألوان -->
+                <button onclick="exportPenaltiesToExcel('active')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
                     <i class="fa-solid fa-file-excel text-base"></i> تصدير الخصومات إلى إكسل
                 </button>
             </div>
@@ -125,9 +132,9 @@
             </form>
         </div>
 
-        <!-- جدول الخصومات والجزاءات السنوية (النشط) -->
+        <!-- جدول الخصومات والجزاءات السنوية -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
-            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="p-5 border-b border-slate-100 bg-slate-50/50">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-scale-balanced text-red-600 text-lg"></i>
                     <h3 class="font-bold text-slate-800">جدول الجزاءات والخصومات السنوية (قابل للتعديل والتجميد والحذف)</h3>
@@ -255,8 +262,7 @@
             }
 
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="17" class="py-8 text-slate-400 italic bg-white">لا توجد خصومات نشطة.</td></tr>`;
-                return;
+                tbody.innerHTML = `<tr><td colspan="17" class="py-8 text-slate-400 italic bg-white">لا توجد خصومات نشطة.</td></tr>`; return;
             }
 
             tbody.innerHTML = '';
@@ -340,6 +346,75 @@
         }
         function deletePenaltyRecord(id) { if(confirm("حذف؟")) { let d = JSON.parse(localStorage.getItem('five_caravans_penalties_data'))||[]; d=d.filter(p=>String(p.id)!==String(id)); localStorage.setItem('five_caravans_penalties_data',JSON.stringify(d)); renderPenaltiesTable(); } }
 
+        /* 👑 دالة استيراد ملفات الإكسل المتقدمة والمقاومة للأخطاء 👑 */
+        function importPenaltiesFromExcel(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const buffer = e.target.result;
+                    const workbook = new ExcelJS.Workbook();
+                    await workbook.xlsx.load(buffer);
+                    const worksheet = workbook.worksheets[0];
+
+                    let importedData = [];
+
+                    worksheet.eachRow((row, rowNumber) => {
+                        // تخطي صف الهيدر الأول
+                        if (rowNumber === 1) return;
+
+                        // استخراج النصوص والقيم وتنظيفها من الكلمات الإضافية مثل " ريال"
+                        const cleanNum = (val) => {
+                            if (!val) return 0;
+                            let txt = val.toString().replace(/ريال/g, '').replace(/,/g, '').trim();
+                            return parseFloat(txt) || 0;
+                        };
+
+                        const name = row.getCell(1).text?.trim();
+                        const reason = row.getCell(2).text?.trim();
+
+                        if (name) {
+                            let monthsObj = {};
+                            monthsKeys.forEach((m, idx) => {
+                                let cellVal = row.getCell(3 + idx).value;
+                                monthsObj[m] = (cellVal === "-" || !cellVal) ? "0.00" : cleanNum(cellVal).toFixed(2);
+                            });
+
+                            const remaining = cleanNum(row.getCell(15).value);
+                            const totalAmount = cleanNum(row.getCell(16).value);
+
+                            importedData.push({
+                                id: Date.now() + rowNumber,
+                                name: name,
+                                reason: reason || "خصم مستورد",
+                                months: monthsObj,
+                                remaining: remaining.toFixed(2),
+                                totalAmount: totalAmount.toFixed(2)
+                            });
+                        }
+                    });
+
+                    if (importedData.length > 0) {
+                        let currentData = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
+                        // دمج البيانات المستوردة في بداية المصفوفة الحالية
+                        localStorage.setItem('five_caravans_penalties_data', JSON.stringify([...importedData, ...currentData]));
+                        renderPenaltiesTable();
+                        alert(`✅ تم استيراد عدد (${importedData.length}) سجلات خصومات بنجاح وتحديث الجدول الحالي!`);
+                    } else {
+                        alert("⚠️ لم يتم العثور على بيانات صالحة للاستيراد في الملف.");
+                    }
+
+                } catch (error) {
+                    console.error(error);
+                    alert("❌ حدث خطأ أثناء قراءة ملف الإكسل، يرجى التأكد من مطابقة الملف المرفوع لهيكل الجدول.");
+                }
+                input.value = ""; // تصفية حقل الإدخال ليقبل نفس الملف لاحقاً
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
         /* 👑 دالة التصدير الاحترافية والمطابقة تماماً لشكل الجدول والألوان 👑 */
         async function exportPenaltiesToExcel(type) {
             const data = type === 'active' 
@@ -347,106 +422,84 @@
                 : (JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || []);
 
             if (data.length === 0) {
-                alert("⚠️ لا توجد بيانات لتصديرها حالياً!");
-                return;
+                alert("⚠️ لا توجد بيانات لتصديرها حالياً!"); return;
             }
 
-            // إنشاء ملف Excel جديد عبر مكتبة ExcelJS المتقدمة
             const workbook = new ExcelJS.Workbook();
             const worksheet = workbook.addWorksheet('الخصومات السنوية', {
-                views: [{ rightToLeft: true, showGridLines: true }] // الاتجاه عربي من اليمين لليسار مع إظهار الخطوط
+                views: [{ rightToLeft: true, showGridLines: true }]
             });
 
-            // أعمدة الجدول بالترتيب الصحيح
             const headers = [
                 "اسم الموظف", "سبب الخصم الأخير", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
                 "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر", "المتبقي من الخصم", "إجمالي الخصم الأصلي"
             ];
 
-            // إضافة صف الهيدر الرئيسي
             const headerRow = worksheet.addRow(headers);
-            headerRow.height = 28; // تحديد ارتفاع الهيدر
+            headerRow.height = 28;
 
-            // تنسيق وتلوين خلايا الهيدر بناءً على كرت الجدول النشط في صورتك
             headerRow.eachCell((cell, colNumber) => {
                 cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'FFFFFF' } };
                 cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
                 cell.border = {
-                    top: { style: 'thin', color: { argb: 'D1D5DB' } },
-                    bottom: { style: 'thin', color: { argb: 'D1D5DB' } },
-                    left: { style: 'thin', color: { argb: 'D1D5DB' } },
-                    right: { style: 'thin', color: { argb: 'D1D5DB' } }
+                    top: { style: 'thin', color: { argb: 'D1D5DB' } }, bottom: { style: 'thin', color: { argb: 'D1D5DB' } },
+                    left: { style: 'thin', color: { argb: 'D1D5DB' } }, right: { style: 'thin', color: { argb: 'D1D5DB' } }
                 };
 
                 const headerName = headers[colNumber - 1];
                 if (headerName === "المتبقي من الخصم") {
-                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D97706' } }; // اللون البرتقالي/الذهبي المكتوب عليه المتبقي
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D97706' } };
                 } else if (headerName === "إجمالي الخصم الأصلي") {
-                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '111827' } }; // الكحلي/الأسود للإجمالي
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '111827' } };
                 } else {
-                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'B22222' } }; // الأحمر العنابي لباقي الخلايا والأشهر
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'B22222' } };
                 }
             });
 
-            // إضافة البيانات وتنسيقها صفاً بصف
             data.forEach(item => {
                 const rowValues = [
-                    item.name,
-                    item.reason,
-                    parseFloat(item.months?.["يناير"]) || 0,
-                    parseFloat(item.months?.["فبراير"]) || 0,
-                    parseFloat(item.months?.["مارس"]) || 0,
-                    parseFloat(item.months?.["أبريل"]) || 0,
-                    parseFloat(item.months?.["مايو"]) || 0,
-                    parseFloat(item.months?.["يونيو"]) || 0,
-                    parseFloat(item.months?.["يوليو"]) || 0,
-                    parseFloat(item.months?.["أغسطس"]) || 0,
-                    parseFloat(item.months?.["سبتمبر"]) || 0,
-                    parseFloat(item.months?.["أكتوبر"]) || 0,
-                    parseFloat(item.months?.["نوفمبر"]) || 0,
-                    parseFloat(item.months?.["ديسمبر"]) || 0,
-                    parseFloat(item.remaining) || 0,
-                    parseFloat(item.totalAmount) || 0
+                    item.name, item.reason,
+                    parseFloat(item.months?.["يناير"]) || 0, parseFloat(item.months?.["فبراير"]) || 0,
+                    parseFloat(item.months?.["مارس"]) || 0, parseFloat(item.months?.["أبريل"]) || 0,
+                    parseFloat(item.months?.["مايو"]) || 0, parseFloat(item.months?.["يونيو"]) || 0,
+                    parseFloat(item.months?.["يوليو"]) || 0, parseFloat(item.months?.["أغسطس"]) || 0,
+                    parseFloat(item.months?.["سبتمبر"]) || 0, parseFloat(item.months?.["أكتوبر"]) || 0,
+                    parseFloat(item.months?.["نوفمبر"]) || 0, parseFloat(item.months?.["ديسمبر"]) || 0,
+                    parseFloat(item.remaining) || 0, parseFloat(item.totalAmount) || 0
                 ];
 
                 const row = worksheet.addRow(rowValues);
-                row.height = 24; // تحديد ارتفاع صف الموظف
+                row.height = 24;
 
                 row.eachCell((cell, colNumber) => {
                     cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '4B5563' } };
                     cell.alignment = { horizontal: 'center', vertical: 'middle' };
                     cell.border = {
-                        top: { style: 'thin', color: { argb: 'E5E7EB' } },
-                        bottom: { style: 'thin', color: { argb: 'E5E7EB' } },
-                        left: { style: 'thin', color: { argb: 'E5E7EB' } },
-                        right: { style: 'thin', color: { argb: 'E5E7EB' } }
+                        top: { style: 'thin', color: { argb: 'E5E7EB' } }, bottom: { style: 'thin', color: { argb: 'E5E7EB' } },
+                        left: { style: 'thin', color: { argb: 'E5E7EB' } }, right: { style: 'thin', color: { argb: 'E5E7EB' } }
                     };
 
-                    // محاذاة اسم الموظف لليمين
                     if (colNumber === 1) {
                         cell.alignment = { horizontal: 'right', vertical: 'middle' };
                         cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '1F2937' } };
                     }
 
-                    // تنسيق قيم الأشهر (إذا كانت 0 تظهر شحطة "-"، وإذا أكبر تظهر باللون الأحمر وخلفية فاتحة)
                     if (colNumber >= 3 && colNumber <= 14) {
                         if (cell.value === 0) {
                             cell.value = "-";
                             cell.font = { name: 'Segoe UI', size: 11, bold: false, color: { argb: '9CA3AF' } };
                         } else {
-                            cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'DC2626' } }; // خط أحمر
-                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEE2E2' } }; // خلفية حمراء خفيفة
+                            cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'DC2626' } };
+                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEE2E2' } };
                         }
                     }
 
-                    // تنسيق عمود المتبقي من الخصم (نص بني داكن وخلفية صفراء خفيفة وعملة)
                     if (colNumber === 15) {
                         cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '92400E' } };
                         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEF3C7' } };
                         cell.numFmt = '#,##0.00" ريال"';
                     }
 
-                    // تنسيق عمود إجمالي الخصم الأصلي (خلفية رمادية خفيفة وعملة)
                     if (colNumber === 16) {
                         cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '111827' } };
                         cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F3F4F6' } };
@@ -455,7 +508,6 @@
                 });
             });
 
-            // ضبط عرض الأعمدة تلقائياً لتفادي مشكلة ظهور رموز (###)
             worksheet.columns.forEach(column => {
                 let maxLength = 0;
                 column.eachCell({ includeEmpty: true }, cell => {
@@ -465,7 +517,6 @@
                 column.width = maxLength < 12 ? 14 : maxLength + 5;
             });
 
-            // توليد وحفظ الملف مباشرة في التحميلات لدى المستخدم
             const buffer = await workbook.xlsx.writeBuffer();
             const fileName = type === 'active' ? "سجل_الجزاءات_والخصومات_السنوي.xlsx" : "سجل_الخصومات_المجمدة.xlsx";
             saveAs(new Blob([buffer]), fileName);
