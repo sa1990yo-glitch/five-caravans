@@ -66,7 +66,7 @@
                 <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="hidden" onchange="importPenaltiesFromExcel(this)">
 
                 <button onclick="exportPenaltiesToExcel('active')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-file-excel text-base"></i> تصدير الخصومات إلى إكسل
+                    <i class="fa-solid fa-file-excel text-base"></i> تصدير الخصومات النشطة إلى إكسل
                 </button>
             </div>
         </div>
@@ -130,7 +130,7 @@
             </form>
         </div>
 
-        <!-- جدول الخصومات والجزاءات السنوية -->
+        <!-- جدول الخصومات والجزاءات السنوية النشطة -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50">
                 <div class="flex items-center gap-2">
@@ -169,12 +169,12 @@
             </div>
         </div>
 
-        <!-- سجل الخصومات والجزاءات المجمدة -->
+        <!-- سجل الخصومات والجزاءات المجمدة (تم تحديث الهيكل بالكامل ليطابق الأعلى) -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-snowflake text-sky-500 text-lg"></i>
-                    <h3 class="font-bold text-slate-800">سجل الخصومات والجزاءات المجمدة مؤقتاً</h3>
+                    <h3 class="font-bold text-slate-800">سجل الخصومات والجزاءات المجمدة مؤقتاً (يحتوي على كافة تفاصيل الأشهر)</h3>
                 </div>
                 <div>
                     <button onclick="exportPenaltiesToExcel('frozen')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
@@ -189,14 +189,26 @@
                         <tr class="bg-slate-800 text-white font-bold whitespace-nowrap">
                             <th class="p-3 text-right">اسم الموظف</th>
                             <th class="p-3">سبب الخصم المجمّد</th>
-                            <th class="p-3 bg-blue-900 text-blue-100">شهر بداية التجميد</th>
-                            <th class="p-3 bg-amber-950 text-amber-300">المبلغ المتبقي عند التجميد</th>
-                            <th class="p-3 bg-slate-900 text-white">الخصم الأصلي</th>
+                            <th class="p-3 bg-blue-900 text-blue-100 font-bold">بداية التجميد</th>
+                            <th class="p-3">يناير</th>
+                            <th class="p-3">فبراير</th>
+                            <th class="p-3">مارس</th>
+                            <th class="p-3">أبريل</th>
+                            <th class="p-3">مايو</th>
+                            <th class="p-3">يونيو</th>
+                            <th class="p-3">يوليو</th>
+                            <th class="p-3">أغسطس</th>
+                            <th class="p-3">سبتمبر</th>
+                            <th class="p-3">أكتوبر</th>
+                            <th class="p-3">نوفمبر</th>
+                            <th class="p-3">ديسمبر</th>
+                            <th class="p-3 bg-amber-700 text-white font-bold">المتبقي عند التجميد</th>
+                            <th class="p-3 bg-slate-900 text-white font-bold">إجمالي الخصم الأصلي</th>
                             <th class="p-3">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="frozen-table-body" class="divide-y divide-slate-100 text-slate-600 font-semibold whitespace-nowrap">
-                        <!-- تضاف البيانات المجمدة هنا -->
+                        <!-- تضاف البيانات المجمدة هنا بكامل تفاصيلها -->
                     </tbody>
                 </table>
             </div>
@@ -206,7 +218,7 @@
 
     <!-- نافذة اختيار شهر التجميد (Modal Pop-up) -->
     <div id="freeze-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+        <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-100">
             <div class="flex items-center gap-3 text-sky-600 mb-4">
                 <i class="fa-solid fa-snowflake text-xl"></i>
                 <h4 class="font-bold text-base text-slate-800">تجميد حساب الموظف والخصومات</h4>
@@ -229,7 +241,7 @@
                         <option value="أغسطس 2026">أغسطس 2026</option>
                         <option value="سبتمبر 2026">سبتمبر 2026</option>
                         <option value="أكتوبر 2026">أكتوبر 2026</option>
-                        <option value="نوفمبر 2026">نوفمبر 2026</option>
+                        <option value="نوفمبر 2026">nوفمبر 2026</option>
                         <option value="ديسمبر 2026">ديسمبر 2026</option>
                     </select>
                 </div>
@@ -294,9 +306,9 @@
 
             if (data.length === 0 && !localStorage.getItem('five_caravans_penalties_initialized')) {
                 data.push({
-                    id: 111, name: "صدام", reason: "حادث شاحنة", totalAmount: "2500.00",
-                    months: {"يناير":"0.00","فبراير":"0.00","مارس":"0.00","أبريل":"300.00","مايو":"0.00","يونيو":"0.00","يوليو":"0.00","أغسطس":"0.00","سبتمبر":"0.00","أكتوبر":"0.00","نوفمبر":"0.00","ديسمبر":"0.00"},
-                    remaining: "2200.00"
+                    id: 111, name: "شعيب رحمن عزيز", reason: "حادث شاحنة", totalAmount: "2500.00",
+                    months: {"يناير":"0.00","فبراير":"0.00","مارس":"500.00","أبريل":"500.00","مايو":"500.00","يونيو":"500.00","يوليو":"500.00","أغسطس":"0.00","سبتمبر":"0.00","أكتوبر":"0.00","نوفمبر":"0.00","ديسمبر":"0.00"},
+                    remaining: "0.00"
                 });
                 localStorage.setItem('five_caravans_penalties_data', JSON.stringify(data));
                 localStorage.setItem('five_caravans_penalties_initialized', 'true');
@@ -336,18 +348,27 @@
         function renderFrozenTable() {
             const tbody = document.getElementById('frozen-table-body');
             const frozenData = JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || [];
+            
             if (frozenData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-slate-400 bg-white italic">لا توجد خصومات مجمدة.</td></tr>`; return;
+                tbody.innerHTML = `<tr><td colspan="18" class="py-6 text-slate-400 bg-white italic">لا توجد خصومات مجمدة حالياً.</td></tr>`; return;
             }
+            
             tbody.innerHTML = '';
             frozenData.forEach(item => {
+                let monthsHtml = '';
+                monthsKeys.forEach(m => {
+                    const val = parseFloat(item.months?.[m] || 0);
+                    monthsHtml += val > 0 ? `<td class="p-3 text-red-600 font-bold bg-red-50/30 font-mono">${val}</td>` : `<td class="p-3 text-slate-300 font-mono">-</td>`;
+                });
+
                 tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-all">
+                    <tr class="hover:bg-slate-50 transition-all opacity-90">
                         <td class="p-3 text-right font-bold text-slate-800">${item.name}</td>
                         <td class="p-3 text-slate-500">${item.reason}</td>
-                        <td class="p-3 font-bold text-blue-700 bg-blue-50/50">${item.frozenMonth || "-"}</td>
-                        <td class="p-3 font-bold text-amber-700 bg-amber-50/60 font-mono">${item.remaining} ريال</td>
-                        <td class="p-3 font-semibold text-slate-700 font-mono">${item.totalAmount} ريال</td>
+                        <td class="p-3 font-bold text-blue-700 bg-blue-50/60">${item.frozenMonth || "-"}</td>
+                        ${monthsHtml}
+                        <td class="p-3 font-black text-amber-700 bg-amber-50/50 font-mono">${item.remaining} ريال</td>
+                        <td class="p-3 font-bold text-slate-800 bg-slate-100 font-mono">${item.totalAmount} ريال</td>
                         <td class="p-3">
                             <button onclick="unfreezePenalty('${item.id}')" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-2 py-1 rounded-lg text-[11px] font-bold">إعادة تنشيط</button>
                         </td>
@@ -376,7 +397,7 @@
             let frozenData = JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || [];
             
             let recordToFreeze = activeData[idx];
-            recordToFreeze.frozenMonth = selectedMonth; // تطبيق الشهر المختار يدوياً من القائمة
+            recordToFreeze.frozenMonth = selectedMonth; 
 
             frozenData.unshift(recordToFreeze);
             localStorage.setItem('five_caravans_penalties_frozen', JSON.stringify(frozenData));
@@ -475,7 +496,7 @@
             reader.readAsArrayBuffer(file);
         }
 
-        /* دالة التصدير الاحترافية متوافقة مع الهيكل الجديد للجدولين ومعدلة لشهر التجميد */
+        /* دالة التصدير الاحترافية متوافقة مع الهيكل الموحد والمطابق بنسبة 100% */
         async function exportPenaltiesToExcel(type) {
             const data = type === 'active' 
                 ? (JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [])
@@ -497,7 +518,10 @@
                     "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر", "المتبقي من الخصم", "إجمالي الخصم الأصلي"
                 ];
             } else {
-                headers = ["اسم الموظف", "سبب الخصم المجمّد", "شهر بداية التجميد", "المبلغ المتبقي عند التجميد", "الخصم الأصلي"];
+                headers = [
+                    "اسم الموظف", "سبب الخصم المجمّد", "بداية التجميد", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+                    "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر", "المتبقي عند التجميد", "إجمالي الخصم الأصلي"
+                ];
             }
 
             const headerRow = worksheet.addRow(headers);
@@ -517,16 +541,17 @@
                     else if (headerName === "إجمالي الخصم الأصلي") cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '111827' } };
                     else cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'B22222' } };
                 } else {
-                    if (headerName === "شهر بداية التجميد") cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1E40AF' } };
-                    else if (headerName === "المبلغ المتبقي عند التجميد") cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '7C2D12' } };
-                    else if (headerName === "الخصم الأصلي") cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '111827' } };
+                    if (headerName === "بداية التجميد") cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1E40AF' } };
+                    else if (headerName === "المتبقي عند التجميد") cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '7C2D12' } };
+                    else if (headerName === "إجمالي الخصم الأصلي") cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '111827' } };
                     else cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1E293B' } };
                 }
             });
 
-            if (type === 'active') {
-                data.forEach(item => {
-                    const rowValues = [
+            data.forEach(item => {
+                let rowValues = [];
+                if (type === 'active') {
+                    rowValues = [
                         item.name, item.reason,
                         parseFloat(item.months?.["يناير"]) || 0, parseFloat(item.months?.["فبراير"]) || 0,
                         parseFloat(item.months?.["مارس"]) || 0, parseFloat(item.months?.["أبريل"]) || 0,
@@ -536,38 +561,59 @@
                         parseFloat(item.months?.["نوفمبر"]) || 0, parseFloat(item.months?.["ديسمبر"]) || 0,
                         parseFloat(item.remaining) || 0, parseFloat(item.totalAmount) || 0
                     ];
-                    const row = worksheet.addRow(rowValues);
-                    row.height = 24;
-                    row.eachCell((cell, colNumber) => {
-                        cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '4B5563' } };
-                        cell.alignment = { horizontal: 'center', vertical: 'middle' };
-                        if (colNumber === 1) cell.alignment = { horizontal: 'right', vertical: 'middle' };
-                        if (colNumber >= 3 && colNumber <= 14) {
-                            if (cell.value === 0) { cell.value = "-"; cell.font = { name: 'Segoe UI', size: 11, bold: false, color: { argb: '9CA3AF' } }; }
-                            else { cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'DC2626' } }; cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEE2E2' } }; }
-                        }
-                        if (colNumber === 15) { cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '92400E' } }; cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEF3C7' } }; cell.numFmt = '#,##0.00" ريال"'; }
-                        if (colNumber === 16) { cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '111827' } }; cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F3F4F6' } }; cell.numFmt = '#,##0.00" ريال"'; }
-                    });
-                });
-            } else {
-                data.forEach(item => {
-                    const rowValues = [
+                } else {
+                    rowValues = [
                         item.name, item.reason, item.frozenMonth || "-",
+                        parseFloat(item.months?.["يناير"]) || 0, parseFloat(item.months?.["فبراير"]) || 0,
+                        parseFloat(item.months?.["مارس"]) || 0, parseFloat(item.months?.["أبريل"]) || 0,
+                        parseFloat(item.months?.["مايو"]) || 0, parseFloat(item.months?.["يونيو"]) || 0,
+                        parseFloat(item.months?.["يوليو"]) || 0, parseFloat(item.months?.["أغسطس"]) || 0,
+                        parseFloat(item.months?.["سبتمبر"]) || 0, parseFloat(item.months?.["أكتوبر"]) || 0,
+                        parseFloat(item.months?.["نوفمبر"]) || 0, parseFloat(item.months?.["ديسمبر"]) || 0,
                         parseFloat(item.remaining) || 0, parseFloat(item.totalAmount) || 0
                     ];
-                    const row = worksheet.addRow(rowValues);
-                    row.height = 24;
-                    row.eachCell((cell, colNumber) => {
-                        cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '4B5563' } };
-                        cell.alignment = { horizontal: 'center', vertical: 'middle' };
-                        if (colNumber === 1) cell.alignment = { horizontal: 'right', vertical: 'middle' };
-                        if (colNumber === 3) { cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '1E40AF' } }; cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EFF6FF' } }; }
-                        if (colNumber === 4) { cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '7C2D12' } }; cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEDD5' } }; cell.numFmt = '#,##0.00" ريال"'; }
-                        if (colNumber === 5) { cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '111827' } }; cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F3F4F6' } }; cell.numFmt = '#,##0.00" ريال"'; }
-                    });
+                }
+
+                const row = worksheet.addRow(rowValues);
+                row.height = 24;
+
+                row.eachCell((cell, colNumber) => {
+                    cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '4B5563' } };
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    if (colNumber === 1) cell.alignment = { horizontal: 'right', vertical: 'middle' };
+
+                    // تنسيق خانات الأشهر للجدولين
+                    let startMonthIdx = type === 'active' ? 3 : 4;
+                    let endMonthIdx = type === 'active' ? 14 : 15;
+
+                    if (type === 'frozen' && colNumber === 3) {
+                        cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '1E40AF' } };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EFF6FF' } };
+                    }
+
+                    if (colNumber >= startMonthIdx && colNumber <= endMonthIdx) {
+                        if (cell.value === 0) {
+                            cell.value = "-";
+                            cell.font = { name: 'Segoe UI', size: 11, bold: false, color: { argb: '9CA3AF' } };
+                        } else {
+                            cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'DC2626' } };
+                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEE2E2' } };
+                        }
+                    }
+
+                    // المتبقي والإجمالي للأكتيف والمجمد
+                    if (colNumber === endMonthIdx + 1) {
+                        cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '92400E' } };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEF3C7' } };
+                        cell.numFmt = '#,##0.00" ريال"';
+                    }
+                    if (colNumber === endMonthIdx + 2) {
+                        cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '111827' } };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F3F4F6' } };
+                        cell.numFmt = '#,##0.00" ريال"';
+                    }
                 });
-            }
+            });
 
             worksheet.columns.forEach(column => {
                 let maxLength = 0;
