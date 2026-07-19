@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>مؤسسة القوافل الخمسة - إدارة الجزاءات والخصومات</title>
-    <!-- مكتبات التصميم والأيقونات والإكسل -->
+    <!-- مكتبات التصميم والأيقونات وتنسيق الإكسل المتقدم -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- تم استخدام مكتبة exceljs لدعم الألوان والتنسيقات المتقدمة في المتصفح -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
         body { font-family: 'Cairo', sans-serif; }
@@ -44,9 +46,6 @@
             <a href="settings.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
                 <i class="fa-solid fa-sliders w-5 text-center text-blue-400"></i> الضبط والإعدادات
             </a>
-            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/50">
-                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
-            </button>
         </nav>
     </div>
 
@@ -61,12 +60,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <label class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-file-import text-base"></i> استيراد الخصومات من إكسل
-                    <input type="file" id="excel-import-penalties" accept=".xlsx, .xls" class="hidden" onchange="importPenaltiesFromExcel(event)">
-                </label>
-
-                <button onclick="exportPenaltiesToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
+                <button onclick="exportPenaltiesToExcel('active')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
                     <i class="fa-solid fa-file-excel text-base"></i> تصدير الخصومات إلى إكسل
                 </button>
             </div>
@@ -78,14 +72,6 @@
                 <div class="flex items-center gap-2 text-blue-600 font-bold">
                     <i class="fa-solid fa-pen-to-square text-lg"></i>
                     <h3>إدخال خصم جديد أو تعديل جزاءات موظف حالي</h3>
-                </div>
-                <!-- البحث السريع للتعديل -->
-                <div class="relative w-full sm:w-80">
-                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-blue-500">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                    </span>
-                    <input type="text" id="quick-search-penalty" oninput="handlePenaltySearch()" placeholder="ابحث باسم الموظف للتعديل الفوري..." class="w-full pl-4 pr-9 py-2 bg-blue-50/50 border border-blue-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500">
-                    <div id="search-dropdown-penalty" class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto hidden"></div>
                 </div>
             </div>
             
@@ -107,7 +93,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">تحديث خصم شهر معين (اختياري)</label>
+                    <label class="block text-xs font-bold text-slate-600 mb-2">تحديث خصم شهر معين</label>
                     <div class="flex gap-2">
                         <select id="penalty-month-select" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none cursor-pointer">
                             <option value="">-- اختر الشهر --</option>
@@ -124,7 +110,7 @@
                             <option value="نوفمبر">نوفمبر</option>
                             <option value="ديسمبر">ديسمبر</option>
                         </select>
-                        <input type="number" step="0.01" id="penalty-month-val" placeholder="اكتب 0 للإلغاء" class="w-32 px-2 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-center focus:outline-none">
+                        <input type="number" step="0.01" id="penalty-month-val" placeholder="المبلغ" class="w-32 px-2 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-center focus:outline-none">
                     </div>
                 </div>
 
@@ -145,13 +131,6 @@
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-scale-balanced text-red-600 text-lg"></i>
                     <h3 class="font-bold text-slate-800">جدول الجزاءات والخصومات السنوية (قابل للتعديل والتجميد والحذف)</h3>
-                </div>
-                
-                <div class="relative w-full sm:w-80">
-                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
-                        <i class="fa-solid fa-filter text-sm"></i>
-                    </span>
-                    <input type="text" id="table-filter-input" oninput="filterTable()" placeholder="ابحث باسم الموظف أو سبب الخصم..." class="w-full pl-4 pr-9 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none">
                 </div>
             </div>
             
@@ -185,15 +164,15 @@
             </div>
         </div>
 
-        <!-- جدول الخصومات المجمّدة الجديد -->
+        <!-- جدول الخصومات المجمّدة -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-snowflake text-sky-500 text-lg"></i>
-                    <h3 class="font-bold text-slate-800">سجل الخصومات والجزاءات المجمدة مؤقتاً (موقوفة الجدولة)</h3>
+                    <h3 class="font-bold text-slate-800">سجل الخصومات والجزاءات المجمدة مؤقتاً</h3>
                 </div>
                 <div>
-                    <button onclick="exportFrozenToExcel()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
+                    <button onclick="exportPenaltiesToExcel('frozen')" class="bg-sky-600 hover:bg-sky-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
                         <i class="fa-solid fa-file-excel"></i> تصدير المجمّدة لإكسل
                     </button>
                 </div>
@@ -207,8 +186,7 @@
                             <th class="p-3">سبب الخصم المجمّد</th>
                             <th class="p-3 bg-amber-950 text-amber-300">المبلغ المتبقي عند التجميد</th>
                             <th class="p-3 bg-slate-900 text-white">الخصم الأصلي</th>
-                            <th class="p-3 text-sky-300 bg-slate-950">تاريخ التجميد</th>
-                            <th class="p-3">الإجراءات والخيارات</th>
+                            <th class="p-3">الإجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="frozen-table-body" class="divide-y divide-slate-100 text-slate-600 font-semibold whitespace-nowrap">
@@ -227,10 +205,8 @@
             renderPenaltiesTable();
             renderFrozenTable();
 
-            // معالجة حفظ وتعديل النموذج
             document.getElementById('penalty-form').addEventListener('submit', function(e) {
                 e.preventDefault();
-                
                 const name = document.getElementById('penalty-emp-name').value.trim();
                 const reason = document.getElementById('penalty-reason').value.trim();
                 const totalAmount = parseFloat(document.getElementById('penalty-total-amount').value) || 0;
@@ -240,87 +216,56 @@
 
                 let penaltiesData = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
 
-                let record;
                 if (editId) {
-                    // وضع التعديل
                     const idx = penaltiesData.findIndex(p => String(p.id) === String(editId));
                     if (idx !== -1) {
-                        record = penaltiesData[idx];
-                        record.name = name;
-                        record.reason = reason;
-                        record.totalAmount = totalAmount.toFixed(2);
-                        if (selMonth) {
-                            record.months[selMonth] = selMonthVal.toFixed(2);
-                        }
-                        // إعادة احتساب المتبقي
-                        let paid = 0;
-                        monthsKeys.forEach(m => paid += parseFloat(record.months[m] || 0));
+                        let record = penaltiesData[idx];
+                        record.name = name; record.reason = reason; record.totalAmount = totalAmount.toFixed(2);
+                        if (selMonth) record.months[selMonth] = selMonthVal.toFixed(2);
+                        let paid = 0; monthsKeys.forEach(m => paid += parseFloat(record.months[m] || 0));
                         record.remaining = (totalAmount - paid).toFixed(2);
                         penaltiesData[idx] = record;
                     }
                 } else {
-                    // وضع إضافة جديد
-                    let monthsObj = {};
-                    monthsKeys.forEach(m => monthsObj[m] = "0.00");
+                    let monthsObj = {}; monthsKeys.forEach(m => monthsObj[m] = "0.00");
                     if (selMonth) monthsObj[selMonth] = selMonthVal.toFixed(2);
-
                     const remaining = totalAmount - selMonthVal;
-
-                    record = {
-                        id: Date.now(),
-                        name: name,
-                        reason: reason,
-                        totalAmount: totalAmount.toFixed(2),
-                        months: monthsObj,
-                        remaining: remaining.toFixed(2)
-                    };
-                    penaltiesData.unshift(record);
+                    penaltiesData.unshift({
+                        id: Date.now(), name: name, reason: reason, totalAmount: totalAmount.toFixed(2), months: monthsObj, remaining: remaining.toFixed(2)
+                    });
                 }
-
                 localStorage.setItem('five_caravans_penalties_data', JSON.stringify(penaltiesData));
-                renderPenaltiesTable();
-                clearPenaltyForm();
-                alert("تم تحديث وحفظ سجل الجزاءات بنجاح! ⚖️");
+                renderPenaltiesTable(); clearPenaltyForm();
+                alert("تم الحفظ بنجاح!");
             });
         });
 
-        // رندرة الجدول النشط
         function renderPenaltiesTable() {
             const tbody = document.getElementById('penalties-table-body');
             const data = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
 
-            // تجربة عينة لو فارغ تماماً مثل صورة السائل (صدام - حادث - 2500 - يونيو 500)
             if (data.length === 0 && !localStorage.getItem('five_caravans_penalties_initialized')) {
-                let initialObj = {
-                    id: 111,
-                    name: "صدام",
-                    reason: "حادث",
-                    totalAmount: "2500.00",
-                    months: {"يناير":"0.00","فبراير":"0.00","مارس":"0.00","أبريل":"0.00","مايو":"0.00","يونيو":"500.00","يوليو":"0.00","أغسطس":"0.00","سبتمبر":"0.00","أكتوبر":"0.00","نوفمبر":"0.00","ديسمبر":"0.00"},
-                    remaining: "2000.00"
-                };
-                data.push(initialObj);
+                data.push({
+                    id: 111, name: "صدام", reason: "حادث", totalAmount: "2500.00",
+                    months: {"يناير":"0.00","فبراير":"0.00","مارس":"0.00","أبريل":"300.00","مايو":"0.00","يونيو":"0.00","يوليو":"0.00","أغسطس":"0.00","سبتمبر":"0.00","أكتوبر":"0.00","نوفمبر":"0.00","ديسمبر":"0.00"},
+                    remaining: "2200.00"
+                });
                 localStorage.setItem('five_caravans_penalties_data', JSON.stringify(data));
                 localStorage.setItem('five_caravans_penalties_initialized', 'true');
             }
 
             if (data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="17" class="py-8 text-slate-400 italic bg-white">لا توجد خصومات نشطة حالياً.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="17" class="py-8 text-slate-400 italic bg-white">لا توجد خصومات نشطة.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = '';
             data.forEach(item => {
                 const targetJson = JSON.stringify(item).replace(/"/g, '&quot;');
-                
                 let monthsHtml = '';
                 monthsKeys.forEach(m => {
                     const val = parseFloat(item.months[m]) || 0;
-                    if (val > 0) {
-                        monthsHtml += `<td class="p-3 text-red-600 font-bold bg-red-50/50 font-mono">${val}</td>`;
-                    } else {
-                        monthsHtml += `<td class="p-3 text-slate-300 font-mono">-</td>`;
-                    }
+                    monthsHtml += val > 0 ? `<td class="p-3 text-red-600 font-bold bg-red-50/50 font-mono">${val}</td>` : `<td class="p-3 text-slate-300 font-mono">-</td>`;
                 });
 
                 tbody.innerHTML += `
@@ -332,97 +277,21 @@
                         <td class="p-3 font-black text-slate-800 bg-slate-100 font-mono">${item.totalAmount} ريال</td>
                         <td class="p-3">
                             <div class="flex items-center justify-center gap-1">
-                                <button onclick='selectPenaltyToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded-lg font-bold transition-all text-[11px]">
-                                    <i class="fa-solid fa-user-pen"></i> تعديل
-                                </button>
-                                <button onclick="freezePenalty('${item.id}')" class="bg-sky-50 text-sky-600 hover:bg-sky-600 hover:text-white px-2 py-1 rounded-lg font-bold transition-all text-[11px]">
-                                    <i class="fa-solid fa-snowflake"></i> تجميد
-                                </button>
-                                <button onclick="deletePenaltyRecord('${item.id}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2 py-1 rounded-lg font-bold transition-all text-[11px]">
-                                    <i class="fa-solid fa-trash"></i> حذف
-                                </button>
+                                <button onclick='selectPenaltyToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded-lg text-[11px] font-bold">تعديل</button>
+                                <button onclick="freezePenalty('${item.id}')" class="bg-sky-50 text-sky-600 hover:bg-sky-600 hover:text-white px-2 py-1 rounded-lg text-[11px] font-bold">تجميد</button>
+                                <button onclick="deletePenaltyRecord('${item.id}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2 py-1 rounded-lg text-[11px] font-bold">حذف</button>
                             </div>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         }
 
-        // تفريغ الفورم
-        function clearPenaltyForm() {
-            document.getElementById('penalty-form').reset();
-            document.getElementById('edit-row-id').value = '';
-            document.getElementById('quick-search-penalty').value = '';
-        }
-
-        // اختيار العنصر للتعديل في الفورم
-        function selectPenaltyToForm(item) {
-            document.getElementById('edit-row-id').value = item.id;
-            document.getElementById('penalty-emp-name').value = item.name;
-            document.getElementById('penalty-reason').value = item.reason;
-            document.getElementById('penalty-total-amount').value = item.totalAmount;
-            document.getElementById('penalty-month-select').value = '';
-            document.getElementById('penalty-month-val').value = '';
-            
-            document.getElementById('penalty-form').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // حذف الخصم
-        function deletePenaltyRecord(id) {
-            if (!confirm("⚠️ هل أنت متأكد من حذف هذا السجل نهائياً؟")) return;
-            let data = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
-            data = data.filter(p => String(p.id) !== String(id));
-            localStorage.setItem('five_caravans_penalties_data', JSON.stringify(data));
-            renderPenaltiesTable();
-        }
-
-        /* ❄️ محرك وظيفة تجميد وإلغاء تجميد الخصومات ❄️ */
-
-        // 1. تجميد الخصم وترحيله للأسفل
-        function freezePenalty(id) {
-            let activeData = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
-            const idx = activeData.findIndex(p => String(p.id) === String(id));
-
-            if (idx === -1) return;
-
-            const targetItem = activeData[idx];
-            
-            // إنشاء سجل مجمّد جديد
-            const frozenRecord = {
-                id: targetItem.id,
-                name: targetItem.name,
-                reason: targetItem.reason,
-                totalAmount: targetItem.totalAmount,
-                months: targetItem.months,
-                remaining: targetItem.remaining,
-                frozenDate: new Date().toISOString().split('T')[0] // تاريخ التجميد الحالي
-            };
-
-            // الحفظ في كرت المجمدات
-            let frozenData = JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || [];
-            frozenData.unshift(frozenRecord);
-            localStorage.setItem('five_caravans_penalties_frozen', JSON.stringify(frozenData));
-
-            // الحذف من الكشف النشط
-            activeData.splice(idx, 1);
-            localStorage.setItem('five_caravans_penalties_data', JSON.stringify(activeData));
-
-            // إعادة بناء الجداول وحفز المستخدم
-            renderPenaltiesTable();
-            renderFrozenTable();
-            alert(`❄️ تم تجميد الخصم الخاص بـ (${frozenRecord.name}) وترحيله لجدول المجمدات بنجاح.`);
-        }
-
-        // 2. بناء ورندرة جدول الخصومات المجمدة
         function renderFrozenTable() {
             const tbody = document.getElementById('frozen-table-body');
             const frozenData = JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || [];
-
             if (frozenData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="py-6 text-slate-400 bg-white italic">لا توجد أقساط أو خصومات مجمدة حالياً.</td></tr>`;
-                return;
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-slate-400 bg-white italic">لا توجد خصومات مجمدة.</td></tr>`; return;
             }
-
             tbody.innerHTML = '';
             frozenData.forEach(item => {
                 tbody.innerHTML += `
@@ -431,158 +300,175 @@
                         <td class="p-3 text-slate-500">${item.reason}</td>
                         <td class="p-3 font-bold text-amber-700 bg-amber-50/60 font-mono">${item.remaining} ريال</td>
                         <td class="p-3 font-semibold text-slate-700 font-mono">${item.totalAmount} ريال</td>
-                        <td class="p-3 font-mono text-sky-700 bg-sky-50/40">${item.frozenDate}</td>
                         <td class="p-3">
-                            <div class="flex items-center justify-center gap-2">
-                                <button onclick="unfreezePenalty('${item.id}')" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-2.5 py-1 rounded-lg font-bold transition-all text-[11px]">
-                                    <i class="fa-solid fa-fire-flame-curved"></i> إعادة تنشيط الخصم
-                                </button>
-                                <button onclick="deleteFrozenRecord('${item.id}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2 py-1 rounded-lg font-bold transition-all text-[11px]">
-                                    <i class="fa-solid fa-trash"></i> حذف نهائي
-                                </button>
-                            </div>
+                            <button onclick="unfreezePenalty('${item.id}')" class="bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white px-2 py-1 rounded-lg text-[11px] font-bold">إعادة تنشيط</button>
                         </td>
-                    </tr>
-                `;
+                    </tr>`;
             });
         }
 
-        // 3. إلغاء التجميد وإعادته للجدول الرئيسي للخصم
+        function freezePenalty(id) {
+            let activeData = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
+            const idx = activeData.findIndex(p => String(p.id) === String(id));
+            if (idx === -1) return;
+            let frozenData = JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || [];
+            frozenData.unshift(activeData[idx]);
+            localStorage.setItem('five_caravans_penalties_frozen', JSON.stringify(frozenData));
+            activeData.splice(idx, 1);
+            localStorage.setItem('five_caravans_penalties_data', JSON.stringify(activeData));
+            renderPenaltiesTable(); renderFrozenTable();
+        }
+
         function unfreezePenalty(id) {
             let frozenData = JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || [];
             const idx = frozenData.findIndex(p => String(p.id) === String(id));
-
             if (idx === -1) return;
-
-            const targetItem = frozenData[idx];
-
-            // تحضير الإعادة للنشط
-            const activeRecord = {
-                id: targetItem.id,
-                name: targetItem.name,
-                reason: targetItem.reason,
-                totalAmount: targetItem.totalAmount,
-                months: targetItem.months,
-                remaining: targetItem.remaining
-            };
-
             let activeData = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
-            activeData.unshift(activeRecord);
+            activeData.unshift(frozenData[idx]);
             localStorage.setItem('five_caravans_penalties_data', JSON.stringify(activeData));
-
-            // الحذف من المجمد
             frozenData.splice(idx, 1);
             localStorage.setItem('five_caravans_penalties_frozen', JSON.stringify(frozenData));
-
-            renderPenaltiesTable();
-            renderFrozenTable();
-            alert(`🔥 تم تذويب وإعادة تنشيط خصم الموظف (${activeRecord.name}) إلى السجل الرئيسي بنجاح.`);
+            renderPenaltiesTable(); renderFrozenTable();
         }
 
-        // 4. حذف نهائي من كرت التجميد
-        function deleteFrozenRecord(id) {
-            if (!confirm("⚠️ هل أنت متأكد من حذف الخصم المجمد نهائياً؟")) return;
-            let frozenData = JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || [];
-            frozenData = frozenData.filter(p => String(p.id) !== String(id));
-            localStorage.setItem('five_caravans_penalties_frozen', JSON.stringify(frozenData));
-            renderFrozenTable();
+        function clearPenaltyForm() { document.getElementById('penalty-form').reset(); document.getElementById('edit-row-id').value = ''; }
+        function selectPenaltyToForm(item) {
+            document.getElementById('edit-row-id').value = item.id;
+            document.getElementById('penalty-emp-name').value = item.name;
+            document.getElementById('penalty-reason').value = item.reason;
+            document.getElementById('penalty-total-amount').value = item.totalAmount;
         }
+        function deletePenaltyRecord(id) { if(confirm("حذف؟")) { let d = JSON.parse(localStorage.getItem('five_caravans_penalties_data'))||[]; d=d.filter(p=>String(p.id)!==String(id)); localStorage.setItem('five_caravans_penalties_data',JSON.stringify(d)); renderPenaltiesTable(); } }
 
-        // 5. تصدير المجمدات إلى إكسل
-        function exportFrozenToExcel() {
-            const frozenData = JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || [];
-            if (frozenData.length === 0) {
-                alert("⚠️ لا توجد خصومات مجمدة لتصديرها!");
+        /* 👑 دالة التصدير الاحترافية والمطابقة تماماً لشكل الجدول والألوان 👑 */
+        async function exportPenaltiesToExcel(type) {
+            const data = type === 'active' 
+                ? (JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [])
+                : (JSON.parse(localStorage.getItem('five_caravans_penalties_frozen')) || []);
+
+            if (data.length === 0) {
+                alert("⚠️ لا توجد بيانات لتصديرها حالياً!");
                 return;
             }
-            const formatted = frozenData.map(p => ({
-                "اسم الموظف": p.name,
-                "السبب": p.reason,
-                "المبلغ المتبقي": parseFloat(p.remaining),
-                "الخصم الكلي الأصلي": parseFloat(p.totalAmount),
-                "تاريخ التجميد": p.frozenDate
-            }));
-            const ws = XLSX.utils.json_to_sheet(formatted);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "الخصومات المجمدة");
-            XLSX.writeFile(wb, "سجل_الخصومات_المجمدة.xlsx");
-        }
 
-        /* ------------------------------------------------------------- */
+            // إنشاء ملف Excel جديد عبر مكتبة ExcelJS المتقدمة
+            const workbook = new ExcelJS.Workbook();
+            const worksheet = workbook.addWorksheet('الخصومات السنوية', {
+                views: [{ rightToLeft: true, showGridLines: true }] // الاتجاه عربي من اليمين لليسار مع إظهار الخطوط
+            });
 
-        // فلترة وعزل السطور في البحث
-        function filterTable() {
-            const query = document.getElementById('table-filter-input').value.toLowerCase().trim();
-            const rows = document.querySelectorAll('#penalties-table-body tr');
-            rows.forEach(row => {
-                if(row.cells.length < 2) return;
-                const name = row.cells[0].textContent.toLowerCase();
-                const reason = row.cells[1].textContent.toLowerCase();
-                if (name.includes(query) || reason.includes(query)) {
-                    row.style.display = '';
+            // أعمدة الجدول بالترتيب الصحيح
+            const headers = [
+                "اسم الموظف", "سبب الخصم الأخير", "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+                "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر", "المتبقي من الخصم", "إجمالي الخصم الأصلي"
+            ];
+
+            // إضافة صف الهيدر الرئيسي
+            const headerRow = worksheet.addRow(headers);
+            headerRow.height = 28; // تحديد ارتفاع الهيدر
+
+            // تنسيق وتلوين خلايا الهيدر بناءً على كرت الجدول النشط في صورتك
+            headerRow.eachCell((cell, colNumber) => {
+                cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'FFFFFF' } };
+                cell.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true };
+                cell.border = {
+                    top: { style: 'thin', color: { argb: 'D1D5DB' } },
+                    bottom: { style: 'thin', color: { argb: 'D1D5DB' } },
+                    left: { style: 'thin', color: { argb: 'D1D5DB' } },
+                    right: { style: 'thin', color: { argb: 'D1D5DB' } }
+                };
+
+                const headerName = headers[colNumber - 1];
+                if (headerName === "المتبقي من الخصم") {
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D97706' } }; // اللون البرتقالي/الذهبي المكتوب عليه المتبقي
+                } else if (headerName === "إجمالي الخصم الأصلي") {
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '111827' } }; // الكحلي/الأسود للإجمالي
                 } else {
-                    row.style.display = 'none';
+                    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'B22222' } }; // الأحمر العنابي لباقي الخلايا والأشهر
                 }
             });
-        }
 
-        // البحث السريع فوق
-        function handlePenaltySearch() {
-            const query = document.getElementById('quick-search-penalty').value.trim().toLowerCase();
-            const dropdown = document.getElementById('search-dropdown-penalty');
-            if (!query) { dropdown.classList.add('hidden'); return; }
+            // إضافة البيانات وتنسيقها صفاً بصف
+            data.forEach(item => {
+                const rowValues = [
+                    item.name,
+                    item.reason,
+                    parseFloat(item.months?.["يناير"]) || 0,
+                    parseFloat(item.months?.["فبراير"]) || 0,
+                    parseFloat(item.months?.["مارس"]) || 0,
+                    parseFloat(item.months?.["أبريل"]) || 0,
+                    parseFloat(item.months?.["مايو"]) || 0,
+                    parseFloat(item.months?.["يونيو"]) || 0,
+                    parseFloat(item.months?.["يوليو"]) || 0,
+                    parseFloat(item.months?.["أغسطس"]) || 0,
+                    parseFloat(item.months?.["سبتمبر"]) || 0,
+                    parseFloat(item.months?.["أكتوبر"]) || 0,
+                    parseFloat(item.months?.["نوفمبر"]) || 0,
+                    parseFloat(item.months?.["ديسمبر"]) || 0,
+                    parseFloat(item.remaining) || 0,
+                    parseFloat(item.totalAmount) || 0
+                ];
 
-            const data = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
-            const filtered = data.filter(p => p.name.toLowerCase().includes(query));
+                const row = worksheet.addRow(rowValues);
+                row.height = 24; // تحديد ارتفاع صف الموظف
 
-            dropdown.innerHTML = '';
-            if (filtered.length === 0) {
-                dropdown.innerHTML = `<div class="p-2 text-slate-400 text-center text-xs italic">لا توجد نتائج متطابقة</div>`;
-            } else {
-                filtered.forEach(p => {
-                    const d = document.createElement('div');
-                    d.className = "p-2 hover:bg-blue-50 cursor-pointer text-xs font-bold border-b text-slate-700 flex justify-between";
-                    d.innerHTML = `<span>${p.name}</span><span class="text-red-500">${p.reason}</span>`;
-                    d.onclick = function() {
-                        selectPenaltyToForm(p);
-                        dropdown.classList.add('hidden');
+                row.eachCell((cell, colNumber) => {
+                    cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '4B5563' } };
+                    cell.alignment = { horizontal: 'center', vertical: 'middle' };
+                    cell.border = {
+                        top: { style: 'thin', color: { argb: 'E5E7EB' } },
+                        bottom: { style: 'thin', color: { argb: 'E5E7EB' } },
+                        left: { style: 'thin', color: { argb: 'E5E7EB' } },
+                        right: { style: 'thin', color: { argb: 'E5E7EB' } }
                     };
-                    dropdown.appendChild(d);
+
+                    // محاذاة اسم الموظف لليمين
+                    if (colNumber === 1) {
+                        cell.alignment = { horizontal: 'right', vertical: 'middle' };
+                        cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '1F2937' } };
+                    }
+
+                    // تنسيق قيم الأشهر (إذا كانت 0 تظهر شحطة "-"، وإذا أكبر تظهر باللون الأحمر وخلفية فاتحة)
+                    if (colNumber >= 3 && colNumber <= 14) {
+                        if (cell.value === 0) {
+                            cell.value = "-";
+                            cell.font = { name: 'Segoe UI', size: 11, bold: false, color: { argb: '9CA3AF' } };
+                        } else {
+                            cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: 'DC2626' } }; // خط أحمر
+                            cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEE2E2' } }; // خلفية حمراء خفيفة
+                        }
+                    }
+
+                    // تنسيق عمود المتبقي من الخصم (نص بني داكن وخلفية صفراء خفيفة وعملة)
+                    if (colNumber === 15) {
+                        cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '92400E' } };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FEF3C7' } };
+                        cell.numFmt = '#,##0.00" ريال"';
+                    }
+
+                    // تنسيق عمود إجمالي الخصم الأصلي (خلفية رمادية خفيفة وعملة)
+                    if (colNumber === 16) {
+                        cell.font = { name: 'Segoe UI', size: 11, bold: true, color: { argb: '111827' } };
+                        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F3F4F6' } };
+                        cell.numFmt = '#,##0.00" ريال"';
+                    }
                 });
-            }
-            dropdown.classList.remove('hidden');
-        }
+            });
 
-        function exportPenaltiesToExcel() {
-            const data = JSON.parse(localStorage.getItem('five_caravans_penalties_data')) || [];
-            if (data.length === 0) { alert("لا توجد بيانات!"); return; }
-            const ws = XLSX.utils.json_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "الجزاءات");
-            XLSX.writeFile(wb, "سجل_الجزاءات_السنوي.xlsx");
-        }
+            // ضبط عرض الأعمدة تلقائياً لتفادي مشكلة ظهور رموز (###)
+            worksheet.columns.forEach(column => {
+                let maxLength = 0;
+                column.eachCell({ includeEmpty: true }, cell => {
+                    const columnLength = cell.value ? cell.value.toString().length : 0;
+                    if (columnLength > maxLength) { maxLength = columnLength; }
+                });
+                column.width = maxLength < 12 ? 14 : maxLength + 5;
+            });
 
-        function importPenaltiesFromExcel(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const r = new FileReader();
-            r.onload = function(evt) {
-                const arr = new Uint8Array(evt.target.result);
-                const wb = XLSX.read(arr, {type:'array'});
-                const ws = wb.Sheets[wb.SheetNames[0]];
-                const json = XLSX.utils.sheet_to_json(ws);
-                if (json.length > 0) {
-                    localStorage.setItem('five_caravans_penalties_data', JSON.stringify(json));
-                    renderPenaltiesTable();
-                    alert("تم الاستيراد بنجاح!");
-                }
-            };
-            r.readAsArrayBuffer(file);
-        }
-
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            window.location.href = "login.html";
+            // توليد وحفظ الملف مباشرة في التحميلات لدى المستخدم
+            const buffer = await workbook.xlsx.writeBuffer();
+            const fileName = type === 'active' ? "سجل_الجزاءات_والخصومات_السنوي.xlsx" : "سجل_الخصومات_المجمدة.xlsx";
+            saveAs(new Blob([buffer]), fileName);
         }
     </script>
 </body>
