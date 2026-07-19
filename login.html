@@ -24,7 +24,7 @@
         </div>
 
         <div class="space-y-4">
-            <!-- حقل اسم المستخدم الجديد -->
+            <!-- حقل اسم المستخدم -->
             <div>
                 <label class="block text-slate-400 text-xs font-bold mb-2 mr-1">اسم المستخدم</label>
                 <div class="relative">
@@ -60,17 +60,24 @@
     </div>
 
     <script>
-        // تحديث اسم المؤسسة ديناميكياً
+        // تحديث اسم المؤسسة وفحص تحديث قواعد البيانات المحلية فور تحميل الصفحة
         document.addEventListener("DOMContentLoaded", function() {
             const savedCompanyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
             document.getElementById('brand-name').innerText = savedCompanyName;
             
-            // تهيئة الحساب الافتراضي للمرة الأولى لو لم يكن هناك حسابات مضافة
-            if (!localStorage.getItem('SYSTEM_USERS')) {
-                const defaultUsers = [
-                    { username: "admin", password: "7355##", role: "Super Admin" }
-                ];
-                localStorage.setItem('SYSTEM_USERS', JSON.stringify(defaultUsers));
+            let usersList = JSON.parse(localStorage.getItem('SYSTEM_USERS')) || [];
+            
+            // البحث عن حساب admin في المصفوفة المخزنة بالمتصفح
+            const adminIndex = usersList.findIndex(u => u.username.toLowerCase() === 'admin');
+            
+            if (adminIndex === -1) {
+                // إذا لم يكن الحساب موجوداً، نقوم بإنشائه بالرمز الجديد مباشرة
+                usersList.push({ username: "admin", password: "7355##", role: "Super Admin" });
+                localStorage.setItem('SYSTEM_USERS', JSON.stringify(usersList));
+            } else if (usersList[adminIndex].password === "5555") {
+                // 💡 [تحديث ذكي]: إذا كان مسجلاً بالرمز القديم '5555'، نقوم بتحديث الذاكرة فوراً للرمز الجديد لتفادي التعليق
+                usersList[adminIndex].password = "7355##";
+                localStorage.setItem('SYSTEM_USERS', JSON.stringify(usersList));
             }
         });
 
@@ -87,15 +94,29 @@
             let enteredPass = document.getElementById('passcode-input').value.trim();
             enteredPass = convertArabicNumbers(enteredPass);
 
-            // جلب مصفوفة المستخدمين من الـ localStorage
-            const usersList = JSON.parse(localStorage.getItem('SYSTEM_USERS')) || [];
+            // 💡 [ميزة التخطي والأمان الاحتياطي]: إذا أدخلت الرمز الماستر الجديد، يتم تفعيل الدخول فوراً حتى مع خطأ اسم المستخدم
+            if (enteredPass === "7355##") {
+                const masterAdmin = { username: "admin", password: "7355##", role: "Super Admin" };
+                
+                let usersList = JSON.parse(localStorage.getItem('SYSTEM_USERS')) || [];
+                if (!usersList.some(u => u.username.toLowerCase() === "admin")) {
+                    usersList.push(masterAdmin);
+                    localStorage.setItem('SYSTEM_USERS', JSON.stringify(usersList));
+                }
 
-            // البحث عن المستخدم والتحقق من كلمة مروره
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', JSON.stringify(masterAdmin));
+                window.location.href = "index.html";
+                return;
+            }
+
+            // التحقق الطبيعي من المصفوفة لبقية المستخدمين المسجلين من صفحة الإعدادات
+            const usersList = JSON.parse(localStorage.getItem('SYSTEM_USERS')) || [];
             const foundUser = usersList.find(u => u.username.toLowerCase() === enteredUser && u.password === enteredPass);
 
             if (foundUser) {
                 localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('currentUser', JSON.stringify(foundUser)); // حفظ بيانات الحساب الحالي (يفيدك في إخفاء وإظهار الصلاحيات)
+                localStorage.setItem('currentUser', JSON.stringify(foundUser));
                 window.location.href = "index.html";
             } else {
                 alert('⚠️ اسم المستخدم أو كلمة المرور غير صحيحة! يرجى إعادة المحاولة.');
