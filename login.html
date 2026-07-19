@@ -4,23 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تسجيل الدخول - مؤسسة القوافل الخمسة</title>
-    
-    <!-- مكتبة الأيقونات والخطوط والتصميم الداكن اللوجستي -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700;900&display=swap');
-        body { 
-            font-family: 'Cairo', sans-serif; 
-        }
+        body { font-family: 'Cairo', sans-serif; }
     </style>
 </head>
 <body class="bg-slate-950 min-h-screen flex items-center justify-center p-4">
 
-    <!-- كرت تسجيل الدخول المتناسق -->
     <div class="w-full max-w-md bg-slate-900/60 border border-slate-800/80 rounded-3xl p-8 shadow-2xl backdrop-blur-md">
         
-        <!-- الهوية والشعار -->
         <div class="text-center mb-8">
             <div class="w-16 h-16 bg-blue-600/10 text-blue-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 border border-blue-500/20 shadow-lg shadow-blue-600/10">
                 🚚
@@ -29,10 +23,22 @@
             <p class="text-xs text-slate-400 mt-1">للخدمات اللوجستية والنقل</p>
         </div>
 
-        <!-- حقل إدخال رمز المرور -->
         <div class="space-y-4">
+            <!-- حقل اسم المستخدم الجديد -->
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-2 mr-1">رمز الدخول الخاص بالإدارة</label>
+                <label class="block text-slate-400 text-xs font-bold mb-2 mr-1">اسم المستخدم</label>
+                <div class="relative">
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-500">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                    <input type="text" id="username-input" placeholder="مثال: admin" 
+                        class="w-full bg-slate-950/80 border border-slate-800 rounded-2xl py-3.5 pr-11 pl-4 text-center text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all">
+                </div>
+            </div>
+
+            <!-- حقل كلمة المرور -->
+            <div>
+                <label class="block text-slate-400 text-xs font-bold mb-2 mr-1">كلمة المرور</label>
                 <div class="relative">
                     <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-slate-500">
                         <i class="fa-solid fa-lock"></i>
@@ -42,58 +48,64 @@
                 </div>
             </div>
 
-            <!-- زر الدخول -->
-            <button onclick="checkPasscode()" 
+            <button onclick="checkLogin()" 
                 class="w-full bg-blue-600 hover:bg-blue-500 active:scale-[0.98] text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-blue-600/15 flex items-center justify-center gap-2 text-sm mt-6">
                 دخول للوحة التحكم <i class="fa-solid fa-chevron-left text-xs"></i>
             </button>
         </div>
 
-        <!-- حقوق النظام بالأسفل -->
         <div class="text-center mt-8 border-t border-slate-800/60 pt-4">
             <p class="text-[10px] text-slate-500">نظام الإدارة الداخلي الموحد © 2026</p>
         </div>
-
     </div>
 
-    <!-- 🌐 جافا سكريبت الذكي للتحقق التلقائي -->
     <script>
-        // 1. تحديث اسم المؤسسة ديناميكياً إذا تم تعديله من الإعدادات
+        // تحديث اسم المؤسسة ديناميكياً
         document.addEventListener("DOMContentLoaded", function() {
             const savedCompanyName = localStorage.getItem('COMPANY_NAME') || "مؤسسة القوافل الخمسة";
             document.getElementById('brand-name').innerText = savedCompanyName;
+            
+            // تهيئة الحساب الافتراضي للمرة الأولى لو لم يكن هناك حسابات مضافة
+            if (!localStorage.getItem('SYSTEM_USERS')) {
+                const defaultUsers = [
+                    { username: "admin", password: "5555", role: "Super Admin" }
+                ];
+                localStorage.setItem('SYSTEM_USERS', JSON.stringify(defaultUsers));
+            }
         });
 
-        // 2. إذا كان المستخدم قد سجل دخوله بالفعل، نقله للرئيسية مباشرة
         if (localStorage.getItem('isLoggedIn') === 'true') {
             window.location.href = "index.html";
         }
 
-        // 3. دالة التحقق الذكية من رمز المرور الجديد أو الافتراضي
-        function checkPasscode() {
-            const enteredPass = document.getElementById('passcode-input').value.trim();
-            
-            // جلب الرمز السري الفعلي من الذاكرة (وفي حال عدم وجوده، نعتمد الافتراضي "5555")
-            const activePasscode = localStorage.getItem('SECRET_PASSCODE') || "5555";
+        function convertArabicNumbers(str) {
+            return String(str).replace(/[٠-٩]/g, d => d.charCodeAt(0) - 1632);
+        }
 
-            if (enteredPass === activePasscode) {
-                // حفظ جلسة تسجيل الدخول
+        function checkLogin() {
+            const enteredUser = document.getElementById('username-input').value.trim().toLowerCase();
+            let enteredPass = document.getElementById('passcode-input').value.trim();
+            enteredPass = convertArabicNumbers(enteredPass);
+
+            // جلب مصفوفة المستخدمين من الـ localStorage
+            const usersList = JSON.parse(localStorage.getItem('SYSTEM_USERS')) || [];
+
+            // البحث عن المستخدم والتحقق من كلمة مروره
+            const foundUser = usersList.find(u => u.username.toLowerCase() === enteredUser && u.password === enteredPass);
+
+            if (foundUser) {
                 localStorage.setItem('isLoggedIn', 'true');
-                
-                // توجيه فوري وسلس للوحة التحكم الرئيسية
+                localStorage.setItem('currentUser', JSON.stringify(foundUser)); // حفظ بيانات الحساب الحالي (يفيدك في إخفاء وإظهار الصلاحيات)
                 window.location.href = "index.html";
             } else {
-                alert('⚠️ رمز المرور الذي أدخلته غير صحيح! يرجى المحاولة مرة أخرى.');
-                document.getElementById('passcode-input').value = ''; // مسح الحقل بعد الخطأ
-                document.getElementById('passcode-input').focus(); // إعادة التركيز على الحقل
+                alert('⚠️ اسم المستخدم أو كلمة المرور غير صحيحة! يرجى إعادة المحاولة.');
+                document.getElementById('passcode-input').value = '';
+                document.getElementById('passcode-input').focus();
             }
         }
 
-        // تفعيل تسجيل الدخول عند الضغط على زر "Enter" في لوحة المفاتيح
-        document.getElementById('passcode-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkPasscode();
-            }
+        document.getElementById('passcode-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') checkLogin();
         });
     </script>
 </body>
