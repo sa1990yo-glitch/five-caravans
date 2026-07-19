@@ -38,12 +38,12 @@
                 <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
             </a>
             <!-- زر الضبط والإعدادات الجديد -->
-<a href="settings.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-    <i class="fa-solid fa-sliders w-5 text-center text-blue-400"></i> الضبط والإعدادات
-</a>
-<a href="login.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/40">
-    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
-</a>
+            <a href="settings.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
+                <i class="fa-solid fa-sliders w-5 text-center text-blue-400"></i> الضبط والإعدادات
+            </a>
+            <a href="login.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/40">
+                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
+            </a>
         </nav>
     </div>
 
@@ -184,7 +184,7 @@
                             <th class="p-4 bg-indigo-950">أيام التأمين</th>
                             <th class="p-4 bg-indigo-950">فئة التأمين</th>
                             <th class="p-4 bg-indigo-950 border-r border-indigo-900">حالة التأمين</th>
-                            <th class="p-4">الحالة العامة للستندات</th>
+                            <th class="p-4">الحالة العامة للمستندات</th>
                             <th class="p-4">الإجراءات</th>
                         </tr>
                     </thead>
@@ -261,7 +261,7 @@
                 text = 'منتهية';
             } else if (diffDays <= 30) {
                 badge = `<span class="bg-amber-400 text-slate-900 px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm block w-full text-center">🟡 باقي أقل من شهر</span>`;
-                text = 'باقي اقل من شهر';
+                text = 'باقي أقل من شهر';
             } else {
                 badge = `<span class="bg-emerald-500 text-white px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm block w-full text-center">🟢 سارية</span>`;
                 text = 'سارية';
@@ -460,7 +460,7 @@
             }
 
             const docData = JSON.parse(localStorage.getItem('five_caravans_documents')) || [];
-            const filtered = docData.filter(doc => doc.name.toLowerCase().includes(query) || doc.nationalId.includes(query));
+            const filtered = docData.filter(doc => doc.name.toLowerCase().includes(query) || String(doc.nationalId).includes(query));
 
             if (filtered.length === 0) {
                 dropdown.innerHTML = `<div class="p-3 text-slate-400 text-xs text-center italic">لا توجد نتائج متطابقة...</div>`;
