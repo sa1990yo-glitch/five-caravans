@@ -487,22 +487,39 @@
             document.getElementById('emp-accidents').value = item.accidents || "0.00";
             document.getElementById('emp-penalties').value = item.penalties || "0.00";
             document.getElementById('emp-loans').value = item.loans || "0.00";
-            
+
             calculateTotals();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            document.getElementById('emp-form-section').scrollIntoView({ behavior: 'smooth' });
         }
 
         // تفريغ النموذج
         function clearEmpForm() {
             document.getElementById('emp-form').reset();
             document.getElementById('quick-search-emp').value = '';
-            document.getElementById('emp-total-earned').value = '0.00';
-            document.getElementById('emp-total-deducted').value = '0.00';
-            document.getElementById('emp-net-salary').value = '0.00';
-            document.getElementById('search-dropdown-emp').classList.add('hidden');
+            calculateTotals();
         }
 
-        // البحث السريع أعلى الفورم
+        // حذف موظف
+        function deleteEmpRecord(id, name) {
+            if (confirm(`هل أنت تأكد من حذف سجل الموظف: (${name})؟`)) {
+                let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+                empData = empData.filter(emp => emp.id.toString() !== id.toString());
+                localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
+                renderEmpTable();
+            }
+        }
+
+        // البحث السريع والتصفية للجدول الرئيسي
+        function filterEmpTable() {
+            const val = document.getElementById('emp-table-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#emp-table-body tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(val) ? '' : 'none';
+            });
+        }
+
+        // إكمال تلقائي عند البحث بالاسم في خانة التعديل الفوري
         function handleEmpSearch() {
             const query = document.getElementById('quick-search-emp').value.trim().toLowerCase();
             const dropdown = document.getElementById('search-dropdown-emp');
@@ -513,50 +530,37 @@
                 return;
             }
 
-            const results = empData.filter(emp => emp.name.toLowerCase().includes(query));
-
-            if (results.length === 0) {
-                dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">لا توجد نتائج مطابقة</div>`;
-            } else {
-                dropdown.innerHTML = results.map(item => {
-                    const targetJson = JSON.stringify(item).replace(/"/g, '&quot;');
-                    return `<div onclick='selectEmpToForm(${targetJson})' class="p-2.5 hover:bg-blue-50 cursor-pointer border-b last:border-0 text-xs flex justify-between items-center">
-                        <span class="font-bold text-slate-800">${item.name}</span>
-                        <span class="text-slate-500 font-mono">${item.role}</span>
-                    </div>`;
-                }).join('');
+            const matches = empData.filter(emp => emp.name.toLowerCase().includes(query));
+            if (matches.length === 0) {
+                dropdown.classList.add('hidden');
+                return;
             }
+
+            dropdown.innerHTML = matches.map(emp => `
+                <div onclick='selectEmpFromSearch(${JSON.stringify(emp).replace(/"/g, '&quot;')})' class="p-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 flex justify-between items-center text-xs">
+                    <span class="font-bold text-slate-800">${emp.name}</span>
+                    <span class="text-slate-500">${emp.role}</span>
+                </div>
+            `).join('');
+
             dropdown.classList.remove('hidden');
         }
 
-        // فلترة جدول الموظفين
-        function filterEmpTable() {
-            const query = document.getElementById('emp-table-search').value.toLowerCase();
-            const rows = document.querySelectorAll('#emp-table-body tr');
-
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
-            });
+        function selectEmpFromSearch(emp) {
+            selectEmpToForm(emp);
+            document.getElementById('search-dropdown-emp').classList.add('hidden');
         }
 
-        // حذف موظف
-        function deleteEmpRecord(id, name) {
-            if (confirm(`هل أنت تأكد من حذف بيانات الموظف (${name}) بشكل نهائي؟`)) {
-                let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-                empData = empData.filter(emp => emp.id != id);
-                localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
-                renderEmpTable();
-            }
-        }
-
-        // --- إدارة أرشيف وإنهاء الخدمة ---
-
+        // إدارة مودال إنهاء الخدمة والتصفية
         function openTerminationModal(id, name) {
             document.getElementById('term-emp-id').value = id;
             document.getElementById('term-emp-name').value = name;
+            
+            let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+            let target = empData.find(e => e.id.toString() === id.toString());
+            
+            document.getElementById('term-amount').value = target ? target.netSalary : '0.00';
             document.getElementById('term-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('term-amount').value = '';
             document.getElementById('termination-modal').classList.remove('hidden');
         }
 
@@ -573,17 +577,17 @@
             let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
             let archiveData = JSON.parse(localStorage.getItem('five_caravans_employees_archive')) || [];
 
-            const empIndex = empData.findIndex(emp => emp.id == id);
-            if (empIndex !== -1) {
-                const emp = empData[empIndex];
-                const archiveRecord = {
+            let index = empData.findIndex(e => e.id.toString() === id.toString());
+            if (index !== -1) {
+                let emp = empData[index];
+                let archivedEmp = {
                     ...emp,
-                    termDate: termDate,
-                    termAmount: termAmount.toFixed(2)
+                    terminationDate: termDate,
+                    settlementAmount: termAmount.toFixed(2)
                 };
 
-                archiveData.unshift(archiveRecord);
-                empData.splice(empIndex, 1);
+                archiveData.unshift(archivedEmp);
+                empData.splice(index, 1);
 
                 localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
                 localStorage.setItem('five_caravans_employees_archive', JSON.stringify(archiveData));
@@ -591,31 +595,32 @@
                 renderEmpTable();
                 renderArchiveTable();
                 closeTerminationModal();
-                alert("تم تحويل الموظف إلى أرشيف إنهاء الخدمة بنجاح! 📦");
+                alert("تم إنهاء الخدمة وترحيل الموظف إلى الأرشيف بنجاح 📦");
             }
         }
 
+        // عرض جدول الأرشيف
         function renderArchiveTable() {
             const tbody = document.getElementById('archive-table-body');
             const archiveData = JSON.parse(localStorage.getItem('five_caravans_employees_archive')) || [];
 
             if (archiveData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-slate-400 bg-white italic text-center text-sm">الأرشيف فارغ حالياً.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-8 text-slate-400 bg-white italic text-center text-sm">لا يوجد موظفون في سجل الأرشيف والتصفيات المالية حالياً.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = '';
             archiveData.forEach(item => {
                 tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition-all">
+                    <tr class="hover:bg-slate-50/80 transition-all">
                         <td class="p-3 text-right font-bold text-slate-800">${item.name}</td>
                         <td class="p-3 text-slate-700">${item.role}</td>
-                        <td class="p-3 text-slate-600 font-mono">${item.nationalId}</td>
-                        <td class="p-3 text-slate-500 font-mono">${item.joinDate}</td>
-                        <td class="p-3 text-rose-700 font-bold font-mono bg-rose-50/50">${item.termDate}</td>
-                        <td class="p-3 text-emerald-700 font-black font-mono bg-emerald-50/50">${item.termAmount} ر.س</td>
+                        <td class="p-3 text-slate-600 font-mono">${item.nationalId || '-'}</td>
+                        <td class="p-3 text-slate-500 font-mono">${item.joinDate || '-'}</td>
+                        <td class="p-3 text-rose-600 font-mono font-bold">${item.terminationDate || '-'}</td>
+                        <td class="p-3 font-black text-emerald-600 bg-emerald-50/50 font-mono">${item.settlementAmount} ر.س</td>
                         <td class="p-3">
-                            <button onclick="restoreFromArchive('${item.id}')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all">
+                            <button onclick="restoreFromArchive('${item.id}')" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1 rounded-lg font-bold transition-all text-[11px]">
                                 <i class="fa-solid fa-rotate-left ml-1"></i> استعادة للنشط
                             </button>
                         </td>
@@ -623,41 +628,61 @@
             });
         }
 
+        // استعادة موظف من الأرشيف
         function restoreFromArchive(id) {
-            if (confirm("هل ترغب في إعادة هذا الموظف إلى قائمة الموظفين النشطين؟")) {
-                let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-                let archiveData = JSON.parse(localStorage.getItem('five_caravans_employees_archive')) || [];
+            let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+            let archiveData = JSON.parse(localStorage.getItem('five_caravans_employees_archive')) || [];
 
-                const index = archiveData.findIndex(emp => emp.id == id);
-                if (index !== -1) {
-                    const restoredEmp = archiveData[index];
-                    delete restoredEmp.termDate;
-                    delete restoredEmp.termAmount;
+            let index = archiveData.findIndex(e => e.id.toString() === id.toString());
+            if (index !== -1) {
+                let emp = archiveData[index];
+                delete emp.terminationDate;
+                delete emp.settlementAmount;
 
-                    empData.unshift(restoredEmp);
-                    archiveData.splice(index, 1);
+                empData.unshift(emp);
+                archiveData.splice(index, 1);
 
-                    localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
-                    localStorage.setItem('five_caravans_employees_archive', JSON.stringify(archiveData));
+                localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
+                localStorage.setItem('five_caravans_employees_archive', JSON.stringify(archiveData));
 
-                    renderEmpTable();
-                    renderArchiveTable();
-                }
+                renderEmpTable();
+                renderArchiveTable();
+                alert("تم إعادة الموظف لقائمة الموظفين النشطين بنجاح! 🔄");
             }
         }
 
-        // --- التصدير والاستيراد مع Excel ---
-
+        // تصدير واستيراد إكسل Excel
         function exportEmpDataToExcel() {
             const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
             if (empData.length === 0) {
                 alert("لا توجد بيانات لتصديرها!");
                 return;
             }
-            const ws = XLSX.utils.json_to_sheet(empData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "الموظفين_النشطين");
-            XLSX.writeFile(wb, `سجل_موظفي_القوافل_الخمسة_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+            const exportArr = empData.map(e => ({
+                'الاسم': e.name,
+                'المسمى الوظيفي': e.role,
+                'رقم الجوال': e.phone,
+                'الهوية': e.nationalId,
+                'الجنسية': e.nationality,
+                'الكفالة': e.sponsorship,
+                'تاريخ الالتحاق': e.joinDate,
+                'الراتب الأساسي': parseFloat(e.salary),
+                'المكافآت': parseFloat(e.bonuses),
+                'إجمالي المستحق': parseFloat(e.totalEarned),
+                'غياب': parseFloat(e.absence),
+                'حوادث': parseFloat(e.accidents),
+                'خصومات وجزاءات': parseFloat(e.penalties),
+                'سلف': parseFloat(e.loans),
+                'إجمالي المستقطع': parseFloat(e.totalDeducted),
+                'الصافي المستحق': parseFloat(e.netSalary),
+                'طريقة الدفع': e.paymentMethod
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(exportArr);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "مسير_الرواتب");
+            XLSX.writeFile(workbook, `مسير_رواتب_القوافل_الخمسة_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
         function exportArchiveToExcel() {
@@ -666,10 +691,20 @@
                 alert("الأرشيف فارغ حالياً!");
                 return;
             }
-            const ws = XLSX.utils.json_to_sheet(archiveData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "أرشيف_الموظفين");
-            XLSX.writeFile(wb, `أرشيف_تصفية_الموظفين_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+            const exportArr = archiveData.map(e => ({
+                'الاسم': e.name,
+                'المسمى الوظيفي': e.role,
+                'الهوية': e.nationalId,
+                'تاريخ الالتحاق': e.joinDate,
+                'تاريخ إنهاء الخدمة': e.terminationDate,
+                'المبلغ المستلم/التصفية': parseFloat(e.settlementAmount)
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(exportArr);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "أرشيف_التصفيات");
+            XLSX.writeFile(workbook, `أرشيف_تصفيات_القوافل_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
         function importEmpDataFromExcel(event) {
@@ -681,48 +716,69 @@
                 try {
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheet = workbook.SheetNames[0];
-                    const importedData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet]);
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonArr = XLSX.utils.sheet_to_json(worksheet);
 
-                    if (importedData.length > 0) {
-                        let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-                        importedData.forEach(item => {
-                            if (item.name) {
-                                empData.unshift({
-                                    id: item.id || Date.now() + Math.random(),
-                                    name: item.name,
-                                    role: item.role || 'سائق دينا',
-                                    phone: item.phone || '-',
-                                    nationalId: item.nationalId || '-',
-                                    nationality: item.nationality || '-',
-                                    sponsorship: item.sponsorship || 'القوافل',
-                                    joinDate: item.joinDate || '-',
-                                    paymentMethod: item.paymentMethod || 'نقداً',
-                                    salary: parseFloat(item.salary || 0).toFixed(2),
-                                    bonuses: parseFloat(item.bonuses || 0).toFixed(2),
-                                    totalEarned: parseFloat(item.totalEarned || 0).toFixed(2),
-                                    absence: parseFloat(item.absence || 0).toFixed(2),
-                                    accidents: parseFloat(item.accidents || 0).toFixed(2),
-                                    penalties: parseFloat(item.penalties || 0).toFixed(2),
-                                    loans: parseFloat(item.loans || 0).toFixed(2),
-                                    totalDeducted: parseFloat(item.totalDeducted || 0).toFixed(2),
-                                    netSalary: parseFloat(item.netSalary || 0).toFixed(2)
-                                });
-                            }
-                        });
-                        localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
-                        renderEmpTable();
-                        alert("تم استيراد البيانات من ملف الإكسل بنجاح! 🚀");
-                    }
-                } catch (error) {
-                    alert("حدث خطأ أثناء قراءة ملف الإكسل. يرجى التأكد من صحة تنسيق الملف.");
+                    let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+
+                    jsonArr.forEach((item, index) => {
+                        let name = item['الاسم'] || item['اسم الموظف'] || item['Name'];
+                        if (!name) return;
+
+                        let salary = parseFloat(item['الراتب الأساسي'] || item['الراتب'] || 0);
+                        let bonuses = parseFloat(item['المكافآت'] || 0);
+                        let absence = parseFloat(item['غياب'] || 0);
+                        let accidents = parseFloat(item['حوادث'] || 0);
+                        let penalties = parseFloat(item['خصومات وجزاءات'] || item['الجزاءات'] || 0);
+                        let loans = parseFloat(item['سلف'] || item['السلف'] || 0);
+
+                        let totalEarned = salary + bonuses;
+                        let totalDeducted = absence + accidents + penalties + loans;
+                        let netSalary = totalEarned - totalDeducted;
+
+                        let record = {
+                            id: Date.now() + index,
+                            name: name.toString().trim(),
+                            role: item['المسمى الوظيفي'] || item['الوظيفة'] || 'سائق دينا',
+                            phone: item['رقم الجوال'] || item['الجوال'] || '-',
+                            nationalId: item['الهوية'] || item['رقم الهوية'] || '-',
+                            nationality: item['الجنسية'] || '-',
+                            sponsorship: item['الكفالة'] || 'القوافل',
+                            joinDate: item['تاريخ الالتحاق'] || '-',
+                            paymentMethod: item['طريقة الدفع'] || 'نقداً',
+                            salary: salary.toFixed(2),
+                            bonuses: bonuses.toFixed(2),
+                            totalEarned: totalEarned.toFixed(2),
+                            absence: absence.toFixed(2),
+                            accidents: accidents.toFixed(2),
+                            penalties: penalties.toFixed(2),
+                            loans: loans.toFixed(2),
+                            totalDeducted: totalDeducted.toFixed(2),
+                            netSalary: netSalary.toFixed(2)
+                        };
+
+                        let existingIndex = empData.findIndex(e => e.name.toLowerCase() === record.name.toLowerCase());
+                        if (existingIndex !== -1) {
+                            empData[existingIndex] = record;
+                        } else {
+                            empData.push(record);
+                        }
+                    });
+
+                    localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
+                    renderEmpTable();
+                    alert("تم استيراد الملف وتحديث بيانات المسير المالي بنجاح! 🚀");
+                } catch (err) {
+                    alert("حدث خطأ أثناء قراءة ملف الإكسل. يرجى التأكد من التنسيق الصحيح.");
                 }
             };
             reader.readAsArrayBuffer(file);
         }
 
+        // تسجيل الخروج
         function logout() {
-            if (confirm("هل ترغب في تسجيل الخروج؟")) {
+            if (confirm("هل تريد تسجيل الخروج؟")) {
                 window.location.href = "login.html";
             }
         }
