@@ -14,6 +14,7 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex">
 
+    <!-- Sidebar Navigation -->
     <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
         <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
             <div class="text-2xl text-blue-500">🚚</div>
@@ -48,8 +49,10 @@
         </nav>
     </div>
 
+    <!-- Main Content Area -->
     <div class="flex-1 p-8 overflow-x-hidden">
         
+        <!-- Header Banner -->
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
                 <h2 class="text-2xl font-bold text-slate-800">سجل الموظفين والمسيرات المالية</h2>
@@ -63,7 +66,7 @@
 
                 <label class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-file-import text-base"></i> استيراد من إكسل
-                    <input type="file" id="excel-import-emp" accept=".xlsx, .xls" class="hidden" onchange="importEmpDataFromExcel(event)">
+                    <input type="file" id="excel-import-emp" accept=".xlsx, .xls, .csv" class="hidden" onchange="importEmpDataFromExcel(event)">
                 </label>
 
                 <button onclick="exportEmpDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
@@ -72,6 +75,7 @@
             </div>
         </div>
 
+        <!-- Form Section -->
         <div id="emp-form-section" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
             <div class="flex items-center justify-between mb-6 border-b pb-3 border-slate-100 flex-wrap gap-4">
                 <div class="flex items-center gap-2 text-blue-600 font-bold">
@@ -214,6 +218,7 @@
             </form>
         </div>
 
+        <!-- Active Employees Table -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
@@ -274,6 +279,7 @@
             </div>
         </div>
 
+        <!-- Archive Section -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
             <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <div class="flex items-center gap-2">
@@ -318,6 +324,7 @@
 
     </div>
 
+    <!-- Termination Modal -->
     <div id="termination-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
         <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-100 mx-4">
             <div class="flex items-center gap-3 text-rose-600 font-bold border-b pb-3 mb-4">
@@ -611,19 +618,19 @@
 
             document.getElementById('emp-name').value = emp.name || emp['الاسم'] || '';
             document.getElementById('emp-role').value = emp.role || emp['المسمى الوظيفي'] || 'سائق دينا';
-            document.getElementById('emp-phone').value = (emp.phone === '-' ? '' : emp.phone) || (emp['رقم الجوال'] === '-' ? '' : emp['رقم الجوال']) || '';
-            document.getElementById('emp-national-id').value = (emp.nationalId === '-' ? '' : emp.nationalId) || (emp['الهوية'] === '-' ? '' : emp['الهوية']) || '';
-            document.getElementById('emp-nationality').value = (emp.nationality === '-' ? '' : emp.nationality) || (emp['الجنسية'] === '-' ? '' : emp['الجنسية']) || '';
-            document.getElementById('emp-sponsorship').value = emp.sponsorship || emp['الكفالة'] || 'القوافل';
-            document.getElementById('emp-join-date').value = (emp.joinDate === '-' ? '' : emp.joinDate) || (emp['تاريخ الالتحاق'] === '-' ? '' : emp['تاريخ الالتحاق']) || '';
-            document.getElementById('emp-payment-method').value = emp.paymentMethod || emp['طريقة الدفع'] || 'نقداً';
+            document.getElementById('emp-phone').value = (emp.phone === '-' ? '' : emp.phone) || '';
+            document.getElementById('emp-national-id').value = (emp.nationalId === '-' ? '' : emp.nationalId) || '';
+            document.getElementById('emp-nationality').value = (emp.nationality === '-' ? '' : emp.nationality) || '';
+            document.getElementById('emp-sponsorship').value = emp.sponsorship || 'القوافل';
+            document.getElementById('emp-join-date').value = (emp.joinDate === '-' ? '' : emp.joinDate) || '';
+            document.getElementById('emp-payment-method').value = emp.paymentMethod || 'نقداً';
 
-            document.getElementById('emp-salary').value = emp.salary || emp['الراتب المستحق'] || '0.00';
-            document.getElementById('emp-bonuses').value = emp.bonuses || emp['المكافآت'] || '0.00';
-            document.getElementById('emp-absence').value = emp.absence || emp['غياب'] || '0.00';
-            document.getElementById('emp-accidents').value = emp.accidents || emp['حوادث'] || '0.00';
-            document.getElementById('emp-penalties').value = emp.penalties || emp['خصومات وجزاءات'] || '0.00';
-            document.getElementById('emp-loans').value = emp.loans || emp['سلف'] || '0.00';
+            document.getElementById('emp-salary').value = emp.salary || '0.00';
+            document.getElementById('emp-bonuses').value = emp.bonuses || '0.00';
+            document.getElementById('emp-absence').value = emp.absence || '0.00';
+            document.getElementById('emp-accidents').value = emp.accidents || '0.00';
+            document.getElementById('emp-penalties').value = emp.penalties || '0.00';
+            document.getElementById('emp-loans').value = emp.loans || '0.00';
 
             calculateTotals();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -764,7 +771,7 @@
             }
         }
 
-        /* ===== تعديل دالة الاستيراد لتجنب التكرار واستيراد الأسماء الجديدة فقط ===== */
+        /* ===== دالة الاستيراد الجديدة الشاملة والذكية بدون قيود تمنع رفع البيانات ===== */
         function importEmpDataFromExcel(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -776,49 +783,93 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const sheetName = workbook.SheetNames[0];
                     const sheet = workbook.Sheets[sheetName];
-                    const json = XLSX.utils.sheet_to_json(sheet);
+                    const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
 
-                    if (json.length > 0) {
-                        let currentData = getStoredEmployees();
-                        let addedCount = 0;
-                        let skippedCount = 0;
+                    if (json.length === 0) {
+                        alert("الملف المرفق فارغ ولا يحتوي على بيانات!");
+                        return;
+                    }
 
-                        json.forEach(row => {
-                            const rowName = (row.name || row['الاسم'] || '').toString().trim().toLowerCase();
-                            const rowNationalId = (row.nationalId || row['الهوية'] || '').toString().trim();
+                    let currentData = getStoredEmployees();
+                    let importedCount = 0;
 
-                            if (!rowName) return;
-
-                            // التحقق من وجود الاسم أو الهوية سابقاً
-                            const isDuplicate = currentData.some(emp => {
-                                const existingName = (emp.name || emp['الاسم'] || '').toString().trim().toLowerCase();
-                                const existingId = (emp.nationalId || emp['الهوية'] || '').toString().trim();
-
-                                const sameName = existingName && existingName === rowName;
-                                const sameId = existingId && existingId !== '-' && existingId === rowNationalId;
-
-                                return sameName || sameId;
-                            });
-
-                            if (isDuplicate) {
-                                skippedCount++;
-                            } else {
-                                row.id = row.id || (Date.now() + Math.random());
-                                currentData.unshift(row);
-                                addedCount++;
+                    // دالة مساعدة للبحث في كائن الصف عن قيمة تحت أي اسم عمود محتمل
+                    const getVal = (row, keys) => {
+                        for (let k of keys) {
+                            for (let prop in row) {
+                                if (prop.trim().toLowerCase() === k.trim().toLowerCase()) {
+                                    return row[prop];
+                                }
                             }
-                        });
-
-                        if (addedCount > 0) {
-                            saveStoredEmployees(currentData);
-                            renderEmpTable();
-                            alert(`تمت عملية الاستيراد بنجاح! 🎉\n\n- الأسماء الجديدة المضافة: ${addedCount}\n- الأسماء المكررة التي تم التغاضي عنها: ${skippedCount}`);
-                        } else {
-                            alert(`لم يتم إضافة أي أسماء جديدة.\nجميع الأسماء الموجودة في الملف (${skippedCount}) مسجلة سابقاً بالنظام! ⚠️`);
                         }
+                        return "";
+                    };
+
+                    json.forEach((row, idx) => {
+                        // قراءة الاسم
+                        const name = getVal(row, ['name', 'الاسم', 'اسم الموظف', 'الاسم الكامل', 'اسم الموظف / السائق']);
+                        if (!name || name.toString().trim() === "") return; // تجاوز الأسطر الفارغة
+
+                        const role = getVal(row, ['role', 'المسمى الوظيفي', 'الوظيفة', 'المسمى']) || 'سائق دينا';
+                        const phone = getVal(row, ['phone', 'رقم الجوال', 'الجوال', 'الهاتف', 'رقم الهاتف']) || '-';
+                        const nationalId = getVal(row, ['nationalId', 'الهوية', 'رقم الهوية', 'الإقامة', 'رقم الإقامة']) || '-';
+                        const nationality = getVal(row, ['nationality', 'الجنسية']) || '-';
+                        const sponsorship = getVal(row, ['sponsorship', 'الكفالة']) || 'القوافل';
+                        const joinDate = getVal(row, ['joinDate', 'تاريخ الالتحاق', 'تاريخ التعيين', 'تاريخ المباشرة']) || '-';
+                        const paymentMethod = getVal(row, ['paymentMethod', 'طريقة الدفع', 'طريقة السداد']) || 'نقداً';
+
+                        // تحويل القيم المالية تلقائياً مع معالجة الخانات الفارغة أو النصوص
+                        const parseNum = (v) => {
+                            let n = parseFloat(v);
+                            return isNaN(n) ? 0 : n;
+                        };
+
+                        const salary = parseNum(getVal(row, ['salary', 'الراتب المستحق', 'الراتب الأساسي', 'الراتب']));
+                        const bonuses = parseNum(getVal(row, ['bonuses', 'المكافآت', 'المكافأة']));
+                        const absence = parseNum(getVal(row, ['absence', 'غياب', 'الغياب']));
+                        const accidents = parseNum(getVal(row, ['accidents', 'حوادث', 'الحوادث']));
+                        const penalties = parseNum(getVal(row, ['penalties', 'خصومات وجزاءات', 'الجزاءات', 'الخصومات']));
+                        const loans = parseNum(getVal(row, ['loans', 'سلف', 'السلف']));
+
+                        const totalEarned = salary + bonuses;
+                        const totalDeducted = absence + accidents + penalties + loans;
+                        const netSalary = totalEarned - totalDeducted;
+
+                        const record = {
+                            id: Date.now() + Math.random(),
+                            name: name.toString().trim(),
+                            role: role.toString().trim(),
+                            phone: phone.toString().trim(),
+                            nationalId: nationalId.toString().trim(),
+                            nationality: nationality.toString().trim(),
+                            sponsorship: sponsorship.toString().trim(),
+                            joinDate: joinDate.toString().trim(),
+                            paymentMethod: paymentMethod.toString().trim(),
+                            salary: salary.toFixed(2),
+                            bonuses: bonuses.toFixed(2),
+                            totalEarned: totalEarned.toFixed(2),
+                            absence: absence.toFixed(2),
+                            accidents: accidents.toFixed(2),
+                            penalties: penalties.toFixed(2),
+                            loans: loans.toFixed(2),
+                            totalDeducted: totalDeducted.toFixed(2),
+                            netSalary: netSalary.toFixed(2)
+                        };
+
+                        currentData.unshift(record);
+                        importedCount++;
+                    });
+
+                    if (importedCount > 0) {
+                        saveStoredEmployees(currentData);
+                        renderEmpTable();
+                        alert(`تم استيراد ${importedCount} موظف بنجاح! 🎉`);
+                    } else {
+                        alert("لم يتم العثور على عمود يحتوي على (الاسم) في ملف إكسل. الرجاء التأكد من وجود عمود باسم 'الاسم' أو 'اسم الموظف'!");
                     }
                 } catch (err) {
-                    alert("حدث خطأ أثناء قراءة الملف، الرجاء التأكد من صيغة الملف.");
+                    console.error(err);
+                    alert("حدث خطأ أثناء قراءة ملف الإكسل. يرجى التأكد من أن الملف ليس محمياً بكلمة سر.");
                 }
                 e.target.value = '';
             };
