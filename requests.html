@@ -483,76 +483,177 @@
                                 <button onclick="openTerminationModal('${item.id}', '${name}')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
                                     <i class="fa-solid fa-user-slash"></i> إنهاء خدمة
                                 </button>
-                                <button onclick="deleteEmpRecord('${item.id}', '${name}')" class="bg-red-50 text-red-600 hover:bg-red-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
-                                    <i class="fa-solid fa-trash-can"></i> حذف
+                                <button onclick="deleteEmpRecord('${item.id}')" class="bg-slate-100 text-slate-500 hover:bg-rose-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
+                                    <i class="fa-solid fa-trash"></i> حذف
                                 </button>
                             </div>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
             });
         }
 
-        // نقل بيانات السطر المسجل للنموذج العلوي للتحديث
-        function selectEmpToForm(item) {
-            document.getElementById('quick-search-emp').value = item.name || '';
-            document.getElementById('emp-name').value = item.name || '';
-            document.getElementById('emp-role').value = item.role || 'سائق دينا';
-            document.getElementById('emp-phone').value = (!item.phone || item.phone === '-') ? '' : item.phone;
-            document.getElementById('emp-national-id').value = (!item.nationalId || item.nationalId === '-') ? '' : item.nationalId;
-            document.getElementById('emp-nationality').value = (!item.nationality || item.nationality === '-') ? '' : item.nationality;
-            document.getElementById('emp-sponsorship').value = item.sponsorship || 'القوافل';
-            document.getElementById('emp-join-date').value = (!item.joinDate || item.joinDate === '-') ? '' : item.joinDate;
-            document.getElementById('emp-payment-method').value = item.paymentMethod || 'نقداً';
-            
-            // تعبئة البيانات المالية
-            document.getElementById('emp-salary').value = item.salary || "0.00";
-            document.getElementById('emp-bonuses').value = item.bonuses || "0.00";
-            document.getElementById('emp-absence').value = item.absence || "0.00";
-            document.getElementById('emp-accidents').value = item.accidents || "0.00";
-            document.getElementById('emp-penalties').value = item.penalties || "0.00";
-            document.getElementById('emp-loans').value = item.loans || "0.00";
+        // الدالة المعدلة والمحدثة لاستيراد الإكسل وتوافق عناوين الملف المرفوع
+        function importEmpDataFromExcel(e) {
+            const file = e.target.files[0];
+            if (!file) return;
 
-            calculateTotals();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const rawJson = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+
+                    if (rawJson.length === 0) {
+                        alert("الملف فارغ أو لا يحتوي على بيانات!");
+                        return;
+                    }
+
+                    const mappedData = rawJson.map((row, index) => {
+                        const name = row['الاسم'] || row['اسم الموظف'] || row['name'] || '';
+                        if (!name || String(name).trim() === '') return null;
+
+                        const role = row['المهنة'] || row['المسمى الوظيفي'] || row['الوظيفة'] || 'أخرى';
+                        const phone = row['رقم الجوال'] || row['الجوال'] || '-';
+                        const nationalId = row['السجل الوطني'] || row['الهوية'] || row['رقم الهوية'] || '-';
+                        const nationality = row['الجنسية'] || '-';
+                        const sponsorship = row['الكفالة'] || 'القوافل';
+                        const joinDate = row['تاريخ الالتحاق'] || row['تاريخ المباشرة'] || '-';
+                        const paymentMethod = row['طريقة الدفع'] || row['طريقة الصرف'] || 'نقداً';
+
+                        const salary = parseFloat(row['الراتب المستحق'] || row['الراتب الأساسي'] || 0) || 0;
+                        const bonuses = parseFloat(row['المكافآت'] || row['المكافأة'] || 0) || 0;
+                        const totalEarned = parseFloat(row['إجمالي المستحق'] || (salary + bonuses)) || 0;
+
+                        const absence = parseFloat(row['غياب'] || 0) || 0;
+                        const accidents = parseFloat(row['حوادث'] || 0) || 0;
+                        const penalties = parseFloat(row['الخصومات والجزاءات'] || row['جزاءات'] || 0) || 0;
+                        const loans = parseFloat(row['سلف'] || 0) || 0;
+                        const totalDeducted = parseFloat(row['إجمالي المستقطع'] || (absence + accidents + penalties + loans)) || 0;
+
+                        const netSalary = parseFloat(row['صافي المبلغ المستحق'] || (totalEarned - totalDeducted)) || 0;
+
+                        return {
+                            id: Date.now() + index,
+                            name: String(name).trim(),
+                            role: String(role).trim(),
+                            phone: String(phone).trim(),
+                            nationalId: String(nationalId).trim(),
+                            nationality: String(nationality).trim(),
+                            sponsorship: String(sponsorship).trim(),
+                            joinDate: String(joinDate).trim(),
+                            paymentMethod: String(paymentMethod).trim(),
+                            salary: salary.toFixed(2),
+                            bonuses: bonuses.toFixed(2),
+                            totalEarned: totalEarned.toFixed(2),
+                            absence: absence.toFixed(2),
+                            accidents: accidents.toFixed(2),
+                            penalties: penalties.toFixed(2),
+                            loans: loans.toFixed(2),
+                            totalDeducted: totalDeducted.toFixed(2),
+                            netSalary: netSalary.toFixed(2)
+                        };
+                    }).filter(item => item !== null);
+
+                    if (mappedData.length > 0) {
+                        localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(mappedData));
+                        renderEmpTable();
+                        alert(`تم استيراد ${mappedData.length} موظف بنجاح! 🚀`);
+                    } else {
+                        alert("لم يتم العثور على أعمدة متطابقة في ملف الإكسل.");
+                    }
+
+                } catch (error) {
+                    alert("حدث خطأ أثناء قراءة ملف الإكسل.");
+                    console.error(error);
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         // تفريغ النموذج
         function clearEmpForm() {
             document.getElementById('emp-form').reset();
-            document.getElementById('quick-search-emp').value = '';
-            document.getElementById('emp-salary').value = '0.00';
-            document.getElementById('emp-bonuses').value = '0.00';
-            document.getElementById('emp-absence').value = '0.00';
-            document.getElementById('emp-accidents').value = '0.00';
-            document.getElementById('emp-penalties').value = '0.00';
-            document.getElementById('emp-loans').value = '0.00';
+            document.getElementById('emp-salary').value = "0.00";
+            document.getElementById('emp-bonuses').value = "0.00";
+            document.getElementById('emp-absence').value = "0.00";
+            document.getElementById('emp-accidents').value = "0.00";
+            document.getElementById('emp-penalties').value = "0.00";
+            document.getElementById('emp-loans').value = "0.00";
             calculateTotals();
         }
 
-        // مسح وحذف كافة السجلات القديمة دفعة واحدة
-        function deleteAllEmpRecords() {
-            if (confirm("هل أنت متأكد من حذف جميع سجلات الموظفين والمسيرات بالكامل؟ لا يمكن التراجع عن هذه الخطوة!")) {
-                localStorage.removeItem('five_caravans_employees_detailed');
-                renderEmpTable();
-                alert("تم حذف جميع السجلات بنجاح! 🗑️");
-            }
+        // تعبئة نموذج التعديل عند النقر على تعديل
+        function selectEmpToForm(emp) {
+            document.getElementById('emp-name').value = emp.name || '';
+            document.getElementById('emp-role').value = emp.role || 'سائق دينا';
+            document.getElementById('emp-phone').value = emp.phone !== '-' ? emp.phone : '';
+            document.getElementById('emp-national-id').value = emp.nationalId !== '-' ? emp.nationalId : '';
+            document.getElementById('emp-nationality').value = emp.nationality !== '-' ? emp.nationality : '';
+            document.getElementById('emp-sponsorship').value = emp.sponsorship || 'القوافل';
+            document.getElementById('emp-join-date').value = emp.joinDate !== '-' ? emp.joinDate : '';
+            document.getElementById('emp-payment-method').value = emp.paymentMethod || 'نقداً';
+
+            document.getElementById('emp-salary').value = emp.salary || "0.00";
+            document.getElementById('emp-bonuses').value = emp.bonuses || "0.00";
+            document.getElementById('emp-absence').value = emp.absence || "0.00";
+            document.getElementById('emp-accidents').value = emp.accidents || "0.00";
+            document.getElementById('emp-penalties').value = emp.penalties || "0.00";
+            document.getElementById('emp-loans').value = emp.loans || "0.00";
+
+            calculateTotals();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // البحث الفوري في الجدول
+        function filterEmpTable() {
+            const query = document.getElementById('emp-table-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#emp-table-body tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
         }
 
         // حذف موظف فردي
-        function deleteEmpRecord(id, name) {
-            if (confirm(`هل أنت متأكد من حذف الموظف "${name}"؟`)) {
+        function deleteEmpRecord(id) {
+            if (confirm("هل أنت تأكد من حذف هذا الموظف من المسير؟")) {
                 let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-                empData = empData.filter(item => item.id != id);
+                empData = empData.filter(e => String(e.id) !== String(id));
                 localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
                 renderEmpTable();
             }
         }
 
-        // فتح نافذة إنهاء الخدمة
+        // مسح كافة السجلات
+        function deleteAllEmpRecords() {
+            if (confirm("⚠️ تحذير: هل أنت متأكد من مسح جميع بيانات السجل؟ لا يمكن التراجع عن هذه الخطوة.")) {
+                localStorage.removeItem('five_caravans_employees_detailed');
+                renderEmpTable();
+            }
+        }
+
+        // تصدير البيانات لإكسل
+        function exportEmpDataToExcel() {
+            const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+            if (empData.length === 0) {
+                alert("لا توجد بيانات لتصديرها!");
+                return;
+            }
+            const worksheet = XLSX.utils.json_to_sheet(empData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "المسير المالي");
+            XLSX.writeFile(workbook, `مسير_الرواتب_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+
+        // نافذة إنهاء الخدمة
         function openTerminationModal(id, name) {
             document.getElementById('term-emp-id').value = id;
             document.getElementById('term-emp-name').value = name;
-            document.getElementById('term-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('term-date').value = new Date().toISOString().slice(0, 10);
             document.getElementById('termination-modal').classList.remove('hidden');
         }
 
@@ -560,44 +661,48 @@
             document.getElementById('termination-modal').classList.add('hidden');
         }
 
-        // تأكيد إنهاء الخدمة والترحيل للأرشيف
         function submitTermination(e) {
             e.preventDefault();
             const id = document.getElementById('term-emp-id').value;
+            const name = document.getElementById('term-emp-name').value;
             const termDate = document.getElementById('term-date').value;
-            const amount = parseFloat(document.getElementById('term-amount').value) || 0;
+            const termAmount = parseFloat(document.getElementById('term-amount').value) || 0;
 
             let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-            let empIndex = empData.findIndex(item => item.id == id);
+            const empIndex = empData.findIndex(e => String(e.id) === String(id));
 
             if (empIndex !== -1) {
+                const emp = empData[empIndex];
                 let archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
-                let archivedEmp = {
-                    ...empData[empIndex],
-                    termDate: termDate,
-                    settlementAmount: amount.toFixed(2)
-                };
                 
-                archiveData.unshift(archivedEmp);
+                archiveData.unshift({
+                    id: emp.id,
+                    name: emp.name,
+                    role: emp.role,
+                    nationalId: emp.nationalId,
+                    joinDate: emp.joinDate,
+                    termDate: termDate,
+                    amountPaid: termAmount.toFixed(2)
+                });
+
                 empData.splice(empIndex, 1);
 
-                localStorage.setItem('five_caravans_emp_archive', JSON.stringify(archiveData));
                 localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
+                localStorage.setItem('five_caravans_emp_archive', JSON.stringify(archiveData));
 
                 renderEmpTable();
                 renderArchiveTable();
                 closeTerminationModal();
-                alert("تم ترحيل الموظف إلى أرشيف إنهاء الخدمة بنجاح! 📦");
+                alert(`تم إنهاء خدمة الموظف (${name}) ونقله لأرشيف التصفيات بنجاح.`);
             }
         }
 
-        // عرض جدول الأرشيف
         function renderArchiveTable() {
             const tbody = document.getElementById('archive-table-body');
             const archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
 
             if (archiveData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-slate-400 italic text-center text-sm">لا توجد سجلات منتهية الخدمة حالياً.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-slate-400 bg-white italic text-center text-xs">لا يوجد موظفين في أرشيف إنهاء الخدمة.</td></tr>`;
                 return;
             }
 
@@ -605,81 +710,60 @@
             archiveData.forEach(item => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition-all">
-                        <td class="p-3 text-right font-bold text-slate-800">${item.name || '-'}</td>
-                        <td class="p-3 text-slate-700">${item.role || '-'}</td>
-                        <td class="p-3 font-mono">${item.nationalId || '-'}</td>
-                        <td class="p-3 font-mono text-slate-500">${item.joinDate || '-'}</td>
-                        <td class="p-3 font-mono text-rose-600 font-bold">${item.termDate || '-'}</td>
-                        <td class="p-3 font-mono font-bold text-emerald-600 bg-emerald-50">${item.settlementAmount || '0.00'}</td>
+                        <td class="p-3 text-right font-bold text-slate-800">${item.name}</td>
+                        <td class="p-3 text-slate-600">${item.role}</td>
+                        <td class="p-3 font-mono text-slate-600">${item.nationalId}</td>
+                        <td class="p-3 font-mono text-slate-500">${item.joinDate}</td>
+                        <td class="p-3 font-mono text-rose-600 bg-rose-50/50">${item.termDate}</td>
+                        <td class="p-3 font-mono font-bold text-emerald-600 bg-emerald-50/50">${item.amountPaid}</td>
                         <td class="p-3">
-                            <button onclick="deleteArchiveRecord('${item.id}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs">
-                                <i class="fa-solid fa-trash-can"></i> حذف
+                            <button onclick="restoreFromArchive('${item.id}')" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded text-[11px] font-bold transition-all">
+                                استعادة للنظام
                             </button>
                         </td>
-                    </tr>`;
+                    </tr>
+                `;
             });
         }
 
-        function deleteArchiveRecord(id) {
-            if (confirm("هل أنت متأكد من حذف هذا السجل من الأرشيف؟")) {
-                let archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
-                archiveData = archiveData.filter(item => item.id != id);
+        function restoreFromArchive(id) {
+            let archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
+            const index = archiveData.findIndex(a => String(a.id) === String(id));
+
+            if (index !== -1) {
+                const item = archiveData[index];
+                let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+
+                empData.unshift({
+                    id: item.id,
+                    name: item.name,
+                    role: item.role,
+                    phone: '-',
+                    nationalId: item.nationalId,
+                    nationality: '-',
+                    sponsorship: 'القوافل',
+                    joinDate: item.joinDate,
+                    paymentMethod: 'نقداً',
+                    salary: "0.00",
+                    bonuses: "0.00",
+                    totalEarned: "0.00",
+                    absence: "0.00",
+                    accidents: "0.00",
+                    penalties: "0.00",
+                    loans: "0.00",
+                    totalDeducted: "0.00",
+                    netSalary: "0.00"
+                });
+
+                archiveData.splice(index, 1);
+
+                localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
                 localStorage.setItem('five_caravans_emp_archive', JSON.stringify(archiveData));
+
+                renderEmpTable();
                 renderArchiveTable();
+                alert(`تمت إزالة الموظف من الأرشيف وإعادة تفعيله في القائمة النشطة بنجاح.`);
             }
-        }
-
-        // البحث الفوري والتصفية
-        function filterEmpTable() {
-            const query = document.getElementById('emp-table-search').value.toLowerCase();
-            const rows = document.querySelectorAll('#emp-main-table tbody tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
-            });
-        }
-
-        function handleEmpSearch() {
-            const query = document.getElementById('quick-search-emp').value.trim().toLowerCase();
-            const dropdown = document.getElementById('search-dropdown-emp');
-            
-            if (!query) {
-                dropdown.classList.add('hidden');
-                return;
-            }
-
-            const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-            const filtered = empData.filter(emp => (emp.name || '').toLowerCase().includes(query));
-
-            if (filtered.length === 0) {
-                dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">لا توجد نتائج مطابقة</div>`;
-            } else {
-                dropdown.innerHTML = filtered.map(emp => `
-                    <div onclick='selectEmpFromDropdown(${JSON.stringify(emp).replace(/'/g, "\\'")})' class="p-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 flex justify-between items-center text-xs">
-                        <span class="font-bold text-slate-800">${emp.name}</span>
-                        <span class="text-slate-500">${emp.role || ''}</span>
-                    </div>
-                `).join('');
-            }
-            dropdown.classList.remove('hidden');
-        }
-
-        function selectEmpFromDropdown(emp) {
-            selectEmpToForm(emp);
-            document.getElementById('search-dropdown-emp').classList.add('hidden');
-        }
-
-        // تصدير للـ Excel
-        function exportEmpDataToExcel() {
-            const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-            if (empData.length === 0) {
-                alert("لا توجد بيانات للتصدير!");
-                return;
-            }
-            const ws = XLSX.utils.json_to_sheet(empData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "الموظفين والمسيرات");
-            XLSX.writeFile(wb, "مسيرات_الموظفين_القوافل_الخمسة.xlsx");
         }
 
         function exportArchiveToExcel() {
@@ -688,35 +772,45 @@
                 alert("الأرشيف فارغ!");
                 return;
             }
-            const ws = XLSX.utils.json_to_sheet(archiveData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "الأرشيف");
-            XLSX.writeFile(wb, "أرشيف_إنهاء_الخدمة.xlsx");
+            const worksheet = XLSX.utils.json_to_sheet(archiveData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "أرشيف إنهاء الخدمة");
+            XLSX.writeFile(workbook, `أرشيف_إنهاء_الخدمة_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
 
-        function importEmpDataFromExcel(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        function handleEmpSearch() {
+            const query = document.getElementById('quick-search-emp').value.trim().toLowerCase();
+            const dropdown = document.getElementById('search-dropdown-emp');
+            const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
 
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const sheetName = workbook.SheetNames[0];
-                const worksheet = workbook.Sheets[sheetName];
-                const json = XLSX.utils.sheet_to_json(worksheet);
+            if (!query) {
+                dropdown.classList.add('hidden');
+                return;
+            }
 
-                if (json.length > 0) {
-                    localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(json));
-                    renderEmpTable();
-                    alert("تم استيراد البيانات وتحديث الجدول بنجاح! 🚀");
-                }
-            };
-            reader.readAsArrayBuffer(file);
+            const matches = empData.filter(e => (e.name || '').toLowerCase().includes(query));
+
+            if (matches.length === 0) {
+                dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">لا يوجد موظف بهذا الاسم</div>`;
+            } else {
+                dropdown.innerHTML = matches.map(e => `
+                    <div onclick='selectEmpFromSearch(${JSON.stringify(e).replace(/"/g, '&quot;')})' class="p-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-700">${e.name}</span>
+                        <span class="text-slate-400 font-mono">${e.nationalId || ''}</span>
+                    </div>
+                `).join('');
+            }
+            dropdown.classList.remove('hidden');
+        }
+
+        function selectEmpFromSearch(emp) {
+            selectEmpToForm(emp);
+            document.getElementById('search-dropdown-emp').classList.add('hidden');
+            document.getElementById('quick-search-emp').value = '';
         }
 
         function logout() {
-            if(confirm("هل تريد تسجيل الخروج؟")) {
+            if (confirm("هل تريد تسجيل الخروج؟")) {
                 window.location.href = "login.html";
             }
         }
