@@ -553,7 +553,7 @@
         }
 
         // ==========================================
-        //  دالة الاستيراد الذكية من الإكسل
+        //  دالة الاستيراد الذكية لمنع التكرار نهائياً
         // ==========================================
         function importEmpDataFromExcel(event) {
             const file = event.target.files[0];
@@ -574,17 +574,49 @@
                     }
 
                     let currentEmployees = getStoredEmployees();
-                    let importedCount = 0;
+                    let archivedEmployees = getArchivedEmployees();
+
+                    let addedCount = 0;
+                    let skippedCount = 0;
 
                     jsonData.forEach(row => {
-                        // استخراج الاسم
+                        // تنظيف الاسم ورقم الهوية للمطابقة الدقيقة
                         const name = (row['الاسم'] || row['اسم الموظف'] || row['Name'] || row['Employee Name'] || '').toString().trim();
+                        const nationalId = (row['الهوية'] || row['رقم الهوية'] || row['الإقامة'] || row['ID'] || '-').toString().trim();
+
                         if (!name) return;
 
-                        // استخراج الحقول بالأرقام والنصوص
+                        // 1. فحص هل الموظف موجود في الأرشيف؟ (بالاسم أو بالهوية)
+                        const inArchive = archivedEmployees.some(emp => {
+                            const archName = (emp.name || '').trim().toLowerCase();
+                            const archId = (emp.nationalId || '').trim();
+                            const isNameMatch = archName === name.toLowerCase();
+                            const isIdMatch = nationalId !== '-' && archId !== '-' && archId === nationalId;
+                            return isNameMatch || isIdMatch;
+                        });
+
+                        if (inArchive) {
+                            skippedCount++;
+                            return; // يتجاهل الموظف لأنه مؤرشف
+                        }
+
+                        // 2. فحص هل الموظف موجود مسبقاً في السجلات النشطة؟
+                        const inActive = currentEmployees.some(emp => {
+                            const activeName = (emp.name || emp['الاسم'] || '').trim().toLowerCase();
+                            const activeId = (emp.nationalId || emp['الهوية'] || '').trim();
+                            const isNameMatch = activeName === name.toLowerCase();
+                            const isIdMatch = nationalId !== '-' && activeId !== '-' && activeId === nationalId;
+                            return isNameMatch || isIdMatch;
+                        });
+
+                        if (inActive) {
+                            skippedCount++;
+                            return; // يتجاهل الموظف لمنع التكرار
+                        }
+
+                        // 3. إضافة الموظف الجديد فقط
                         const role = row['المسمى الوظيفي'] || row['الوظيفة'] || row['Role'] || 'سائق دينا';
-                        const phone = (row['رقم الجوال'] || row['الجوال'] || row['Phone'] || '-').toString();
-                        const nationalId = (row['الهوية'] || row['رقم الهوية'] || row['الإقامة'] || row['ID'] || '-').toString();
+                        const phone = (row['رقم الجوال'] || row['الجوال'] || row['Phone'] || '-').toString().trim();
                         const nationality = row['الجنسية'] || row['Nationality'] || '-';
                         const sponsorship = row['الكفالة'] || row['Sponsorship'] || 'القوافل';
                         const joinDate = row['تاريخ الالتحاق'] || row['Join Date'] || '-';
@@ -601,10 +633,8 @@
                         const totalDeducted = absence + accidents + penalties + loans;
                         const netSalary = totalEarned - totalDeducted;
 
-                        let existingIndex = currentEmployees.findIndex(emp => (emp.name || emp['الاسم'] || '').toLowerCase() === name.toLowerCase());
-
                         let newRecord = {
-                            id: existingIndex !== -1 ? currentEmployees[existingIndex].id : Date.now() + Math.random(),
+                            id: Date.now() + Math.random(),
                             name: name,
                             role: role,
                             phone: phone,
@@ -624,20 +654,17 @@
                             netSalary: netSalary.toFixed(2)
                         };
 
-                        if (existingIndex !== -1) {
-                            currentEmployees[existingIndex] = newRecord;
-                        } else {
-                            currentEmployees.unshift(newRecord);
-                        }
-                        importedCount++;
+                        currentEmployees.unshift(newRecord);
+                        addedCount++;
                     });
 
                     saveStoredEmployees(currentEmployees);
                     renderEmpTable();
-                    alert(`تم استيراد/تحديث بيانات (${importedCount}) موظف بنجاح! 🎉`);
-                    event.target.value = ''; // إعادة ضبط الخانة
+                    
+                    alert(`نتيجة الاستيراد:\n- تم إدراج (${addedCount}) موظف جديد.\n- تم إهمال (${skippedCount}) سجل (مستورد سابقاً أو متواجد بالأرشيف).`);
+                    event.target.value = ''; // إعادة ضبط خانة رفع الملف
                 } catch (err) {
-                    alert("حدث خطأ أثناء قراءة ملف الإكسل. يرجى التنسيق والتأكد من الملف.");
+                    alert("حدث خطأ أثناء قراءة ملف الإكسل. يرجى التأكد من صيغة الملف.");
                     console.error(err);
                 }
             };
