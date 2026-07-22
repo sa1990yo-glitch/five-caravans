@@ -1,592 +1,51 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مؤسسة القوافل الخمسة - سجل الموظفين والمسيرات</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=300;400;600;700&display=swap');
-        body { font-family: 'Cairo', sans-serif; }
-    </style>
-</head>
-<body class="bg-slate-100 min-h-screen flex">
-
-    <div class="w-72 bg-slate-950 text-white flex flex-col min-h-screen sticky top-0 p-4 shadow-xl z-20">
-        <div class="flex items-center gap-3 px-2 py-4 border-b border-slate-800 mb-6">
-            <div class="text-2xl text-blue-500">🚚</div>
-            <div>
-                <h1 class="font-bold text-base leading-tight">القوافل الخمسة</h1>
-                <p class="text-xs text-slate-400">للخدمات اللوجستية</p>
-            </div>
-        </div>
-        
-        <nav class="flex-1 flex flex-col gap-1.5">
-            <a href="index.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-chart-line w-5 text-center"></i> لوحة التحكم العامة
-            </a>
-            <a href="residence.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold bg-blue-600 text-white shadow-lg shadow-blue-600/20 transition-all">
-                <i class="fa-solid fa-users w-5 text-center"></i> سجل الموظفين والسائقين
-            </a>
-            <a href="loans.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-sack-dollar w-5 text-center"></i> سجلات السُّلف المالية
-            </a>
-            <a href="penalties.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-scale-balanced w-5 text-center"></i> الجزاءات والخصومات
-            </a>
-            <a href="leaves.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-calendar-days w-5 text-center"></i> إدارة الإجازات
-            </a>
-            <a href="settings.html" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-900 hover:text-white transition-all">
-                <i class="fa-solid fa-sliders w-5 text-center text-blue-400"></i> الضبط والإعدادات
-            </a>
-            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-rose-400 hover:bg-rose-950/40 hover:text-rose-300 transition-all mt-auto border border-rose-950/50">
-                <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> تسجيل الخروج
-            </button>
-        </nav>
-    </div>
-
-    <div class="flex-1 p-8 overflow-x-hidden">
-        
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-                <h2 class="text-2xl font-bold text-slate-800">سجل الموظفين والمسيرات المالية</h2>
-                <p class="text-slate-500 text-sm mt-1">النظام الموحد لإدارة الموظفين، تفاصيل الرواتب، المكافآت، الاستقطاعات وطرق الدفع.</p>
-            </div>
-            
-            <div class="flex items-center gap-3 flex-wrap">
-                <button onclick="deleteAllEmpRecords()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-trash-can"></i> مسح كامل السجل
-                </button>
-
-                <label class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2 cursor-pointer">
-                    <i class="fa-solid fa-file-import text-base"></i> استيراد من إكسل
-                    <input type="file" id="excel-import-emp" accept=".xlsx, .xls" class="hidden" onchange="importEmpDataFromExcel(event)">
-                </label>
-
-                <button onclick="exportEmpDataToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all flex items-center gap-2">
-                    <i class="fa-solid fa-file-excel text-base"></i> تصدير إلى إكسل
-                </button>
-            </div>
-        </div>
-
-        <div id="emp-form-section" class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/60 mb-8">
-            <div class="flex items-center justify-between mb-6 border-b pb-3 border-slate-100 flex-wrap gap-4">
-                <div class="flex items-center gap-2 text-blue-600 font-bold">
-                    <i class="fa-solid fa-user-plus text-lg"></i>
-                    <h3>إضافة / تعديل بيانات ومستحقات موظف</h3>
-                </div>
-                <div class="relative w-full sm:w-96">
-                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-blue-500">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
-                    </span>
-                    <input type="text" id="quick-search-emp" oninput="handleEmpSearch()" placeholder="ابحث باسم الموظف للتعديل الفوري..." class="w-full pl-4 pr-9 py-2.5 bg-blue-50/50 border border-blue-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-bold text-slate-700 placeholder-blue-400">
-                    <div id="search-dropdown-emp" class="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-xl shadow-xl z-50 max-h-60 overflow-y-auto hidden"></div>
-                </div>
-            </div>
-            
-            <form id="emp-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <div class="md:col-span-4 border-b pb-2 mb-2">
-                    <span class="text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-id-card ml-1"></i> أولاً: البيانات التعريفية والشخصية</span>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">الاسم</label>
-                    <input type="text" id="emp-name" placeholder="أدخل الاسم الكامل..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-semibold" required>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">المسمى الوظيفي</label>
-                    <select id="emp-role" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="سائق دينا">سائق دينا 🚚</option>
-                        <option value="سائق تريلة">سائق تريلة 🚛</option>
-                        <option value="مندوب توصيل">مندوب توصيل 📦</option>
-                        <option value="إداري">إداري 💼</option>
-                        <option value="محاسب">محاسب 🧮</option>
-                        <option value="أخرى">أخرى</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">رقم الجوال</label>
-                    <input type="text" id="emp-phone" placeholder="05xxxxxxxx" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">الهوية (الإقامة / الوطنية)</label>
-                    <input type="text" id="emp-national-id" placeholder="أدخل رقم الهوية..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">الجنسية</label>
-                    <input type="text" id="emp-nationality" placeholder="أدخل الجنسية..." class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">الكفالة</label>
-                    <select id="emp-sponsorship" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="القوافل">القوافل 🏢</option>
-                        <option value="أخرى">أخرى</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">تاريخ الالتحاق</label>
-                    <input type="date" id="emp-join-date" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">طريقة الدفع</label>
-                    <select id="emp-payment-method" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-blue-500 cursor-pointer">
-                        <option value="نقداً">نقداً 💵</option>
-                        <option value="تحويل بنكي">تحويل بنكي 🏦</option>
-                        <option value="مدد">مدد 🔗</option>
-                        <option value="زاد الجود">زاد الجود 💎</option>
-                        <option value="الخزينة">الخزينة 💰</option>
-                    </select>
-                </div>
-
-                <div class="md:col-span-4 border-b pb-2 mb-2 mt-4">
-                    <span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-money-bill-trend-up ml-1"></i> ثانياً: المستحقات والمكافآت المالية</span>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">الراتب المستحق (ريال)</label>
-                    <input type="number" step="0.01" id="emp-salary" value="0.00" oninput="calculateTotals()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-emerald-600 focus:outline-none focus:border-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">المكافآت (ريال)</label>
-                    <input type="number" step="0.01" id="emp-bonuses" value="0.00" oninput="calculateTotals()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-emerald-600 focus:outline-none focus:border-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي المستحق (ريال)</label>
-                    <input type="text" id="emp-total-earned" value="0.00" readonly class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-black text-slate-700 focus:outline-none cursor-not-allowed">
-                </div>
-
-                <div class="hidden md:block"></div>
-
-                <div class="md:col-span-4 border-b pb-2 mb-2 mt-4">
-                    <span class="text-xs font-bold text-rose-600 bg-rose-50 px-3 py-1.5 rounded-lg"><i class="fa-solid fa-file-invoice-dollar ml-1"></i> ثالثاً: الاستقطاعات والخصومات</span>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">غياب (ريال)</label>
-                    <input type="number" step="0.01" id="emp-absence" value="0.00" oninput="calculateTotals()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-rose-600 focus:outline-none focus:border-rose-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">حوادث (ريال)</label>
-                    <input type="number" step="0.01" id="emp-accidents" value="0.00" oninput="calculateTotals()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-rose-600 focus:outline-none focus:border-rose-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">الخصومات والجزاءات (ريال)</label>
-                    <input type="number" step="0.01" id="emp-penalties" value="0.00" oninput="calculateTotals()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-rose-600 focus:outline-none focus:border-rose-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">سلف (ريال)</label>
-                    <input type="number" step="0.01" id="emp-loans" value="0.00" oninput="calculateTotals()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-rose-600 focus:outline-none focus:border-rose-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">إجمالي المستقطع (ريال)</label>
-                    <input type="text" id="emp-total-deducted" value="0.00" readonly class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-black text-slate-700 focus:outline-none cursor-not-allowed">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2">المبلغ المستحق الصافي (ريال)</label>
-                    <input type="text" id="emp-net-salary" value="0.00" readonly class="w-full px-4 py-2.5 bg-blue-50 border border-blue-200 rounded-xl text-xs font-black text-blue-700 focus:outline-none cursor-not-allowed">
-                </div>
-
-                <div class="md:col-span-2 flex gap-2">
-                    <button type="submit" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all flex items-center justify-center gap-1">
-                        <i class="fa-solid fa-floppy-disk"></i> حفظ الموظف ومسير الراتب
-                    </button>
-                    <button type="button" onclick="clearEmpForm()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-5 py-2.5 rounded-xl text-xs transition-all">
-                        إلغاء
+<button onclick="deleteEmpRecord('${item.id}')" class="bg-slate-100 text-slate-600 hover:bg-rose-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
+                        <i class="fa-solid fa-trash"></i> حذف
                     </button>
                 </div>
-            </form>
-        </div>
+            </td>
+        </tr>
+    `;
+});
 
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
-            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-users-viewfinder text-blue-600 text-lg"></i>
-                    <h3 class="font-bold text-slate-800">قائمة السجلات والمسيرات المالية المفصلة (النشطة)</h3>
-                </div>
-                
-                <div class="relative w-full sm:w-80">
-                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                        <i class="fa-solid fa-filter text-sm"></i>
-                    </span>
-                    <input type="text" id="emp-table-search" oninput="filterEmpTable()" placeholder="ابحث بالاسم، الوظيفة، الهوية، أو الجنسية..." class="w-full pl-4 pr-9 py-2 bg-white border border-slate-300 rounded-xl text-xs focus:outline-none focus:border-blue-500 font-medium">
-                </div>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-center border-collapse text-xs" id="emp-main-table">
-                    <thead>
-                        <tr class="bg-slate-900 text-white font-bold whitespace-nowrap">
-                            <th class="p-3 text-right">الاسم</th>
-                            <th class="p-3">المسمى الوظيفي</th>
-                            <th class="p-3">رقم الجوال</th>
-                            <th class="p-3">الهوية</th>
-                            <th class="p-3">الجنسية</th>
-                            <th class="p-3">الكفالة</th>
-                            <th class="p-3">تاريخ الالتحاق</th>
-                            <th class="p-3">الراتب المستحق</th>
-                            <th class="p-3">المكافآت</th>
-                            <th class="p-3 bg-slate-800">إجمالي المستحق</th>
-                            <th class="p-3">غياب</th>
-                            <th class="p-3">حوادث</th>
-                            <th class="p-3">خصومات وجزاءات</th>
-                            <th class="p-3">سلف</th>
-                            <th class="p-3 bg-rose-950">إجمالي المستقطع</th>
-                            <th class="p-3 bg-emerald-900 text-emerald-300 font-black">المبلغ المستحق</th>
-                            <th class="p-3">طريقة الدفع</th>
-                            <th class="p-3">الإجراءات</th>
-                        </tr>
-                    </thead>
-                    <tbody id="emp-table-body" class="divide-y divide-slate-100 text-slate-600 font-semibold whitespace-nowrap">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden mb-8">
-            <div class="p-5 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-box-archive text-rose-600 text-lg"></i>
-                    <h3 class="font-bold text-slate-800">أرشيف وسجل إنهاء الخدمة والتصفيات المالية</h3>
-                </div>
-                <div>
-                    <button onclick="exportArchiveToExcel()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
-                        <i class="fa-solid fa-file-excel"></i> تصدير الأرشيف لإكسل
-                    </button>
-                </div>
-            </div>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-center border-collapse text-xs">
-                    <thead>
-                        <tr class="bg-slate-800 text-white font-bold whitespace-nowrap">
-                            <th class="p-3 text-right">الاسم</th>
-                            <th class="p-3">المسمى الوظيفي</th>
-                            <th class="p-3">الهوية</th>
-                            <th class="p-3">تاريخ الالتحاق</th>
-                            <th class="p-3 bg-rose-950">تاريخ إنهاء الخدمة</th>
-                            <th class="p-3 bg-emerald-950 text-emerald-300">المبلغ المستلم (ر.س)</th>
-                            <th class="p-3">الإجراء</th>
-                        </tr>
-                    </thead>
-                    <tbody id="archive-table-body" class="divide-y divide-slate-100 text-slate-600 font-semibold whitespace-nowrap">
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="termination-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-        <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-100 mx-4">
-            <div class="flex items-center gap-3 text-rose-600 font-bold border-b pb-3 mb-4">
-                <i class="fa-solid fa-user-slash text-xl"></i>
-                <h3 class="text-base">إجراء تصفية وإنهاء خدمة موظف</h3>
-            </div>
-            
-            <form id="termination-form" onsubmit="submitTermination(event)">
-                <input type="hidden" id="term-emp-id">
-                
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-slate-500 mb-2">اسم الموظف</label>
-                    <input type="text" id="term-emp-name" readonly class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 cursor-not-allowed">
-                </div>
-
-                <div class="mb-4">
-                    <label class="block text-xs font-bold text-slate-500 mb-2">تاريخ إنهاء الخدمة</label>
-                    <input type="date" id="term-date" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-none focus:border-rose-500" required>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-xs font-bold text-slate-500 mb-2">المبلغ المستلم / مستحقات نهاية الخدمة (ريال)</label>
-                    <input type="number" step="0.01" id="term-amount" placeholder="0.00" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-black text-emerald-600 focus:outline-none focus:border-rose-500" required>
-                </div>
-
-                <div class="flex gap-2.5">
-                    <button type="submit" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md transition-all">
-                        تأكيد الترحيل للأرشيف 📦
-                    </button>
-                    <button type="button" onclick="closeTerminationModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2.5 rounded-xl text-xs transition-all">
-                        إلغاء
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            renderEmpTable();
-            renderArchiveTable();
-
-            // معالجة حفظ الموظف
-            document.getElementById('emp-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const name = document.getElementById('emp-name').value.trim();
-                const role = document.getElementById('emp-role').value;
-                const phone = document.getElementById('emp-phone').value.trim();
-                const nationalId = document.getElementById('emp-national-id').value.trim();
-                const nationality = document.getElementById('emp-nationality').value.trim();
-                const sponsorship = document.getElementById('emp-sponsorship').value;
-                const joinDate = document.getElementById('emp-join-date').value;
-                const paymentMethod = document.getElementById('emp-payment-method').value;
-
-                // القيم المالية
-                const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
-                const bonuses = parseFloat(document.getElementById('emp-bonuses').value) || 0;
-                const absence = parseFloat(document.getElementById('emp-absence').value) || 0;
-                const accidents = parseFloat(document.getElementById('emp-accidents').value) || 0;
-                const penalties = parseFloat(document.getElementById('emp-penalties').value) || 0;
-                const loans = parseFloat(document.getElementById('emp-loans').value) || 0;
-
-                const totalEarned = salary + bonuses;
-                const totalDeducted = absence + accidents + penalties + loans;
-                const netSalary = totalEarned - totalDeducted;
-
-                if (!name) return;
-
-                let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-                let existingIndex = empData.findIndex(emp => (emp.name || '').toLowerCase() === name.toLowerCase());
-
-                let record = {
-                    id: existingIndex !== -1 ? empData[existingIndex].id : Date.now(),
-                    name: name,
-                    role: role,
-                    phone: phone || '-',
-                    nationalId: nationalId || '-',
-                    nationality: nationality || '-',
-                    sponsorship: sponsorship,
-                    joinDate: joinDate || '-',
-                    paymentMethod: paymentMethod,
-                    salary: salary.toFixed(2),
-                    bonuses: bonuses.toFixed(2),
-                    totalEarned: totalEarned.toFixed(2),
-                    absence: absence.toFixed(2),
-                    accidents: accidents.toFixed(2),
-                    penalties: penalties.toFixed(2),
-                    loans: loans.toFixed(2),
-                    totalDeducted: totalDeducted.toFixed(2),
-                    netSalary: netSalary.toFixed(2)
-                };
-
-                if (existingIndex !== -1) {
-                    empData[existingIndex] = record;
-                } else {
-                    empData.unshift(record);
-                }
-
-                localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
-                renderEmpTable();
-                clearEmpForm();
-                alert("تم حفظ الموظف وتحديث المسير المالي بنجاح! ✨");
-            });
-        });
-
-        // احتساب الإجماليات بشكل حي ومباشر
-        function calculateTotals() {
-            const salary = parseFloat(document.getElementById('emp-salary').value) || 0;
-            const bonuses = parseFloat(document.getElementById('emp-bonuses').value) || 0;
-            const absence = parseFloat(document.getElementById('emp-absence').value) || 0;
-            const accidents = parseFloat(document.getElementById('emp-accidents').value) || 0;
-            const penalties = parseFloat(document.getElementById('emp-penalties').value) || 0;
-            const loans = parseFloat(document.getElementById('emp-loans').value) || 0;
-
-            const totalEarned = salary + bonuses;
-            const totalDeducted = absence + accidents + penalties + loans;
-            const netSalary = totalEarned - totalDeducted;
-
-            document.getElementById('emp-total-earned').value = totalEarned.toFixed(2);
-            document.getElementById('emp-total-deducted').value = totalDeducted.toFixed(2);
-            document.getElementById('emp-net-salary').value = netSalary.toFixed(2);
+            // إضافة دالة حساب إجمالي الأعمدة
+            calculateTableFooterTotals();
         }
 
-        // بناء وعرض جدول الموظفين بأمان
-        function renderEmpTable() {
-            const tbody = document.getElementById('emp-table-body');
-            const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+        // دالة حساب مجاميع أسفل الجدول لكل عمود
+        function calculateTableFooterTotals() {
+            const rows = document.querySelectorAll('#emp-table-body tr');
+            let sumSalary = 0, sumBonuses = 0, sumDeductions = 0, sumLoans = 0, sumNet = 0;
 
-            if (empData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="18" class="py-10 text-slate-400 bg-white italic text-center text-sm">سجل البيانات فارغ حالياً. قم بإدخال بيانات الموظف أو استيراد ملف إكسل.</td></tr>`;
-                return;
-            }
+            rows.forEach(row => {
+                if (row.style.display !== 'none' && !row.querySelector('td[colspan]')) {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 10) {
+                        sumSalary += parseFloat(cells[4].innerText.replace(/[^\d.-]/g, '')) || 0;
+                        sumBonuses += parseFloat(cells[5].innerText.replace(/[^\d.-]/g, '')) || 0;
+                        sumDeductions += parseFloat(cells[6].innerText.replace(/[^\d.-]/g, '')) || 0;
+                        sumLoans += parseFloat(cells[7].innerText.replace(/[^\d.-]/g, '')) || 0;
+                        sumNet += parseFloat(cells[8].innerText.replace(/[^\d.-]/g, '')) || 0;
+                    }
+                }
+            });
 
-            tbody.innerHTML = '';
-            empData.forEach(item => {
-                const name = item.name || item.empName || '-';
-                const role = item.role || item.empRole || '-';
-                const phone = item.phone || '-';
-                const nationalId = item.nationalId || '-';
-                const nationality = item.nationality || '-';
-                const sponsorship = item.sponsorship || 'القوافل';
-                const joinDate = item.joinDate || '-';
-                const paymentMethod = item.paymentMethod || 'نقداً';
-
-                const salary = parseFloat(item.salary || 0).toFixed(2);
-                const bonuses = parseFloat(item.bonuses || 0).toFixed(2);
-                const totalEarned = parseFloat(item.totalEarned || (parseFloat(salary) + parseFloat(bonuses))).toFixed(2);
-                
-                const absence = parseFloat(item.absence || 0).toFixed(2);
-                const accidents = parseFloat(item.accidents || 0).toFixed(2);
-                const penalties = parseFloat(item.penalties || 0).toFixed(2);
-                const loans = parseFloat(item.loans || 0).toFixed(2);
-                const totalDeducted = parseFloat(item.totalDeducted || (parseFloat(absence) + parseFloat(accidents) + parseFloat(penalties) + parseFloat(loans))).toFixed(2);
-                
-                const netSalary = parseFloat(item.netSalary || (parseFloat(totalEarned) - parseFloat(totalDeducted))).toFixed(2);
-
-                const targetJson = JSON.stringify(item).replace(/"/g, '&quot;');
-
-                let sponsorBadge = sponsorship === 'القوافل' 
-                    ? '<span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold">القوافل</span>' 
-                    : '<span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">أخرى</span>';
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition-all">
-                        <td class="p-3 text-right font-bold text-slate-800">${name}</td>
-                        <td class="p-3 text-slate-700 font-medium">${role}</td>
-                        <td class="p-3 text-slate-600 font-mono">${phone}</td>
-                        <td class="p-3 text-slate-600 font-mono">${nationalId}</td>
-                        <td class="p-3 text-slate-700">${nationality}</td>
-                        <td class="p-3">${sponsorBadge}</td>
-                        <td class="p-3 text-slate-500 font-mono">${joinDate}</td>
-                        <td class="p-3 text-slate-600 font-mono">${salary}</td>
-                        <td class="p-3 text-slate-600 font-mono">${bonuses}</td>
-                        <td class="p-3 font-bold text-slate-800 bg-slate-50 font-mono">${totalEarned}</td>
-                        <td class="p-3 text-rose-600 font-mono">${absence}</td>
-                        <td class="p-3 text-rose-600 font-mono">${accidents}</td>
-                        <td class="p-3 text-rose-600 font-mono">${penalties}</td>
-                        <td class="p-3 text-rose-600 font-mono">${loans}</td>
-                        <td class="p-3 font-bold text-rose-800 bg-rose-50 font-mono">${totalDeducted}</td>
-                        <td class="p-3 font-black text-emerald-700 bg-emerald-50/70 font-mono">${netSalary} ر.س</td>
-                        <td class="p-3"><span class="bg-indigo-50 text-indigo-800 px-2.5 py-1 rounded-full text-[10px] font-bold">${paymentMethod}</span></td>
-                        <td class="p-3">
-                            <div class="flex items-center justify-center gap-1.5">
-                                <button onclick='selectEmpToForm(${targetJson})' class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
-                                    <i class="fa-solid fa-user-pen"></i> تعديل
-                                </button>
-                                <button onclick="openTerminationModal('${item.id}', '${name}')" class="bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
-                                    <i class="fa-solid fa-user-slash"></i> إنهاء خدمة
-                                </button>
-                                <button onclick="deleteEmpRecord('${item.id}')" class="bg-slate-100 text-slate-500 hover:bg-rose-600 hover:text-white px-2 py-1 rounded-lg font-bold flex items-center gap-0.5 transition-all text-[11px]">
-                                    <i class="fa-solid fa-trash"></i> حذف
-                                </button>
-                            </div>
-                        </td>
+            const tfoot = document.getElementById('emp-table-foot');
+            if (tfoot) {
+                tfoot.innerHTML = `
+                    <tr class="bg-slate-800 text-white font-bold text-xs border-t-2 border-slate-700">
+                        <td colspan="4" class="p-3 text-center">الإجمالي الكلي للصفوف المعروضة:</td>
+                        <td class="p-3 font-mono text-emerald-400">${sumSalary.toFixed(2)} ر.س</td>
+                        <td class="p-3 font-mono text-blue-400">${sumBonuses.toFixed(2)} ر.س</td>
+                        <td class="p-3 font-mono text-rose-400">${sumDeductions.toFixed(2)} ر.س</td>
+                        <td class="p-3 font-mono text-amber-400">${sumLoans.toFixed(2)} ر.س</td>
+                        <td class="p-3 font-mono text-teal-300 font-black text-sm">${sumNet.toFixed(2)} ر.س</td>
+                        <td class="p-3"></td>
                     </tr>
                 `;
-            });
+            }
         }
 
-        // الدالة المعدلة والمحدثة لاستيراد الإكسل وتوافق عناوين الملف المرفوع
-        function importEmpDataFromExcel(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const data = new Uint8Array(evt.target.result);
-                    const workbook = XLSX.read(data, {type: 'array'});
-                    const sheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[sheetName];
-                    const rawJson = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
-
-                    if (rawJson.length === 0) {
-                        alert("الملف فارغ أو لا يحتوي على بيانات!");
-                        return;
-                    }
-
-                    const mappedData = rawJson.map((row, index) => {
-                        const name = row['الاسم'] || row['اسم الموظف'] || row['name'] || '';
-                        if (!name || String(name).trim() === '') return null;
-
-                        const role = row['المهنة'] || row['المسمى الوظيفي'] || row['الوظيفة'] || 'أخرى';
-                        const phone = row['رقم الجوال'] || row['الجوال'] || '-';
-                        const nationalId = row['السجل الوطني'] || row['الهوية'] || row['رقم الهوية'] || '-';
-                        const nationality = row['الجنسية'] || '-';
-                        const sponsorship = row['الكفالة'] || 'القوافل';
-                        const joinDate = row['تاريخ الالتحاق'] || row['تاريخ المباشرة'] || '-';
-                        const paymentMethod = row['طريقة الدفع'] || row['طريقة الصرف'] || 'نقداً';
-
-                        const salary = parseFloat(row['الراتب المستحق'] || row['الراتب الأساسي'] || 0) || 0;
-                        const bonuses = parseFloat(row['المكافآت'] || row['المكافأة'] || 0) || 0;
-                        const totalEarned = parseFloat(row['إجمالي المستحق'] || (salary + bonuses)) || 0;
-
-                        const absence = parseFloat(row['غياب'] || 0) || 0;
-                        const accidents = parseFloat(row['حوادث'] || 0) || 0;
-                        const penalties = parseFloat(row['الخصومات والجزاءات'] || row['جزاءات'] || 0) || 0;
-                        const loans = parseFloat(row['سلف'] || 0) || 0;
-                        const totalDeducted = parseFloat(row['إجمالي المستقطع'] || (absence + accidents + penalties + loans)) || 0;
-
-                        const netSalary = parseFloat(row['صافي المبلغ المستحق'] || (totalEarned - totalDeducted)) || 0;
-
-                        return {
-                            id: Date.now() + index,
-                            name: String(name).trim(),
-                            role: String(role).trim(),
-                            phone: String(phone).trim(),
-                            nationalId: String(nationalId).trim(),
-                            nationality: String(nationality).trim(),
-                            sponsorship: String(sponsorship).trim(),
-                            joinDate: String(joinDate).trim(),
-                            paymentMethod: String(paymentMethod).trim(),
-                            salary: salary.toFixed(2),
-                            bonuses: bonuses.toFixed(2),
-                            totalEarned: totalEarned.toFixed(2),
-                            absence: absence.toFixed(2),
-                            accidents: accidents.toFixed(2),
-                            penalties: penalties.toFixed(2),
-                            loans: loans.toFixed(2),
-                            totalDeducted: totalDeducted.toFixed(2),
-                            netSalary: netSalary.toFixed(2)
-                        };
-                    }).filter(item => item !== null);
-
-                    if (mappedData.length > 0) {
-                        localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(mappedData));
-                        renderEmpTable();
-                        alert(`تم استيراد ${mappedData.length} موظف بنجاح! 🚀`);
-                    } else {
-                        alert("لم يتم العثور على أعمدة متطابقة في ملف الإكسل.");
-                    }
-
-                } catch (error) {
-                    alert("حدث خطأ أثناء قراءة ملف الإكسل.");
-                    console.error(error);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        // تفريغ النموذج
-        function clearEmpForm() {
-            document.getElementById('emp-form').reset();
-            document.getElementById('emp-salary').value = "0.00";
-            document.getElementById('emp-bonuses').value = "0.00";
-            document.getElementById('emp-absence').value = "0.00";
-            document.getElementById('emp-accidents').value = "0.00";
-            document.getElementById('emp-penalties').value = "0.00";
-            document.getElementById('emp-loans').value = "0.00";
-            calculateTotals();
-        }
-
-        // تعبئة نموذج التعديل عند النقر على تعديل
+        // اختيار موظف للتعديل
         function selectEmpToForm(emp) {
             document.getElementById('emp-name').value = emp.name || '';
             document.getElementById('emp-role').value = emp.role || 'سائق دينا';
@@ -597,63 +56,48 @@
             document.getElementById('emp-join-date').value = emp.joinDate !== '-' ? emp.joinDate : '';
             document.getElementById('emp-payment-method').value = emp.paymentMethod || 'نقداً';
 
-            document.getElementById('emp-salary').value = emp.salary || "0.00";
-            document.getElementById('emp-bonuses').value = emp.bonuses || "0.00";
-            document.getElementById('emp-absence').value = emp.absence || "0.00";
-            document.getElementById('emp-accidents').value = emp.accidents || "0.00";
-            document.getElementById('emp-penalties').value = emp.penalties || "0.00";
-            document.getElementById('emp-loans').value = emp.loans || "0.00";
+            document.getElementById('emp-salary').value = emp.salary || '0.00';
+            document.getElementById('emp-bonuses').value = emp.bonuses || '0.00';
+            document.getElementById('emp-absence').value = emp.absence || '0.00';
+            document.getElementById('emp-accidents').value = emp.accidents || '0.00';
+            document.getElementById('emp-penalties').value = emp.penalties || '0.00';
+            document.getElementById('emp-loans').value = emp.loans || '0.00';
 
             calculateTotals();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // البحث الفوري في الجدول
-        function filterEmpTable() {
-            const query = document.getElementById('emp-table-search').value.toLowerCase();
-            const rows = document.querySelectorAll('#emp-table-body tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
-            });
+        // تفريغ النموذج
+        function clearEmpForm() {
+            document.getElementById('emp-form').reset();
+            document.getElementById('emp-total-earned').value = '0.00';
+            document.getElementById('emp-total-deducted').value = '0.00';
+            document.getElementById('emp-net-salary').value = '0.00';
         }
 
-        // حذف موظف فردي
+        // حذف موظف
         function deleteEmpRecord(id) {
-            if (confirm("هل أنت تأكد من حذف هذا الموظف من المسير؟")) {
+            if (confirm("هل أنت تأكد من حذف هذا الموظف نهائياً؟")) {
                 let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-                empData = empData.filter(e => String(e.id) !== String(id));
+                empData = empData.filter(emp => emp.id != id);
                 localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
                 renderEmpTable();
             }
         }
 
-        // مسح كافة السجلات
+        // مسح كل البيانات
         function deleteAllEmpRecords() {
-            if (confirm("⚠️ تحذير: هل أنت متأكد من مسح جميع بيانات السجل؟ لا يمكن التراجع عن هذه الخطوة.")) {
+            if (confirm("تنبيه حرج: هل أنت متأكد من مسح جميع سجلات الموظفين؟")) {
                 localStorage.removeItem('five_caravans_employees_detailed');
                 renderEmpTable();
             }
         }
 
-        // تصدير البيانات لإكسل
-        function exportEmpDataToExcel() {
-            const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-            if (empData.length === 0) {
-                alert("لا توجد بيانات لتصديرها!");
-                return;
-            }
-            const worksheet = XLSX.utils.json_to_sheet(empData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "المسير المالي");
-            XLSX.writeFile(workbook, `مسير_الرواتب_${new Date().toISOString().slice(0,10)}.xlsx`);
-        }
-
-        // نافذة إنهاء الخدمة
+        // تصفية وحذف وتسكين في الأرشيف
         function openTerminationModal(id, name) {
             document.getElementById('term-emp-id').value = id;
             document.getElementById('term-emp-name').value = name;
-            document.getElementById('term-date').value = new Date().toISOString().slice(0, 10);
+            document.getElementById('term-date').valueAsDate = new Date();
             document.getElementById('termination-modal').classList.remove('hidden');
         }
 
@@ -664,27 +108,21 @@
         function submitTermination(e) {
             e.preventDefault();
             const id = document.getElementById('term-emp-id').value;
-            const name = document.getElementById('term-emp-name').value;
             const termDate = document.getElementById('term-date').value;
-            const termAmount = parseFloat(document.getElementById('term-amount').value) || 0;
+            const amount = parseFloat(document.getElementById('term-amount').value) || 0;
 
             let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
-            const empIndex = empData.findIndex(e => String(e.id) === String(id));
+            let archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
 
+            const empIndex = empData.findIndex(e => e.id == id);
             if (empIndex !== -1) {
                 const emp = empData[empIndex];
-                let archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
-                
-                archiveData.unshift({
-                    id: emp.id,
-                    name: emp.name,
-                    role: emp.role,
-                    nationalId: emp.nationalId,
-                    joinDate: emp.joinDate,
+                const archivedEmp = {
+                    ...emp,
                     termDate: termDate,
-                    amountPaid: termAmount.toFixed(2)
-                });
-
+                    finalAmount: amount.toFixed(2)
+                };
+                archiveData.unshift(archivedEmp);
                 empData.splice(empIndex, 1);
 
                 localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
@@ -693,32 +131,33 @@
                 renderEmpTable();
                 renderArchiveTable();
                 closeTerminationModal();
-                alert(`تم إنهاء خدمة الموظف (${name}) ونقله لأرشيف التصفيات بنجاح.`);
+                alert("تم إنهاء خدمة الموظف ونقله للأرشيف بنجاح.");
             }
         }
 
+        // عرض جدول الأرشيف
         function renderArchiveTable() {
             const tbody = document.getElementById('archive-table-body');
             const archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
 
             if (archiveData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-slate-400 bg-white italic text-center text-xs">لا يوجد موظفين في أرشيف إنهاء الخدمة.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-slate-400 bg-white italic text-center text-sm">لا يوجد موظفين في أرشيف إنهاء الخدمة.</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = '';
-            archiveData.forEach(item => {
+            archiveData.forEach((item, index) => {
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition-all">
-                        <td class="p-3 text-right font-bold text-slate-800">${item.name}</td>
-                        <td class="p-3 text-slate-600">${item.role}</td>
-                        <td class="p-3 font-mono text-slate-600">${item.nationalId}</td>
-                        <td class="p-3 font-mono text-slate-500">${item.joinDate}</td>
-                        <td class="p-3 font-mono text-rose-600 bg-rose-50/50">${item.termDate}</td>
-                        <td class="p-3 font-mono font-bold text-emerald-600 bg-emerald-50/50">${item.amountPaid}</td>
+                        <td class="p-3 text-right font-bold text-slate-800">${item.name || '-'}</td>
+                        <td class="p-3 text-slate-600">${item.role || '-'}</td>
+                        <td class="p-3 text-slate-600 font-mono">${item.nationalId || '-'}</td>
+                        <td class="p-3 text-slate-500 font-mono">${item.joinDate || '-'}</td>
+                        <td class="p-3 text-rose-600 font-mono font-bold">${item.termDate || '-'}</td>
+                        <td class="p-3 font-black text-emerald-600 font-mono">${item.finalAmount || '0.00'} ر.س</td>
                         <td class="p-3">
-                            <button onclick="restoreFromArchive('${item.id}')" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded text-[11px] font-bold transition-all">
-                                استعادة للنظام
+                            <button onclick="restoreFromArchive(${index})" class="bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-2 py-1 rounded-lg font-bold text-[11px] transition-all">
+                                <i class="fa-solid fa-rotate-left"></i> استعادة
                             </button>
                         </td>
                     </tr>
@@ -726,60 +165,23 @@
             });
         }
 
-        function restoreFromArchive(id) {
+        function restoreFromArchive(index) {
+            let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
             let archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
-            const index = archiveData.findIndex(a => String(a.id) === String(id));
 
-            if (index !== -1) {
-                const item = archiveData[index];
-                let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+            const restored = archiveData.splice(index, 1)[0];
+            empData.unshift(restored);
 
-                empData.unshift({
-                    id: item.id,
-                    name: item.name,
-                    role: item.role,
-                    phone: '-',
-                    nationalId: item.nationalId,
-                    nationality: '-',
-                    sponsorship: 'القوافل',
-                    joinDate: item.joinDate,
-                    paymentMethod: 'نقداً',
-                    salary: "0.00",
-                    bonuses: "0.00",
-                    totalEarned: "0.00",
-                    absence: "0.00",
-                    accidents: "0.00",
-                    penalties: "0.00",
-                    loans: "0.00",
-                    totalDeducted: "0.00",
-                    netSalary: "0.00"
-                });
+            localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
+            localStorage.setItem('five_caravans_emp_archive', JSON.stringify(archiveData));
 
-                archiveData.splice(index, 1);
-
-                localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
-                localStorage.setItem('five_caravans_emp_archive', JSON.stringify(archiveData));
-
-                renderEmpTable();
-                renderArchiveTable();
-                alert(`تمت إزالة الموظف من الأرشيف وإعادة تفعيله في القائمة النشطة بنجاح.`);
-            }
+            renderEmpTable();
+            renderArchiveTable();
         }
 
-        function exportArchiveToExcel() {
-            const archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
-            if (archiveData.length === 0) {
-                alert("الأرشيف فارغ!");
-                return;
-            }
-            const worksheet = XLSX.utils.json_to_sheet(archiveData);
-            const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "أرشيف إنهاء الخدمة");
-            XLSX.writeFile(workbook, `أرشيف_إنهاء_الخدمة_${new Date().toISOString().slice(0,10)}.xlsx`);
-        }
-
+        // البحث الفوري والتصفية
         function handleEmpSearch() {
-            const query = document.getElementById('quick-search-emp').value.trim().toLowerCase();
+            const query = document.getElementById('quick-search-emp').value.toLowerCase().trim();
             const dropdown = document.getElementById('search-dropdown-emp');
             const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
 
@@ -789,24 +191,78 @@
             }
 
             const matches = empData.filter(e => (e.name || '').toLowerCase().includes(query));
-
             if (matches.length === 0) {
                 dropdown.innerHTML = `<div class="p-3 text-xs text-slate-400 text-center">لا يوجد موظف بهذا الاسم</div>`;
             } else {
                 dropdown.innerHTML = matches.map(e => `
-                    <div onclick='selectEmpFromSearch(${JSON.stringify(e).replace(/"/g, '&quot;')})' class="p-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 flex justify-between items-center text-xs">
-                        <span class="font-bold text-slate-700">${e.name}</span>
-                        <span class="text-slate-400 font-mono">${e.nationalId || ''}</span>
+                    <div onclick='selectEmpToForm(${JSON.stringify(e).replace(/"/g, '&quot;')}); document.getElementById("search-dropdown-emp").classList.add("hidden");' 
+                         class="p-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 text-xs font-bold text-slate-700 flex justify-between items-center">
+                        <span>${e.name}</span>
+                        <span class="text-[10px] text-slate-400 font-normal">${e.role}</span>
                     </div>
                 `).join('');
             }
             dropdown.classList.remove('hidden');
         }
 
-        function selectEmpFromSearch(emp) {
-            selectEmpToForm(emp);
-            document.getElementById('search-dropdown-emp').classList.add('hidden');
-            document.getElementById('quick-search-emp').value = '';
+        function filterEmpTable() {
+            const val = document.getElementById('emp-table-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#emp-table-body tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(val) ? '' : 'none';
+            });
+
+            // إعادة حساب إجمالي الأعمدة للبيانات المفلترة فقط
+            calculateTableFooterTotals();
+        }
+
+        // التصدير إلى إكسل
+        function exportEmpDataToExcel() {
+            const empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+            if (empData.length === 0) return alert("لا توجد بيانات للتصدير!");
+            
+            const ws = XLSX.utils.json_to_sheet(empData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "الموظفين والمسيرات");
+            XLSX.writeFile(wb, "مسيرات_الموظفين_القوافل_الخمسة.xlsx");
+        }
+
+        function exportArchiveToExcel() {
+            const archiveData = JSON.parse(localStorage.getItem('five_caravans_emp_archive')) || [];
+            if (archiveData.length === 0) return alert("الأرشيف فارغ حالياً!");
+
+            const ws = XLSX.utils.json_to_sheet(archiveData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "أرشيف التصفيات");
+            XLSX.writeFile(wb, "أرشيف_تصفيات_الموظفين.xlsx");
+        }
+
+        // الاستيراد من إكسل
+        function importEmpDataFromExcel(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+                if (jsonData.length > 0) {
+                    let empData = JSON.parse(localStorage.getItem('five_caravans_employees_detailed')) || [];
+                    jsonData.forEach(item => {
+                        item.id = Date.now() + Math.random();
+                        empData.unshift(item);
+                    });
+                    localStorage.setItem('five_caravans_employees_detailed', JSON.stringify(empData));
+                    renderEmpTable();
+                    alert("تم استيراد البيانات بنجاح!");
+                }
+            };
+            reader.readAsArrayBuffer(file);
         }
 
         function logout() {
